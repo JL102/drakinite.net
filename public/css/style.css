@@ -4,5 +4,25 @@
 */
 
 .drak-blue,.drak-hover-blue:hover{color:#fff!important;background-color:#5A72BF!important}
-
 .drak-text-blue{color:#5A72BF!important}
+
+.drak-yellow,.drak-hover-yellow:hover{color:#fff!important;background-color:#FAF8C5!important}
+.drak-text-yellow{color:#FAF8C5!important}
+
+.drak-darkyellow,.drak-hover-darkyellow:hover{color:#fff!important;background-color:#57563D!important}
+.drak-text-darkyellow{color:#57563D!important}
+
+
+
+body{
+	/*background-image: url("/images/horse.jpg");*/
+	background-repeat-y: no-repeat;
+    background-repeat-x: no-repeat;
+    background-size: contain;
+}
+
+.drak-title-width{
+	letter-spacing: 2px;
+	transition-timing-function: ease-out;
+	transition: 6s;
+}
