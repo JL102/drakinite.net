@@ -1,0 +1,1 @@
+This directory is temporary. It exists just in case Cloud9 does not work when I present my Aphorism project in English class. I'll delete it after I present.
