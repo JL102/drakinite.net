@@ -33,6 +33,12 @@ function init() {
 	camera.poi.y = 12;
 	camera.poi.z = 101;
 	
+	camera.param = { 
+		r: 200,
+		y: 20,
+		angle: 1
+	};
+	
 	CameraPOI = new THREE.Vector3( 0.1,0.1,0.1 ); //CANNOT have values of zero!
     
 	
@@ -56,8 +62,7 @@ function animate() {
      
     //camera.rotation.y += .3 * deltaTime;
     
-	camera.poi.x += 10 * deltaTime;
-	camera.poi.y += 10 * deltaTime;
+	camera.param.angle += .5 * deltaTime;
 	//camera.rotation.y += 1 * deltaTime;
 	updateCamera();
    
@@ -133,19 +138,27 @@ function animateParticles() {
 
 function updateCamera(){
 	
+	/*
 	//Updates position based on point of interest
 	var newPos = new THREE.Vector3();
 	newPos = CameraPOI.clone().add( camera.poi );
 	
 	camera.position.set( newPos.x, newPos.y, newPos.z );
+	*/
+	var y = 0;
+	
+	var x = Math.sin( camera.param.angle ) * camera.param.r
+	var z = Math.cos( camera.param.angle ) * camera.param.r
+	
+	camera.position.set( x, y, z );
 	
 	//Updates rotation based on point of interest
 	var distance = camera.position.distanceTo( CameraPOI );
-	var x = Math.asin( ( CameraPOI.y - camera.position.y ) / distance  ); //Euler x is vector y
-	var y = Math.asin( ( camera.position.x - CameraPOI.x ) / distance ); //Euler y is vector x and z
-	var z = 0; //Z is yaw. Not worrying about that for now.
+	var angX = Math.asin( ( CameraPOI.y - camera.position.y ) / distance  ); //Euler x is vector y
+	var angY = Math.asin( ( camera.position.x - CameraPOI.x ) / distance ); //Euler y is vector x and z
+	var angZ = 0; //Z is yaw. Not worrying about that for now.
 	
-	camera.rotation.set( x, y, z );
+	camera.rotation.set( angX, angY, angZ );
 	
 }
 
