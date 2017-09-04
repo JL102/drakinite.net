@@ -9,6 +9,8 @@ var deltaTime;
  
 var particleSystem;
 
+var angX = 0, angY = 0, angZ = 0;
+var dx = 0, dy = 0, dz = 0;
 init();
 
 particleSystem = createParticleSystem();
@@ -28,15 +30,17 @@ function init() {
     camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 1000);
     camera.position.z = 50;
 	
+	/*unneeded
 	camera.poi = new THREE.Vector3();
 	camera.poi.x = 100;
 	camera.poi.y = 12;
 	camera.poi.z = 101;
+	*/
 	
 	camera.param = { 
-		r: 200,
-		y: 20,
-		angle: 1
+		r: 200, //radius
+		y: 1, //vertical angle
+		angle: 1 //horizontal angle
 	};
 	
 	CameraPOI = new THREE.Vector3( 0.1,0.1,0.1 ); //CANNOT have values of zero!
@@ -62,8 +66,15 @@ function animate() {
      
     //camera.rotation.y += .3 * deltaTime;
     
+	angX += dx * deltaTime;
+	angY += dy * deltaTime;
+	angY += dz * deltaTime;
+	
 	camera.param.angle += .5 * deltaTime;
-	//camera.rotation.y += 1 * deltaTime;
+	if(camera.param.y >= 1.5){
+		camera.param.y = -1.5;
+	}
+	
 	updateCamera();
    
     render();
@@ -85,7 +96,7 @@ function onWindowResize() {
 function createParticleSystem() {
      
     // The number of particles in a particle system is not easily changed.
-    var particleCount = 2000;
+    var particleCount = 2500;
      
     // Particles are just individual vertices in a geometry
     // Create the geometry that will hold all of the vertices
@@ -95,9 +106,9 @@ function createParticleSystem() {
     for (var p = 0; p < particleCount; p++) {
      
         // This will create all the vertices in a range of -200 to 200 in all directions
-        var x = Math.random() * 400 - 200;
-        var y = Math.random() * 400 - 200;
-        var z = Math.random() * 400 - 200;
+        var x = Math.random() * 600 - 300;
+        var y = Math.random() * 600 - 300;
+        var z = Math.random() * 600 - 300;
                
         // Create the vertex
         var particle = new THREE.Vector3(x, y, z);
@@ -138,27 +149,54 @@ function animateParticles() {
 
 function updateCamera(){
 	
-	/*
-	//Updates position based on point of interest
-	var newPos = new THREE.Vector3();
-	newPos = CameraPOI.clone().add( camera.poi );
+	/* Creates positioning based on y being a value instead of angle
+	var y = camera.param.y + CameraPOI.y;
 	
-	camera.position.set( newPos.x, newPos.y, newPos.z );
+	var horX = Math.sin( camera.param.angle ) * camera.param.r
+	var horZ = Math.cos( camera.param.angle ) * camera.param.r
 	*/
-	var y = 0;
 	
-	var x = Math.sin( camera.param.angle ) * camera.param.r
-	var z = Math.cos( camera.param.angle ) * camera.param.r
+	//if camera.param.y >= pi/2 or <= -pi/2, make it equal (bounds to half a pi)
+	if( camera.param.y >= 1.5707){
+		camera.param.y = 1.5707;
+		
+	}else if( camera.param.y <= -1.5707 ){
+		camera.param.y = -1.5707
+	}
+	//Set values of y and a horizontal radius for x+z
+	var y = Math.sin( camera.param.y ) * camera.param.r;
+	var xx = Math.cos( camera.param.y ) * camera.param.r;
+	//Set values of x and z with xx as a radius
+	var x = Math.sin( camera.param.angle ) * xx
+	var z = Math.cos( camera.param.angle ) * xx
 	
 	camera.position.set( x, y, z );
 	
-	//Updates rotation based on point of interest
-	var distance = camera.position.distanceTo( CameraPOI );
-	var angX = Math.asin( ( CameraPOI.y - camera.position.y ) / distance  ); //Euler x is vector y
-	var angY = Math.asin( ( camera.position.x - CameraPOI.x ) / distance ); //Euler y is vector x and z
+	/*
+	var angX = camera.param.y * -1; //Euler x is vector y
+	var angY = camera.param.angle; //Euler y is vector x and z
 	var angZ = 0; //Z is yaw. Not worrying about that for now.
+	*/
 	
-	camera.rotation.set( angX, angY, angZ );
+	var dx = x - CameraPOI.x;
+	var dy = y - CameraPOI.y;
+	var dz = z - CameraPOI.z;
+	/*
+	var rotx = Math.atan2( dy, dz )
+	var roty = Math.atan2( dx * Math.cos(rotx), dz )
+	var rotz = Math.atan2( Math.cos(rotx), Math.sin(rotx) * Math.sin(roty) )
+	*/
+	
+	var rotx = Math.atan2( dy, dz );
+	 if (dz >= 0) {
+		var roty = -Math.atan2( dx * Math.cos(rotx), dz );
+	 }else{
+		var roty = Math.atan2( dx * Math.cos(rotx), -dz );
+	 }
+	
+	var rotz = Math.atan2( Math.cos(rotx), Math.sin(rotx) * Math.sin(roty) );
+	
+	camera.rotation.set( rotx, -roty, rotz, 'XYZ' );
 	
 }
 
