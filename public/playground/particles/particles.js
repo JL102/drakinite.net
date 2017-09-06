@@ -9,7 +9,28 @@ var deltaTime;
  
 var particleSystem, uniforms, geometry;
 var maxParticles;
-var emitter;
+var emitter = {
+		rate: 1,
+		pos: new THREE.Vector3( 0.1,0.1,0.1 ),
+		size: {
+			x: 20,
+			y: 20,
+			z: 20
+		},
+		particle: {
+			velocity: {
+				dir: new THREE.Vector3( 0, 0, 0 ),
+				amount: 10,
+				random: 100 
+			}, //velocity not finished yet
+			duration: 3
+		},
+		velocity: {},
+		
+		particleInfo: []
+	};
+    
+	maxParticles = 1000;
 
 document.addEventListener("DOMContentLoaded", function(event) { 
 	init();
@@ -36,7 +57,7 @@ function init() {
 	
 	camera.param = { 
 		r: 60, //radius
-		y: 1, //vertical angle
+		y: .2, //vertical angle
 		angle: 0.1 //horizontal angle
 	};
 	
@@ -47,10 +68,10 @@ function init() {
 	updateCamera();
 	
 	//LIGHT
-    var light = new THREE.DirectionalLight( 0xffffff );
+    /*var light = new THREE.DirectionalLight( 0xffffff );
     light.position.set( 1, -1, 1 ).normalize();
     scene.add(light);
-
+	*/
 	//RENDERER
     renderer = new THREE.WebGLRenderer();
     renderer.setSize( window.innerWidth, window.innerHeight );
@@ -64,14 +85,17 @@ function init() {
 
 function animate() {
 	
-	
     deltaTime = clock.getDelta(); //Time
 	time = Date.now() * 0.005;
 	
 	camera.param.angle += .5 * deltaTime;
 	
-	animateParticles();
+	//camera.param.y = Math.sin( .1 * time) * 1;
+	
+
 	updateCamera();
+	emitter.pos = camera.position;
+	updateParticles();
 
 	render();
     requestAnimationFrame( animate );
@@ -89,34 +113,7 @@ function onWindowResize() {
 }
 
 function createParticleSystem() {
-     
-    // Emitter setup.
-    emitter = {
-		rate: 10,
-		pos: {
-			x: 0,
-			y: 0,
-			z: 0
-		},
-		size: {
-			x: 100,
-			y: 100,
-			z: 100
-		},
-		particle: {
-			velocity: {
-				dir: new THREE.Vector3( 0, 0, 0 ),
-				amount: 10,
-				random: 100 
-			}, //velocity not finished yet
-			duration: 3
-		},
-		velocity: {},
-		
-		particleInfo: []
-	};
-    
-	maxParticles = 1000;
+
 		 
     geometry = new THREE.BufferGeometry();
 	var texture = new THREE.TextureLoader().load("images/snowflake.png");
@@ -144,9 +141,9 @@ function createParticleSystem() {
 	var positions = new Float32Array(maxParticles * 3);
 	var colors = new Float32Array(maxParticles * 3);
 	var sizes = new Float32Array(maxParticles);
-	var opacities = new Float32Array(maxParticles);
+	var alphas = new Float32Array(maxParticles);
 	
-	var color = new THREE.Color();
+	//var color = new THREE.Color();
 	
  
     //Create particles
@@ -157,19 +154,20 @@ function createParticleSystem() {
         positions[ i3 + 1 ] = Math.random() * emitter.size.y - emitter.size.y/2;
         positions[ i3 + 2 ] = Math.random() * emitter.size.z - emitter.size.z/2;
                
-        color.setHSL( i / maxParticles, 1.0, 0.5);
+        //color.setHSL( i / maxParticles, 1.0, 0.5);
 		
-		colors[ i3 + 0 ] = color.r;
-		colors[ i3 + 1 ] = color.g;
-		colors[ i3 + 2 ] = color.b;
+		colors[ i3 + 0 ] = Math.pow(Math.random(),2); //color.r;
+		colors[ i3 + 1 ] = Math.pow(Math.random(),2); //color.g;
+		colors[ i3 + 2 ] = Math.pow(Math.random(),2); //color.b;
 		
-		opacities[ i ] = Math.random();
+		alphas[ i ] = 0; //Math.random();
 		
-		sizes[ i ] = 0;
+		sizes[ i ] = 10;
 		
 		emitter.particleInfo.push({
 			index: i,
-			index3: i3
+			index3: i3,
+			visible: false
 		});
 		
     } 
@@ -177,7 +175,7 @@ function createParticleSystem() {
 	geometry.addAttribute( 'position', new THREE.BufferAttribute( positions, 3) );
 	geometry.addAttribute( 'customColor', new THREE.BufferAttribute( colors, 3) );
 	geometry.addAttribute( 'size', new THREE.BufferAttribute( sizes, 1) );
-	geometry.addAttribute( 'opacity', new THREE.BufferAttribute( opacities, 1) );//not yet working
+	geometry.addAttribute( 'alpha', new THREE.BufferAttribute( alphas, 1) );//not yet working
 	
 	//Creates particle system
 	particleSystem = new THREE.Points( geometry, shaderMaterial );
@@ -187,32 +185,58 @@ function createParticleSystem() {
 }
 
 
-function animateParticles() {
+function updateParticles() {
 	
-	/*
-    var particles = particleSystem.geometry.vertices;
+	var particleInfo = emitter.particleInfo;
+	var numToDo = emitter.rate;
 	
-    for(var i = 0; i < particles.length; i++) {
+	for(var i = 0; i < emitter.particleInfo.length; i++){
 		
-        var p = particles[i];
-        if (p.y < -emitter.size.y/2) {
-            p.y = Math.random() * emitter.size.y - emitter.size.y/2;
-        }
-        p.y = p.y - (10 * deltaTime);
-		
-    }
-	*/
+		if( particleInfo[i].visible != true && numToDo > 0 ){
+
+			createNewParticle( particleInfo[i].index, particleInfo[i].index3 );
+			
+			particleInfo[i].visible = true;
+			numToDo--;
+		}
+	}
 	
 	var sizes = geometry.attributes.size.array;
 	
 	for ( var i = 0; i < maxParticles; i++ ) {
-		sizes[ i ] = 10 * ( 1 + Math.sin( 0.1 * i + time ) );
+		//sizes[ i ] = 10 * ( 1 + Math.sin( 0.1 * i + time ) );
 	}
 	
 	//particleSystem.rotation.z = 0.05 * time;
 	
 	geometry.attributes.size.needsUpdate = true;
+	geometry.attributes.alpha.needsUpdate = true;
+	geometry.attributes.position.needsUpdate = true;
 
+}
+
+function createNewParticle(i, i3/*Indices of particle*/){
+	
+	var positions = geometry.attributes.position.array;
+	var colors = geometry.attributes.customColor.array;
+	var alphas = geometry.attributes.alpha.array;
+	var sizes = geometry.attributes.size.array;
+	
+	// Random position within bounds
+	positions[ i3 + 0 ] = emitter.pos.x + Math.random() * emitter.size.x - emitter.size.x/2;
+	positions[ i3 + 1 ] = emitter.pos.y + Math.random() * emitter.size.y - emitter.size.y/2;
+	positions[ i3 + 2 ] = emitter.pos.z + Math.random() * emitter.size.z - emitter.size.z/2;
+		   
+	//color.setHSL( i / maxParticles, 1.0, 0.5);
+	
+	colors[ i3 + 0 ] = Math.pow(Math.random(),2); //color.r;
+	colors[ i3 + 1 ] = Math.pow(Math.random(),2); //color.g;
+	colors[ i3 + 2 ] = Math.pow(Math.random(),2); //color.b;
+	
+	alphas[ i ] = 1; //Math.random();
+	
+	sizes[ i ] = 10;
+	
 }
 
 
