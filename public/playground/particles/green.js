@@ -108,7 +108,7 @@ function createParticleSystem() {
 		velocity: {}
 	};
     
-	maxParticles = 3000;
+	maxParticles = 5000;
 		 
     geometry = new THREE.BufferGeometry();
 	var texture = new THREE.TextureLoader().load("images/snowflake.png");
