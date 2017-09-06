@@ -32,15 +32,18 @@ function init() {
 	
 	//CAMERA
     camera = new THREE.PerspectiveCamera( 90, window.innerWidth / window.innerHeight, 1, 1000);
+	camera.position.set(0,0,50);
 	
 	camera.param = { 
 		r: 60, //radius
-		y: 0, //vertical angle
+		y: 1, //vertical angle
 		angle: 0.1 //horizontal angle
 	};
 	
-	CameraPOI = new THREE.Vector3( 0.1,0.1,0.1 ); //CANNOT have values of zero!
-    
+	//CameraPOI = new THREE.Object3D();
+	//CameraPOI.position.set( 0.1,0.1,0.1 ); //CANNOT have values of zero!
+    CameraPOI = new THREE.Vector3( 0,0,0 );
+	
 	updateCamera();
 	
 	//LIGHT
@@ -251,7 +254,7 @@ function updateCamera(){
 	var rotx = Math.atan2( dy, dz )
 	var roty = Math.atan2( dx * Math.cos(rotx), dz )
 	var rotz = Math.atan2( Math.cos(rotx), Math.sin(rotx) * Math.sin(roty) )
-	*/
+	
 	
 	var rotx = Math.atan2( dy, dz );
 	 if (dz >= 0) {
@@ -263,7 +266,8 @@ function updateCamera(){
 	var rotz = Math.atan2( Math.cos(rotx), Math.sin(rotx) * Math.sin(roty) );
 	
 	camera.rotation.set( rotx, -roty, rotz, 'XYZ' );// Not functional currently
-	
+	*/
+	camera.lookAt( CameraPOI );
 }
 
 
