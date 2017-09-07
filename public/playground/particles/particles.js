@@ -10,7 +10,7 @@ var deltaTime;
 var particleSystem, uniforms, geometry;
 var maxParticles;
 var emitter = {
-		rate: 8000,
+		rate: 1000,
 		pos: new THREE.Vector3( 0,0,0 ),
 		size: {
 			x: 0,
@@ -23,7 +23,15 @@ var emitter = {
 				amount: 10,
 				random: 100 
 			}, //velocity not finished yet
-			duration: 3
+			duration: 2,
+			startSize: 3,
+			endSize: 0
+		},
+		physics: {
+			air: .3,
+			gravity: {
+				amt: 1 //object to allow for direction later
+			}
 		},
 		velocity: {},
 		
@@ -82,7 +90,7 @@ function animate() {
     deltaTime = clock.getDelta(); //Time
 	time = Date.now() * 0.005;
 	
-	camera.param.angle += 1 * deltaTime;
+	//camera.param.angle += 1 * deltaTime;
 	
 	updateCamera();
 	//emitter.pos = camera.position;
@@ -184,8 +192,11 @@ function createParticleSystem() {
 
 function updateParticles() {
 	
-	var alphas = geometry.attributes.alpha.array;
 	var positions = geometry.attributes.position.array;
+	var colors = geometry.attributes.customColor.array;
+	var alphas = geometry.attributes.alpha.array;
+	var sizes = geometry.attributes.size.array;
+	
 	var p = emitter.particleInfo;
 	var numToDo = emitter.rate * deltaTime;
 	
@@ -193,21 +204,39 @@ function updateParticles() {
 				
 		if( p[i].visible == true ){
 			
+			//Animate particles
+			
+			//Velocity
 			positions[p[i].index3 + 0] += p[i].velocity.x * deltaTime;
 			positions[p[i].index3 + 1] += p[i].velocity.y * deltaTime;
 			positions[p[i].index3 + 2] += p[i].velocity.z * deltaTime;
 			
+			//Air resistance
+			
+			p[i].velocity.x *= 1 - ( emitter.physics.air / 10 );
+			p[i].velocity.y *= 1 - ( emitter.physics.air / 10 );
+			p[i].velocity.z *= 1 - ( emitter.physics.air / 10 );
+			
+			//Gravity
+			p[i].velocity.y -= emitter.physics.gravity.amt;
+			
+			//Lerp size
+			sizes[i] = lerp( emitter.particle.startSize, emitter.particle.endSize,
+								p[i].age / emitter.particle.duration);
+			
+			//Increase age
 			p[i].age += deltaTime;
 			
 			if( p[i].age >= emitter.particle.duration ){
 				
+				//Delete particle
 				p[i].visible = false;
 				p[i].age = 0;
 				alphas[i] = 0;
-				
 			}
 		}else if( numToDo > 0 ){
-
+			
+			//If you still have more particles to create
 			createNewParticle( p[i].index, p[i].index3 );
 			
 			p[i].visible = true;
@@ -226,7 +255,6 @@ function updateParticles() {
 	geometry.attributes.alpha.needsUpdate = true;
 	geometry.attributes.position.needsUpdate = true;
 	geometry.attributes.customColor.needsUpdate = true;
-
 }
 
 function createNewParticle(i, i3/*Indices of particle*/){
@@ -249,10 +277,9 @@ function createNewParticle(i, i3/*Indices of particle*/){
 	
 	alphas[ i ] = 1; //Math.random();
 	
-	sizes[ i ] = .5;
+	sizes[ i ] = emitter.particle.size;
 	
 }
-
 
 function updateCamera(){
 	
@@ -308,7 +335,9 @@ function updateCamera(){
 	camera.lookAt( CameraPOI );
 }
 
-
+function lerp(v0, v1, t) {
+    return v0*(1-t)+v1*t
+}
 
 
 
