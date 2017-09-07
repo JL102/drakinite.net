@@ -10,12 +10,12 @@ var deltaTime;
 var particleSystem, uniforms, geometry;
 var maxParticles;
 var emitter = {
-		rate: 1,
-		pos: new THREE.Vector3( 0.1,0.1,0.1 ),
+		rate: 8000,
+		pos: new THREE.Vector3( 0,0,0 ),
 		size: {
-			x: 20,
-			y: 20,
-			z: 20
+			x: 0,
+			y: 0,
+			z: 0
 		},
 		particle: {
 			velocity: {
@@ -30,7 +30,7 @@ var emitter = {
 		particleInfo: []
 	};
     
-	maxParticles = 1000;
+	maxParticles = emitter.rate * emitter.particle.duration * 1.25;
 
 document.addEventListener("DOMContentLoaded", function(event) { 
 	init();
@@ -61,17 +61,11 @@ function init() {
 		angle: 0.1 //horizontal angle
 	};
 	
-	//CameraPOI = new THREE.Object3D();
-	//CameraPOI.position.set( 0.1,0.1,0.1 ); //CANNOT have values of zero!
+	//Point of interest for camera
     CameraPOI = new THREE.Vector3( 0,0,0 );
 	
 	updateCamera();
 	
-	//LIGHT
-    /*var light = new THREE.DirectionalLight( 0xffffff );
-    light.position.set( 1, -1, 1 ).normalize();
-    scene.add(light);
-	*/
 	//RENDERER
     renderer = new THREE.WebGLRenderer();
     renderer.setSize( window.innerWidth, window.innerHeight );
@@ -88,13 +82,10 @@ function animate() {
     deltaTime = clock.getDelta(); //Time
 	time = Date.now() * 0.005;
 	
-	camera.param.angle += .5 * deltaTime;
+	camera.param.angle += 1 * deltaTime;
 	
-	//camera.param.y = Math.sin( .1 * time) * 1;
-	
-
 	updateCamera();
-	emitter.pos = camera.position;
+	//emitter.pos = camera.position;
 	updateParticles();
 
 	render();
@@ -149,25 +140,31 @@ function createParticleSystem() {
     //Create particles
     for (var i = 0, i3 = 0; i < maxParticles; i++, i3 += 3) {
      
-        // Random position within bounds
-        positions[ i3 + 0 ] = Math.random() * emitter.size.x - emitter.size.x/2;
-        positions[ i3 + 1 ] = Math.random() * emitter.size.y - emitter.size.y/2;
-        positions[ i3 + 2 ] = Math.random() * emitter.size.z - emitter.size.z/2;
+        // ZERO ALL THE THINGS
+        positions[ i3 + 0 ] = 0;
+        positions[ i3 + 1 ] = 0;
+        positions[ i3 + 2 ] = 0;
                
         //color.setHSL( i / maxParticles, 1.0, 0.5);
 		
-		colors[ i3 + 0 ] = Math.pow(Math.random(),2); //color.r;
-		colors[ i3 + 1 ] = Math.pow(Math.random(),2); //color.g;
-		colors[ i3 + 2 ] = Math.pow(Math.random(),2); //color.b;
+		colors[ i3 + 0 ] = 0;
+		colors[ i3 + 1 ] = 0;
+		colors[ i3 + 2 ] = 0;
 		
 		alphas[ i ] = 0; //Math.random();
 		
-		sizes[ i ] = 10;
+		sizes[ i ] = 0;
 		
 		emitter.particleInfo.push({
 			index: i,
 			index3: i3,
-			visible: false
+			visible: false,
+			age: 0,
+			velocity: {
+				x: 0,
+				y: 0,
+				z: 0
+			}
 		});
 		
     } 
@@ -187,31 +184,48 @@ function createParticleSystem() {
 
 function updateParticles() {
 	
-	var particleInfo = emitter.particleInfo;
-	var numToDo = emitter.rate;
+	var alphas = geometry.attributes.alpha.array;
+	var positions = geometry.attributes.position.array;
+	var p = emitter.particleInfo;
+	var numToDo = emitter.rate * deltaTime;
 	
 	for(var i = 0; i < emitter.particleInfo.length; i++){
-		
-		if( particleInfo[i].visible != true && numToDo > 0 ){
-
-			createNewParticle( particleInfo[i].index, particleInfo[i].index3 );
+				
+		if( p[i].visible == true ){
 			
-			particleInfo[i].visible = true;
+			positions[p[i].index3 + 0] += p[i].velocity.x * deltaTime;
+			positions[p[i].index3 + 1] += p[i].velocity.y * deltaTime;
+			positions[p[i].index3 + 2] += p[i].velocity.z * deltaTime;
+			
+			p[i].age += deltaTime;
+			
+			if( p[i].age >= emitter.particle.duration ){
+				
+				p[i].visible = false;
+				p[i].age = 0;
+				alphas[i] = 0;
+				
+			}
+		}else if( numToDo > 0 ){
+
+			createNewParticle( p[i].index, p[i].index3 );
+			
+			p[i].visible = true;
+			
+			p[i].velocity.x = 100 * Math.random() - 50;
+			p[i].velocity.y = 100 * Math.random() - 50;
+			p[i].velocity.z = 100 * Math.random() - 50;
+			
 			numToDo--;
 		}
 	}
 	
 	var sizes = geometry.attributes.size.array;
 	
-	for ( var i = 0; i < maxParticles; i++ ) {
-		//sizes[ i ] = 10 * ( 1 + Math.sin( 0.1 * i + time ) );
-	}
-	
-	//particleSystem.rotation.z = 0.05 * time;
-	
 	geometry.attributes.size.needsUpdate = true;
 	geometry.attributes.alpha.needsUpdate = true;
 	geometry.attributes.position.needsUpdate = true;
+	geometry.attributes.customColor.needsUpdate = true;
 
 }
 
@@ -235,7 +249,7 @@ function createNewParticle(i, i3/*Indices of particle*/){
 	
 	alphas[ i ] = 1; //Math.random();
 	
-	sizes[ i ] = 10;
+	sizes[ i ] = .5;
 	
 }
 
