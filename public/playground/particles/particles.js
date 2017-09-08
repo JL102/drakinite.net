@@ -9,9 +9,12 @@ var deltaTime;
  
 var particleSystem, uniforms, geometry;
 var maxParticles;
+
+var numFramesToDo = 1000;
+
 var emitter = {
 		rate: 1000,
-		pos: new THREE.Vector3( 0,0,0 ),
+		pos: new THREE.Vector3( 0.1,0,0 ),
 		size: {
 			x: 0,
 			y: 0,
@@ -20,17 +23,20 @@ var emitter = {
 		particle: {
 			velocity: {
 				dir: new THREE.Vector3( 0, 0, 0 ),
-				amount: 10,
-				random: 100 
+				amount: 40,
+				dirRandom: 1,
+				amountRandom: 0
 			}, //velocity not finished yet
 			duration: 2,
 			startSize: 3,
-			endSize: 0
+			endSize: 0,
+			color: new THREE.Color(0xb53c3c),
+			colorRandom: .2
 		},
 		physics: {
 			air: .3,
 			gravity: {
-				amt: 1 //object to allow for direction later
+				amt: 0 //object to allow for direction later
 			}
 		},
 		velocity: {},
@@ -38,7 +44,7 @@ var emitter = {
 		particleInfo: []
 	};
     
-	maxParticles = emitter.rate * emitter.particle.duration * 1.25;
+	maxParticles = emitter.rate * emitter.particle.duration + emitter.rate + 1;
 
 document.addEventListener("DOMContentLoaded", function(event) { 
 	init();
@@ -65,7 +71,7 @@ function init() {
 	
 	camera.param = { 
 		r: 60, //radius
-		y: .2, //vertical angle
+		y: 0, //vertical angle
 		angle: 0.1 //horizontal angle
 	};
 	
@@ -77,7 +83,7 @@ function init() {
 	//RENDERER
     renderer = new THREE.WebGLRenderer();
     renderer.setSize( window.innerWidth, window.innerHeight );
-	renderer.setClearColor( 0x7c949c, 1 );
+	renderer.setClearColor( 0x000000, 1 );
     document.body.appendChild( renderer.domElement );
  
     window.addEventListener( 'resize', onWindowResize, false );
@@ -90,14 +96,19 @@ function animate() {
     deltaTime = clock.getDelta(); //Time
 	time = Date.now() * 0.005;
 	
-	//camera.param.angle += 1 * deltaTime;
+	camera.param.angle += 1 * deltaTime;
 	
 	updateCamera();
 	//emitter.pos = camera.position;
 	updateParticles();
-
+	
+	//emitter.particle.velocity.dir.z += 3 * deltaTime;
+	
 	render();
-    requestAnimationFrame( animate );
+	//if(numFramesToDo > 0){
+		numFramesToDo--;
+		requestAnimationFrame( animate );
+	//}
 }
  
 function render() {
@@ -189,7 +200,6 @@ function createParticleSystem() {
     scene.add(particleSystem);  
 }
 
-
 function updateParticles() {
 	
 	var positions = geometry.attributes.position.array;
@@ -207,18 +217,17 @@ function updateParticles() {
 			//Animate particles
 			
 			//Velocity
-			positions[p[i].index3 + 0] += p[i].velocity.x * deltaTime;
-			positions[p[i].index3 + 1] += p[i].velocity.y * deltaTime;
-			positions[p[i].index3 + 2] += p[i].velocity.z * deltaTime;
+			positions[p[i].index3 + 0] += p[i].velocity.x /60;// * deltaTime;
+			positions[p[i].index3 + 1] += p[i].velocity.y /60;//* deltaTime;
+			positions[p[i].index3 + 2] += p[i].velocity.z /60;//* deltaTime;
 			
 			//Air resistance
-			
 			p[i].velocity.x *= 1 - ( emitter.physics.air / 10 );
 			p[i].velocity.y *= 1 - ( emitter.physics.air / 10 );
 			p[i].velocity.z *= 1 - ( emitter.physics.air / 10 );
 			
 			//Gravity
-			p[i].velocity.y -= emitter.physics.gravity.amt;
+			p[i].velocity.y -= emitter.physics.gravity.amt;// * deltaTime * 60;
 			
 			//Lerp size
 			sizes[i] = lerp( emitter.particle.startSize, emitter.particle.endSize,
@@ -234,22 +243,14 @@ function updateParticles() {
 				p[i].age = 0;
 				alphas[i] = 0;
 			}
-		}else if( numToDo > 0 ){
+		}else if( numToDo > 0 && p[i].visible != true ){
 			
 			//If you still have more particles to create
-			createNewParticle( p[i].index, p[i].index3 );
-			
-			p[i].visible = true;
-			
-			p[i].velocity.x = 100 * Math.random() - 50;
-			p[i].velocity.y = 100 * Math.random() - 50;
-			p[i].velocity.z = 100 * Math.random() - 50;
-			
+			createNewParticle( p[i], p[i].index, p[i].index3 );
+						
 			numToDo--;
 		}
 	}
-	
-	var sizes = geometry.attributes.size.array;
 	
 	geometry.attributes.size.needsUpdate = true;
 	geometry.attributes.alpha.needsUpdate = true;
@@ -257,12 +258,28 @@ function updateParticles() {
 	geometry.attributes.customColor.needsUpdate = true;
 }
 
-function createNewParticle(i, i3/*Indices of particle*/){
+function createNewParticle(p/*Particle in info array*/, i, i3/*Indices of particle*/){
 	
 	var positions = geometry.attributes.position.array;
 	var colors = geometry.attributes.customColor.array;
 	var alphas = geometry.attributes.alpha.array;
 	var sizes = geometry.attributes.size.array;
+	
+	p.visible = true;
+	
+	var angX = emitter.particle.velocity.dir.x,
+		angY = emitter.particle.velocity.dir.y,
+		angZ = emitter.particle.velocity.dir.z,
+		angAmt = emitter.particle.velocity.amount,
+		angRand = emitter.particle.velocity.dirRandom;
+	
+	angX = lerp(angX, ( Math.random() - .5 ) * 2 * Math.PI, angRand);
+	angY = lerp(angY, ( Math.random() - .5 ) * 2 * Math.PI, angRand);
+	angZ = lerp(angZ, ( Math.random() - .5 ) * 2 * Math.PI, angRand);
+	
+	p.velocity.x = ( Math.cos(angZ) * Math.cos(angY) ) * angAmt;
+	p.velocity.y = ( Math.sin(angZ) * Math.sin(angX) ) * angAmt;
+	p.velocity.z = ( Math.cos(angX) * Math.sin(angY) )* angAmt;//Math.cos(angX) * angAmt;
 	
 	// Random position within bounds
 	positions[ i3 + 0 ] = emitter.pos.x + Math.random() * emitter.size.x - emitter.size.x/2;
@@ -271,9 +288,12 @@ function createNewParticle(i, i3/*Indices of particle*/){
 		   
 	//color.setHSL( i / maxParticles, 1.0, 0.5);
 	
-	colors[ i3 + 0 ] = Math.pow(Math.random(),2); //color.r;
-	colors[ i3 + 1 ] = Math.pow(Math.random(),2); //color.g;
-	colors[ i3 + 2 ] = Math.pow(Math.random(),2); //color.b;
+	colors[ i3 + 0 ] = lerp( emitter.particle.color.r, Math.pow(Math.random(),2), 
+		emitter.particle.colorRandom ); //color.r;
+	colors[ i3 + 1 ] = lerp( emitter.particle.color.g, Math.pow(Math.random(),2), 
+		emitter.particle.colorRandom ); //color.g;
+	colors[ i3 + 2 ] = lerp( emitter.particle.color.b, Math.pow(Math.random(),2), 
+		emitter.particle.colorRandom ); //color.b;
 	
 	alphas[ i ] = 1; //Math.random();
 	
@@ -282,13 +302,6 @@ function createNewParticle(i, i3/*Indices of particle*/){
 }
 
 function updateCamera(){
-	
-	/* Creates positioning based on y being a value instead of angle
-	var y = camera.param.y + CameraPOI.y;
-	
-	var horX = Math.sin( camera.param.angle ) * camera.param.r
-	var horZ = Math.cos( camera.param.angle ) * camera.param.r
-	*/
 	
 	//if camera.param.y >= pi/2 or <= -pi/2, make it equal (bounds to half a pi)
 	if( camera.param.y >= 1.5707){
@@ -306,32 +319,11 @@ function updateCamera(){
 	
 	camera.position.set( x, y, z );
 	
-	/*
-	var angX = camera.param.y * -1; //Euler x is vector y
-	var angY = camera.param.angle; //Euler y is vector x and z
-	var angZ = 0; //Z is yaw. Not worrying about that for now.
-	*/
 	
 	var dx = x - CameraPOI.x;
 	var dy = y - CameraPOI.y;
 	var dz = z - CameraPOI.z;
-	/*
-	var rotx = Math.atan2( dy, dz )
-	var roty = Math.atan2( dx * Math.cos(rotx), dz )
-	var rotz = Math.atan2( Math.cos(rotx), Math.sin(rotx) * Math.sin(roty) )
-	
-	
-	var rotx = Math.atan2( dy, dz );
-	 if (dz >= 0) {
-		var roty = -Math.atan2( dx * Math.cos(rotx), dz );
-	 }else{
-		var roty = Math.atan2( dx * Math.cos(rotx), -dz );
-	 }
-	
-	var rotz = Math.atan2( Math.cos(rotx), Math.sin(rotx) * Math.sin(roty) );
-	
-	camera.rotation.set( rotx, -roty, rotz, 'XYZ' );// Not functional currently
-	*/
+
 	camera.lookAt( CameraPOI );
 }
 
