@@ -51,7 +51,7 @@ function init() {
 	//RENDERER
     renderer = new THREE.WebGLRenderer();
     renderer.setSize( window.innerWidth, window.innerHeight );
-	renderer.setClearColor( 0x7c949c, 1 );
+	renderer.setClearColor( 0x000000, 1 );
     document.body.appendChild( renderer.domElement );
  
     window.addEventListener( 'resize', onWindowResize, false );
@@ -86,7 +86,7 @@ function createParticleSystem() {
      
     // Emitter setup.
     emitter = {
-		rate: 10,
+		rate: 30,
 		pos: {
 			x: 0,
 			y: 0,
