@@ -2,84 +2,169 @@ var camera;
 var cameraPOI;
 var scene;
 var renderer;
-var cubeMesh;
  
 var clock;
 var deltaTime;
  
-var particleSystem, uniforms, geometry;
-var maxParticles;
-
-var numFramesToDo = 1000;
-
-var emitter = {
-		rate: 1000,
-		pos: new THREE.Vector3( 0.1,0,0 ),
-		size: {
-			x: 0,
-			y: 0,
-			z: 0
-		},
-		particle: {
-			velocity: {
-				dir: new THREE.Vector3( 0, 0, 0 ),
-				amount: 40,
-				dirRandom: 1,
-				amountRandom: 0
-			}, //velocity not finished yet
-			duration: 2,
-			startSize: 3,
-			endSize: 0,
-			color: new THREE.Color(0xb53c3c),
-			colorRandom: .2
-		},
-		physics: {
-			air: .3,
-			gravity: {
-				amt: 0 //object to allow for direction later
-			}
-		},
-		velocity: {},
-		
-		particleInfo: []
-	};
-    
-	maxParticles = emitter.rate * emitter.particle.duration + emitter.rate + 1;
+var emitter;
+var newSizesArray = [], oldSizesArray = [];
+var timeSinceLastRand;
 
 document.addEventListener("DOMContentLoaded", function(event) { 
 	init();
-
-	createParticleSystem();
-
-	animate();
 });
 
+function main(){//For particles. Called by init.
 
+	/*grid = new ParticleArray({
+		size: {
+			x: 80,
+			y: 1,
+			z: 80
+		},
+		position: new THREE.Vector3(0,-30,0)
+	});
+	*/
+	emitter = new ParticleEmitter();
+	
+	createPanel();
+	
+}
 
- 
+function animate() {
+    deltaTime = clock.getDelta(); //Time
+	time = Date.now();
+	
+	//camera.param.angle += .5 * deltaTime;
+	
+	//updateCamera();	
+	//grid.updateParticles();
+	emitter.updateParticles();
+	
+	render();
+	
+	requestAnimationFrame( animate );
+}
+
+function createPanel() {
+	
+	var panel = new dat.GUI( { width: 310 } );
+	var folder1 = panel.addFolder( 'Emitter' );
+	var folder2 = panel.addFolder( 'Emitter Particle' );
+	var folder2 = panel.addFolder( 'Array' );
+	var text = {
+		'e.rate':				1000,
+		'e.position.x':			0,
+		'e.position.y':			0,
+		'e.position.z':			0,
+		'e.type':				"Random",
+		'e.size.x':				0,
+		'e.size.y':				0,
+		'e.size.z':				0,
+		'e.physics.air':		0,
+		'e.physics.gravity':	0,
+		'e.particle.velocity':	10,
+		'e.particle.velocityRandom': 	0,
+		'e.particle.velocityDir.x': 	0,
+		'e.particle.velocityDir.y': 	20,
+		'e.particle.velocityDir.z': 	0,
+		'e.particle.velocityDirRandom': 15,
+		'e.particle.duration':			2,
+		'e.particle.startSize':			1,
+		'e.particle.endSize':			1,
+		'e.particle.color':				"#ffffff",
+		'e.particle.colorRandom':		0,
+	};
+	//folder1.add( settings, 'show model' ).onChange( showModel );
+	//folder1.add( settings, 'show skeleton' ).onChange( showSkeleton );
+	folder1.add(text, 'e.rate').min(0).onChange(function(v){emitter.rate = v;emitter.initializeParticles();});;
+	folder1.add(text, 'e.position.x',-100,100).onChange(function(v){emitter.position.x = v});
+	folder1.add(text, 'e.position.y',-100,100).onChange(function(v){emitter.position.y = v});
+	folder1.add(text, 'e.position.z',-100,100).onChange(function(v){emitter.position.z = v});
+	folder1.add(text, 'e.type', ["Random", "Directional"]).onChange(function(v){emitter.type = v});
+	folder1.add(text, 'e.size.x',0,200).onChange(function(v){emitter.size.x = v});
+	folder1.add(text, 'e.size.y',0,200).onChange(function(v){emitter.size.y = v});
+	folder1.add(text, 'e.size.z',0,200).onChange(function(v){emitter.size.z = v});
+	folder1.add(text, 'e.physics.air',0,0.5).step(0.01).onChange(function(v){emitter.physics.air = v});
+	folder1.add(text, 'e.physics.gravity',0,1).step(0.01).onChange(function(v){emitter.physics.gravity = v});
+	folder1.add(text, 'e.particle.velocity',0,100).step(0.5).onChange(function(v){emitter.particle.velocity = v});
+	folder1.add(text, 'e.particle.velocityDir.x',-100,100).onChange(function(v){emitter.particle.velocityDir.x = v});
+	folder1.add(text, 'e.particle.velocityDir.y',-100,100).onChange(function(v){emitter.particle.velocityDir.y = v});
+	folder1.add(text, 'e.particle.velocityDir.z',-100,100).onChange(function(v){emitter.particle.velocityDir.z = v});
+	folder1.add(text, 'e.particle.velocityDirRandom',0,100).onChange(function(v){emitter.particle.velocityDirRandom = v});
+	folder1.add(text, 'e.particle.duration',0,10).step(0.1).onChange(function(v){emitter.particle.duration = v;emitter.initializeParticles();});
+	folder1.add(text, 'e.particle.startSize',0,20).step(0.1).onChange(function(v){emitter.particle.startSize = v});
+	folder1.add(text, 'e.particle.endSize',0,20).step(0.1).onChange(function(v){emitter.particle.endSize = v});
+	folder1.addColor(text, 'e.particle.color').onChange(function(v){emitter.particle.color = new THREE.Color(v)});
+	folder1.add(text, 'e.particle.colorRandom',0,1).step(0.01).onChange(function(v){emitter.particle.colorRandom = v});
+	
+	folder1.open();
+	folder2.open();
+	
+	panel.remember(text);
+}
+
+function randomSizes(){
+	
+	var pinfo = array.particleInfo;
+	
+	oldSizesArray = newSizesArray;
+	newSizesArray = [];
+	
+	noise.seed(Math.random());
+		
+	for(var i = 0; i < pinfo.length; i++){
+		
+		var p = pinfo[i];
+			
+		var scale = 10;
+		
+		var value = noise.simplex3(p.position.x / scale, p.position.y / scale, p.position.z / scale);
+		
+		value = (array.particle.minSize + value) * (array.particle.maxSize / 2);
+		
+		newSizesArray[i] = value;
+		
+	}
+	
+	timeSinceLastRand = Date.now();
+	
+}
+
+function lerpSizes(){
+	
+	var pinfo = array.particleInfo;
+	
+	for(var i = 0; i < pinfo.length; i++){
+		
+		
+		pinfo[i].size = lerp( oldSizesArray[i], newSizesArray[i], (time - timeSinceLastRand)/1000);
+		
+	}
+}
+
 function init() {
  
+	//SCENE/CAMERA INITIATION
     clock = new THREE.Clock(true);
-	
 	deltaTime = clock.getDelta(); //for initiation of particles
-     
     scene = new THREE.Scene();
 	
 	//CAMERA
     camera = new THREE.PerspectiveCamera( 90, window.innerWidth / window.innerHeight, 1, 1000);
 	camera.position.set(0,0,50);
-	
+	/*
 	camera.param = { 
 		r: 60, //radius
 		y: 0, //vertical angle
-		angle: 0.1 //horizontal angle
+		angle: 0 //horizontal angle
 	};
 	
 	//Point of interest for camera
     CameraPOI = new THREE.Vector3( 0,0,0 );
 	
 	updateCamera();
-	
+	*/
 	//RENDERER
     renderer = new THREE.WebGLRenderer();
     renderer.setSize( window.innerWidth, window.innerHeight );
@@ -87,28 +172,16 @@ function init() {
     document.body.appendChild( renderer.domElement );
  
     window.addEventListener( 'resize', onWindowResize, false );
-         
-    render();
-}
-
-function animate() {
 	
-    deltaTime = clock.getDelta(); //Time
-	time = Date.now() * 0.005;
+	controls = new THREE.OrbitControls( camera, renderer.domElement );
+	controls.target.set( 0, 0, 0 );
+	controls.update();
 	
-	camera.param.angle += 1 * deltaTime;
+	//MAIN PROGRAM
+	main();
 	
-	updateCamera();
-	//emitter.pos = camera.position;
-	updateParticles();
-	
-	//emitter.particle.velocity.dir.z += 3 * deltaTime;
-	
-	render();
-	//if(numFramesToDo > 0){
-		numFramesToDo--;
-		requestAnimationFrame( animate );
-	//}
+	//Animate has render inside
+	animate();
 }
  
 function render() {
@@ -122,184 +195,6 @@ function onWindowResize() {
     render();
 }
 
-function createParticleSystem() {
-
-		 
-    geometry = new THREE.BufferGeometry();
-	var texture = new THREE.TextureLoader().load("images/snowflake.png");
-	
-	//CUSTOM SHADER SHIZ
-	
-	//Values that are constant for all particles during a draw call
-	uniforms = {
-		color:     	{ type: 'c', value: new THREE.Color( 0xffffff ) },
-		texture:   	{ type: 't', value: texture },
-	};
-	
-	//Material	
-	var shaderMaterial = new THREE.ShaderMaterial({
-		
-		uniforms:	uniforms,
-		vertexShader: document.getElementById( 'vertexshader' ).textContent,
-		fragmentShader: document.getElementById( 'fragmentshader' ).textContent,
-		transparent: true,
-		//alphaTest: 0.5,
-		depthTest: false,
-		blending: THREE.AdditiveBlending
-	});
-	
-	var positions = new Float32Array(maxParticles * 3);
-	var colors = new Float32Array(maxParticles * 3);
-	var sizes = new Float32Array(maxParticles);
-	var alphas = new Float32Array(maxParticles);
-	
-	//var color = new THREE.Color();
-	
- 
-    //Create particles
-    for (var i = 0, i3 = 0; i < maxParticles; i++, i3 += 3) {
-     
-        // ZERO ALL THE THINGS
-        positions[ i3 + 0 ] = 0;
-        positions[ i3 + 1 ] = 0;
-        positions[ i3 + 2 ] = 0;
-               
-        //color.setHSL( i / maxParticles, 1.0, 0.5);
-		
-		colors[ i3 + 0 ] = 0;
-		colors[ i3 + 1 ] = 0;
-		colors[ i3 + 2 ] = 0;
-		
-		alphas[ i ] = 0; //Math.random();
-		
-		sizes[ i ] = 0;
-		
-		emitter.particleInfo.push({
-			index: i,
-			index3: i3,
-			visible: false,
-			age: 0,
-			velocity: {
-				x: 0,
-				y: 0,
-				z: 0
-			}
-		});
-		
-    } 
-	
-	geometry.addAttribute( 'position', new THREE.BufferAttribute( positions, 3) );
-	geometry.addAttribute( 'customColor', new THREE.BufferAttribute( colors, 3) );
-	geometry.addAttribute( 'size', new THREE.BufferAttribute( sizes, 1) );
-	geometry.addAttribute( 'alpha', new THREE.BufferAttribute( alphas, 1) );//not yet working
-	
-	//Creates particle system
-	particleSystem = new THREE.Points( geometry, shaderMaterial );
-
-	 
-    scene.add(particleSystem);  
-}
-
-function updateParticles() {
-	
-	var positions = geometry.attributes.position.array;
-	var colors = geometry.attributes.customColor.array;
-	var alphas = geometry.attributes.alpha.array;
-	var sizes = geometry.attributes.size.array;
-	
-	var p = emitter.particleInfo;
-	var numToDo = emitter.rate * deltaTime;
-	
-	for(var i = 0; i < emitter.particleInfo.length; i++){
-				
-		if( p[i].visible == true ){
-			
-			//Animate particles
-			
-			//Velocity
-			positions[p[i].index3 + 0] += p[i].velocity.x /60;// * deltaTime;
-			positions[p[i].index3 + 1] += p[i].velocity.y /60;//* deltaTime;
-			positions[p[i].index3 + 2] += p[i].velocity.z /60;//* deltaTime;
-			
-			//Air resistance
-			p[i].velocity.x *= 1 - ( emitter.physics.air / 10 );
-			p[i].velocity.y *= 1 - ( emitter.physics.air / 10 );
-			p[i].velocity.z *= 1 - ( emitter.physics.air / 10 );
-			
-			//Gravity
-			p[i].velocity.y -= emitter.physics.gravity.amt;// * deltaTime * 60;
-			
-			//Lerp size
-			sizes[i] = lerp( emitter.particle.startSize, emitter.particle.endSize,
-								p[i].age / emitter.particle.duration);
-			
-			//Increase age
-			p[i].age += deltaTime;
-			
-			if( p[i].age >= emitter.particle.duration ){
-				
-				//Delete particle
-				p[i].visible = false;
-				p[i].age = 0;
-				alphas[i] = 0;
-			}
-		}else if( numToDo > 0 && p[i].visible != true ){
-			
-			//If you still have more particles to create
-			createNewParticle( p[i], p[i].index, p[i].index3 );
-						
-			numToDo--;
-		}
-	}
-	
-	geometry.attributes.size.needsUpdate = true;
-	geometry.attributes.alpha.needsUpdate = true;
-	geometry.attributes.position.needsUpdate = true;
-	geometry.attributes.customColor.needsUpdate = true;
-}
-
-function createNewParticle(p/*Particle in info array*/, i, i3/*Indices of particle*/){
-	
-	var positions = geometry.attributes.position.array;
-	var colors = geometry.attributes.customColor.array;
-	var alphas = geometry.attributes.alpha.array;
-	var sizes = geometry.attributes.size.array;
-	
-	p.visible = true;
-	
-	var angX = emitter.particle.velocity.dir.x,
-		angY = emitter.particle.velocity.dir.y,
-		angZ = emitter.particle.velocity.dir.z,
-		angAmt = emitter.particle.velocity.amount,
-		angRand = emitter.particle.velocity.dirRandom;
-	
-	angX = lerp(angX, ( Math.random() - .5 ) * 2 * Math.PI, angRand);
-	angY = lerp(angY, ( Math.random() - .5 ) * 2 * Math.PI, angRand);
-	angZ = lerp(angZ, ( Math.random() - .5 ) * 2 * Math.PI, angRand);
-	
-	p.velocity.x = ( Math.cos(angZ) * Math.cos(angY) ) * angAmt;
-	p.velocity.y = ( Math.sin(angZ) * Math.sin(angX) ) * angAmt;
-	p.velocity.z = ( Math.cos(angX) * Math.sin(angY) )* angAmt;//Math.cos(angX) * angAmt;
-	
-	// Random position within bounds
-	positions[ i3 + 0 ] = emitter.pos.x + Math.random() * emitter.size.x - emitter.size.x/2;
-	positions[ i3 + 1 ] = emitter.pos.y + Math.random() * emitter.size.y - emitter.size.y/2;
-	positions[ i3 + 2 ] = emitter.pos.z + Math.random() * emitter.size.z - emitter.size.z/2;
-		   
-	//color.setHSL( i / maxParticles, 1.0, 0.5);
-	
-	colors[ i3 + 0 ] = lerp( emitter.particle.color.r, Math.pow(Math.random(),2), 
-		emitter.particle.colorRandom ); //color.r;
-	colors[ i3 + 1 ] = lerp( emitter.particle.color.g, Math.pow(Math.random(),2), 
-		emitter.particle.colorRandom ); //color.g;
-	colors[ i3 + 2 ] = lerp( emitter.particle.color.b, Math.pow(Math.random(),2), 
-		emitter.particle.colorRandom ); //color.b;
-	
-	alphas[ i ] = 1; //Math.random();
-	
-	sizes[ i ] = emitter.particle.size;
-	
-}
 
 function updateCamera(){
 	
@@ -327,9 +222,6 @@ function updateCamera(){
 	camera.lookAt( CameraPOI );
 }
 
-function lerp(v0, v1, t) {
-    return v0*(1-t)+v1*t
-}
 
 
 
