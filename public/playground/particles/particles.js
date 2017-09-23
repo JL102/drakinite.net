@@ -86,7 +86,7 @@ function createPanel() {
 	folder1.add(text, 'e.size.y',0,200).onChange(function(v){emitter.size.y = v});
 	folder1.add(text, 'e.size.z',0,200).onChange(function(v){emitter.size.z = v});
 	folder1.add(text, 'e.physics.air',0,0.5).step(0.01).onChange(function(v){emitter.physics.air = v});
-	folder1.add(text, 'e.physics.gravity',0,1).step(0.01).onChange(function(v){emitter.physics.gravity = v});
+	folder1.add(text, 'e.physics.gravity',-1,1).step(0.01).onChange(function(v){emitter.physics.gravity = v});
 	folder1.add(text, 'e.particle.velocity',0,100).step(0.5).onChange(function(v){emitter.particle.velocity = v});
 	folder1.add(text, 'e.particle.velocityDir.x',-100,100).onChange(function(v){emitter.particle.velocityDir.x = v});
 	folder1.add(text, 'e.particle.velocityDir.y',-100,100).onChange(function(v){emitter.particle.velocityDir.y = v});
