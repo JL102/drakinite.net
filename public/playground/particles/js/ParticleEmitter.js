@@ -13,7 +13,7 @@ function ParticleEmitter(param){ //takes an object
 	this.rate = param.rate ? param.rate : 1000;
 	this.position = param.position ? param.position : new THREE.Vector3( 0,0,0 )
 	this.size = param.size ? param.size : new THREE.Vector3(0,0,0);
-	this.type = param.type ? param.type : "random"; //random, directional
+	this.type = param.type ? param.type : "Random"; //random, directional
 	this.particle = {
 		velocity: 10,
 		velocityRandom: 0,
@@ -202,7 +202,7 @@ function ParticleEmitter(param){ //takes an object
 		
 		p.visible = true;
 		
-		if( this.type == "random" ){
+		if( this.type == "Random" ){
 			var	angAmt = this.particle.velocity * (1 - Math.random() * this.particle.velocityRandom );
 			
 			var u = Math.random();
