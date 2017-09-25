@@ -9,7 +9,7 @@ function ParticleEmitter(param){ //takes an object
 	}
 	
 	//EMITTER SETTINGS
-	this.particleInfo = [];
+	this.enabled = true;
 	this.rate = param.rate ? param.rate : 1000;
 	this.position = param.position ? param.position : new THREE.Vector3( 0,0,0 )
 	this.size = param.size ? param.size : new THREE.Vector3(0,0,0);
@@ -108,67 +108,70 @@ function ParticleEmitter(param){ //takes an object
 
 	this.updateParticles = function() {
 		
-		var numToDo = this.rate * deltaTime;
-		
-		for(var i = 0, i3 = 0; i < maxParticles; i++, i3 += 3){
+		if(this.enabled == true){
+				
+			var numToDo = this.rate * deltaTime;
+			
+			for(var i = 0, i3 = 0; i < maxParticles; i++, i3 += 3){
+						
+				if( visible[i] === 1 ){
 					
-			if( visible[i] === 1 ){
-				
-				//Animate particles
-				
-				//Velocity
-				positions[i3 + 0] += velocities[i3 + 0] * deltaTime;
-				positions[i3 + 1] += velocities[i3 + 1] * deltaTime;
-				positions[i3 + 2] += velocities[i3 + 2] * deltaTime;
-				
-				//Air resistance
-				velocities[i3 + 0] *= 1 - ( this.physics.air  * deltaTime);
-				velocities[i3 + 1] *= 1 - ( this.physics.air  * deltaTime);
-				velocities[i3 + 2] *= 1 - ( this.physics.air  * deltaTime);
-				
-				//Gravity
-				velocities[i3 + 1] -= this.physics.gravity * deltaTime;
-				
-				//Lerp size
-				sizes[i] = lerp( this.particle.startSize, this.particle.endSize,
-								ages[i] / this.particle.duration);
-								
-				//Lerp alpha
-				alphas[i] = lerp( this.particle.alphaStart, this.particle.alphaEnd,
-								ages[i] / this.particle.duration);
-				
-				//Lerp color
-				colors[i3 + 0] = lerp( colorStarts[ i3 + 0 ], colorEnds[ i3 + 0 ],
-								ages[i] / this.particle.duration);
-				colors[i3 + 1] = lerp( colorStarts[ i3 + 1 ], colorEnds[ i3 + 1 ],
-								ages[i] / this.particle.duration);
-				colors[i3 + 2] = lerp( colorStarts[ i3 + 2 ], colorEnds[ i3 + 2 ],
-								ages[i] / this.particle.duration);
-				
-				//Increase age
-				ages[i] += deltaTime;
+					//Animate particles
+					
+					//Velocity
+					positions[i3 + 0] += velocities[i3 + 0] * deltaTime;
+					positions[i3 + 1] += velocities[i3 + 1] * deltaTime;
+					positions[i3 + 2] += velocities[i3 + 2] * deltaTime;
+					
+					//Air resistance
+					velocities[i3 + 0] *= 1 - ( this.physics.air  * deltaTime);
+					velocities[i3 + 1] *= 1 - ( this.physics.air  * deltaTime);
+					velocities[i3 + 2] *= 1 - ( this.physics.air  * deltaTime);
+					
+					//Gravity
+					velocities[i3 + 1] -= this.physics.gravity * deltaTime;
+					
+					//Lerp size
+					sizes[i] = lerp( this.particle.startSize, this.particle.endSize,
+									ages[i] / this.particle.duration);
+									
+					//Lerp alpha
+					alphas[i] = lerp( this.particle.alphaStart, this.particle.alphaEnd,
+									ages[i] / this.particle.duration);
+					
+					//Lerp color
+					colors[i3 + 0] = lerp( colorStarts[ i3 + 0 ], colorEnds[ i3 + 0 ],
+									ages[i] / this.particle.duration);
+					colors[i3 + 1] = lerp( colorStarts[ i3 + 1 ], colorEnds[ i3 + 1 ],
+									ages[i] / this.particle.duration);
+					colors[i3 + 2] = lerp( colorStarts[ i3 + 2 ], colorEnds[ i3 + 2 ],
+									ages[i] / this.particle.duration);
+					
+					//Increase age
+					ages[i] += deltaTime;
 
-				
-				if( ages[i] >= this.particle.duration ){
 					
-					//Delete particle
-					visible[i] = 0;
-					ages[i] = 0;
-					alphas[i] = 0;
+					if( ages[i] >= this.particle.duration ){
+						
+						//Delete particle
+						visible[i] = 0;
+						ages[i] = 0;
+						alphas[i] = 0;
+					}
+				}else if( numToDo > 0 && visible[i] != 1 ){
+					
+					//If you still have more particles to create
+					this.createNewParticle( i, i3 );
+								
+					numToDo--;
 				}
-			}else if( numToDo > 0 && visible[i] != 1 ){
-				
-				//If you still have more particles to create
-				this.createNewParticle( i, i3 );
-							
-				numToDo--;
 			}
+			
+			geometry.attributes.size.needsUpdate = true;
+			geometry.attributes.alpha.needsUpdate = true;
+			geometry.attributes.position.needsUpdate = true;
+			geometry.attributes.customColor.needsUpdate = true;
 		}
-		
-		geometry.attributes.size.needsUpdate = true;
-		geometry.attributes.alpha.needsUpdate = true;
-		geometry.attributes.position.needsUpdate = true;
-		geometry.attributes.customColor.needsUpdate = true;
 	}
 
 	this.createNewParticle = function( i, i3 ){
