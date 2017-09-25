@@ -24,8 +24,11 @@ function ParticleEmitter(param){ //takes an object
 		startSize: 1,
 		endSize: 1,
 		
-		color: new THREE.Color(0xffffff),
-		colorRandom: 0
+		colorStart: new THREE.Color(0xffffff),
+		colorEnd: new THREE.Color(0xffffff),
+		colorRandom: 0,
+		alphaStart: 1,
+		alphaEnd: 1
 	};
 	this.physics = {
 		air: param.physics.air ? param.physics.air : 0,
@@ -33,15 +36,16 @@ function ParticleEmitter(param){ //takes an object
 	};
 	
 	//VARIABLE INIT
-	var particleSystem;
+	//var particleSystem;
 	var maxParticles;
 
 	var uniforms;
 	var geometry, texture, shaderMaterial;
-	var positions, colors, sizes, alphas;
+	var positions, colors, sizes, alphas, visible, ages, velocities, colorStarts, colorEnds;
+	var positionsArray, colorsArray, sizesArray, alphasArray;
 	
 	geometry = new THREE.BufferGeometry();
-	texture = new THREE.TextureLoader().load("images/snowflake.png");
+	texture = new THREE.TextureLoader().load("images/particle-0.png");
 	
 	//CUSTOM SHADER SHIZ
 	
@@ -67,121 +71,95 @@ function ParticleEmitter(param){ //takes an object
 		
 		maxParticles = this.rate * this.particle.duration + this.rate + 1;
 		this.particleInfo = []; //must reset particleInfo
-		scene.remove(particleSystem);
+		scene.remove(this.particleSystem);
 		
-		positions = new Float32Array(maxParticles * 3);
-		colors = new Float32Array(maxParticles * 3);
-		sizes = new Float32Array(maxParticles);
-		alphas = new Float32Array(maxParticles);
+		positionsArray = new Float32Array(maxParticles * 3);
+		colorsArray = new Float32Array(maxParticles * 3);
+		sizesArray = new Float32Array(maxParticles);
+		alphasArray = new Float32Array(maxParticles);
 		
+		velocities = new Float32Array(maxParticles * 3);
+		ages = new Float32Array(maxParticles);
+		visible = new Uint8Array(maxParticles);
+		colorStarts = new Array();
+		colorEnds = new Array();
+		colorStarts.fill( new THREE.Color() );
+		colorEnds.fill( new THREE.Color() );
 		
-		//INITIALIZE PARTICLES
-		for (var i = 0, i3 = 0; i < maxParticles; i++, i3 += 3) {
-		 
-			// ZERO ALL THE THINGS
-			positions[ i3 + 0 ] = 0;
-			positions[ i3 + 1 ] = 0;
-			positions[ i3 + 2 ] = 0;
-			
-			colors[ i3 + 0 ] = 0;
-			colors[ i3 + 1 ] = 0;
-			colors[ i3 + 2 ] = 0;
-			
-			alphas[ i ] = 0;
-			
-			sizes[ i ] = 0;
-			
-			this.particleInfo.push({
-				index: i,
-				index3: i3,
-				visible: false,
-				age: 0,
-				alpha: 0,
-				velocity: {
-					x: 0,
-					y: 0,
-					z: 0
-				},
-				position: {
-					x: 0,
-					y: 0,
-					z: 0
-				}
-			});
-			
-		} 
+		geometry.addAttribute( 'position', new THREE.BufferAttribute( positionsArray, 3) );
+		geometry.addAttribute( 'customColor', new THREE.BufferAttribute( colorsArray, 3) );
+		geometry.addAttribute( 'size', new THREE.BufferAttribute( sizesArray, 1) );
+		geometry.addAttribute( 'alpha', new THREE.BufferAttribute( alphasArray, 1) );
 		
-		geometry.addAttribute( 'position', new THREE.BufferAttribute( positions, 3) );
-		geometry.addAttribute( 'customColor', new THREE.BufferAttribute( colors, 3) );
-		geometry.addAttribute( 'size', new THREE.BufferAttribute( sizes, 1) );
-		geometry.addAttribute( 'alpha', new THREE.BufferAttribute( alphas, 1) );//not yet working
+		positions = geometry.attributes.position.array;
+		colors = geometry.attributes.customColor.array;
+		alphas = geometry.attributes.alpha.array;
+		sizes = geometry.attributes.size.array;
+		
+		//Velocities, ages, colorStart/etc are already initialized
 		
 		//Creates particle system
-		particleSystem = new THREE.Points( geometry, shaderMaterial );
+		this.particleSystem = new THREE.Points( geometry, shaderMaterial );
 
-		scene.add(particleSystem); 
+		scene.add(this.particleSystem); 
 	}
 	
 	this.initializeParticles();
 
 	this.updateParticles = function() {
 		
-		var positions = geometry.attributes.position.array;
-		var colors = geometry.attributes.customColor.array;
-		var alphas = geometry.attributes.alpha.array;
-		var sizes = geometry.attributes.size.array;
+		var numToDo = this.rate * deltaTime;
 		
-		var p = this.particleInfo;
-		var numToDo = this.rate / 60;// * deltaTime;
-		
-		for(var i = 0; i < this.particleInfo.length; i++){
+		for(var i = 0, i3 = 0; i < maxParticles; i++, i3 += 3){
 					
-			if( p[i].visible == true ){
+			if( visible[i] === 1 ){
 				
 				//Animate particles
 				
 				//Velocity
-				p[i].position.x += p[i].velocity.x /60;// * deltaTime;
-				p[i].position.y += p[i].velocity.y /60;//* deltaTime;
-				p[i].position.z += p[i].velocity.z /60;//* deltaTime;
+				positions[i3 + 0] += velocities[i3 + 0] * deltaTime;
+				positions[i3 + 1] += velocities[i3 + 1] * deltaTime;
+				positions[i3 + 2] += velocities[i3 + 2] * deltaTime;
 				
 				//Air resistance
-				p[i].velocity.x *= 1 - ( this.physics.air / 10 );
-				p[i].velocity.y *= 1 - ( this.physics.air / 10 );
-				p[i].velocity.z *= 1 - ( this.physics.air / 10 );
+				velocities[i3 + 0] *= 1 - ( this.physics.air  * deltaTime);
+				velocities[i3 + 1] *= 1 - ( this.physics.air  * deltaTime);
+				velocities[i3 + 2] *= 1 - ( this.physics.air  * deltaTime);
 				
 				//Gravity
-				p[i].velocity.y -= this.physics.gravity;// * deltaTime * 60;
+				velocities[i3 + 1] -= this.physics.gravity * deltaTime;
 				
 				//Lerp size
-				p[i].size = lerp( emitter.particle.startSize, emitter.particle.endSize,
-								p[i].age / emitter.particle.duration);
+				sizes[i] = lerp( this.particle.startSize, this.particle.endSize,
+								ages[i] / this.particle.duration);
+								
+				//Lerp alpha
+				alphas[i] = lerp( this.particle.alphaStart, this.particle.alphaEnd,
+								ages[i] / this.particle.duration);
+				
+				//Lerp color
+				colors[i3 + 0] = lerp( colorStarts[ i3 + 0 ], colorEnds[ i3 + 0 ],
+								ages[i] / this.particle.duration);
+				colors[i3 + 1] = lerp( colorStarts[ i3 + 1 ], colorEnds[ i3 + 1 ],
+								ages[i] / this.particle.duration);
+				colors[i3 + 2] = lerp( colorStarts[ i3 + 2 ], colorEnds[ i3 + 2 ],
+								ages[i] / this.particle.duration);
 				
 				//Increase age
-				p[i].age += deltaTime;
+				ages[i] += deltaTime;
+
 				
-				//Updates all properties from object
-				positions[p[i].index3 + 0] = p[i].position.x;
-				positions[p[i].index3 + 1] = p[i].position.y;
-				positions[p[i].index3 + 2] = p[i].position.z;
-				
-				sizes[i] = p[i].size;
-				
-				//colors[i] = p[i].color;//not yet implemented
-				
-				//alphas[i] = p[i].alpha;
-				
-				if( p[i].age >= this.particle.duration ){
+				if( ages[i] >= this.particle.duration ){
 					
 					//Delete particle
-					p[i].visible = false;
-					p[i].age = 0;
+					visible[i] = 0;
+					ages[i] = 0;
 					alphas[i] = 0;
 				}
-			}else if( numToDo > 0 && p[i].visible != true ){
+			}else if( numToDo > 0 && visible[i] != 1 ){
 				
 				//If you still have more particles to create
-				this.createNewParticle( p[i], p[i].index, p[i].index3 );
+				this.createNewParticle( i, i3 );
 							
 				numToDo--;
 			}
@@ -193,14 +171,9 @@ function ParticleEmitter(param){ //takes an object
 		geometry.attributes.customColor.needsUpdate = true;
 	}
 
-	this.createNewParticle = function(p/*Particle in info array*/, i, i3/*Indices of particle*/){
-		
-		var positions = geometry.attributes.position.array;
-		var colors = geometry.attributes.customColor.array;
-		var alphas = geometry.attributes.alpha.array;
-		var sizes = geometry.attributes.size.array;
-		
-		p.visible = true;
+	this.createNewParticle = function( i, i3 ){
+				
+		visible[i] = 1;
 		
 		if( this.type == "Random" ){
 			var	angAmt = this.particle.velocity * (1 - Math.random() * this.particle.velocityRandom );
@@ -210,33 +183,37 @@ function ParticleEmitter(param){ //takes an object
 			var theta = 2 * Math.PI * u;
 			var phi = Math.acos(2 * v - 1);
 			
-			p.velocity.x = angAmt * Math.sin(phi) * Math.cos(theta);
-			p.velocity.y = angAmt * Math.sin(phi) * Math.sin(theta);
-			p.velocity.z = angAmt * Math.cos(phi);
+			velocities[i3 + 0] = angAmt * Math.sin(phi) * Math.cos(theta);
+			velocities[i3 + 1] = angAmt * Math.sin(phi) * Math.sin(theta);
+			velocities[i3 + 2] = angAmt * Math.cos(phi);
 		}else{
-			p.velocity.x = this.particle.velocityDir.x + Math.random() * this.particle.velocityDirRandom - this.particle.velocityDirRandom/2;
-			p.velocity.y = this.particle.velocityDir.y + Math.random() * this.particle.velocityDirRandom - this.particle.velocityDirRandom/2;
-			p.velocity.z = this.particle.velocityDir.z + Math.random() * this.particle.velocityDirRandom - this.particle.velocityDirRandom/2;
+			velocities[i3 + 0] = this.particle.velocityDir.x + Math.random() * this.particle.velocityDirRandom - this.particle.velocityDirRandom/2;
+			velocities[i3 + 1] = this.particle.velocityDir.y + Math.random() * this.particle.velocityDirRandom - this.particle.velocityDirRandom/2;
+			velocities[i3 + 2] = this.particle.velocityDir.z + Math.random() * this.particle.velocityDirRandom - this.particle.velocityDirRandom/2;
 		}
 		
-		
-		
-		
 		// Random position within bounds
-		p.position.x = this.position.x + Math.random() * this.size.x - this.size.x/2;
-		p.position.y = this.position.y + Math.random() * this.size.y - this.size.y/2;
-		p.position.z = this.position.z + Math.random() * this.size.z - this.size.z/2;
+		positions[i3 + 0] = this.position.x + Math.random() * this.size.x - this.size.x/2;
+		positions[i3 + 1] = this.position.y + Math.random() * this.size.y - this.size.y/2;
+		positions[i3 + 2] = this.position.z + Math.random() * this.size.z - this.size.z/2;
 			   
 		//color.setHSL( i / maxParticles, 1.0, 0.5);
 		
-		colors[ i3 + 0 ] = lerp( this.particle.color.r, Math.pow(Math.random(),2), 
-			this.particle.colorRandom ); //color.r;
-		colors[ i3 + 1 ] = lerp( this.particle.color.g, Math.pow(Math.random(),2), 
-			this.particle.colorRandom ); //color.g;
-		colors[ i3 + 2 ] = lerp( this.particle.color.b, Math.pow(Math.random(),2), 
-			this.particle.colorRandom ); //color.b;
+		var rRandom = Math.pow(Math.random(),2);
+		var gRandom = Math.pow(Math.random(),2);
+		var bRandom = Math.pow(Math.random(),2);
+				
+		colorStarts[ i3 + 0 ] = lerp( this.particle.colorStart.r, rRandom, this.particle.colorRandom );
+		colorStarts[ i3 + 1 ] = lerp( this.particle.colorStart.g, gRandom, this.particle.colorRandom );
+		colorStarts[ i3 + 2 ] = lerp( this.particle.colorStart.b, bRandom, this.particle.colorRandom );
+		colorEnds[ i3 + 0 ] = lerp( colorStarts[ i3 + 0 ], rRandom, this.particle.colorRandom );
+		colorEnds[ i3 + 1 ] = lerp( colorStarts[ i3 + 0 ], gRandom, this.particle.colorRandom );
+		colorEnds[ i3 + 2 ] = lerp( colorStarts[ i3 + 0 ], bRandom, this.particle.colorRandom );
+		colors[i3 + 0] = colorStarts[i3 + 0];
+		colors[i3 + 1] = colorStarts[i3 + 1];
+		colors[i3 + 2] = colorStarts[i3 + 2];
 		
-		alphas[ i ] = 1; //Math.random();
+		alphas[ i ] = 1 * this.particle.alpha; //Math.random();
 		
 		sizes[ i ] = this.particle.size;
 		

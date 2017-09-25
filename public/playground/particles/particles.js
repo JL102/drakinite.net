@@ -16,15 +16,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
 function main(){//For particles. Called by init.
 
-	/*grid = new ParticleArray({
-		size: {
-			x: 80,
-			y: 1,
-			z: 80
-		},
-		position: new THREE.Vector3(0,-30,0)
-	});
-	*/
 	emitter = new ParticleEmitter();
 	
 	createPanel();
@@ -37,11 +28,10 @@ function animate() {
 	
 	//camera.param.angle += .5 * deltaTime;
 	
-	//updateCamera();	
-	//grid.updateParticles();
 	emitter.updateParticles();
 	
 	render();
+	
 	
 	requestAnimationFrame( animate );
 }
@@ -51,7 +41,7 @@ function createPanel() {
 	var panel = new dat.GUI( { width: 310 } );
 	var folder1 = panel.addFolder( 'Emitter' );
 	var folder2 = panel.addFolder( 'Emitter Particle' );
-	var folder2 = panel.addFolder( 'Array' );
+	var folder3 = panel.addFolder( 'Array' );
 	var text = {
 		'e.rate':				1000,
 		'e.position.x':			0,
@@ -72,8 +62,11 @@ function createPanel() {
 		'e.particle.duration':			2,
 		'e.particle.startSize':			1,
 		'e.particle.endSize':			1,
-		'e.particle.color':				"#ffffff",
+		'e.particle.colorStart':		"#ffffff",
+		'e.particle.colorEnd':			"#ffffff",
 		'e.particle.colorRandom':		0,
+		'e.particle.alphaStart':				1,
+		'e.particle.alphaEnd':				1,
 	};
 	//folder1.add( settings, 'show model' ).onChange( showModel );
 	//folder1.add( settings, 'show skeleton' ).onChange( showSkeleton );
@@ -85,19 +78,22 @@ function createPanel() {
 	folder1.add(text, 'e.size.x',0,200).onChange(function(v){emitter.size.x = v});
 	folder1.add(text, 'e.size.y',0,200).onChange(function(v){emitter.size.y = v});
 	folder1.add(text, 'e.size.z',0,200).onChange(function(v){emitter.size.z = v});
-	folder1.add(text, 'e.physics.air',0,0.5).step(0.01).onChange(function(v){emitter.physics.air = v});
+	folder1.add(text, 'e.physics.air',0,3).step(0.01).onChange(function(v){emitter.physics.air = v});
 	folder1.add(text, 'e.physics.gravity',-1,1).step(0.01).onChange(function(v){emitter.physics.gravity = v});
-	folder1.add(text, 'e.particle.velocity',0,100).step(0.5).onChange(function(v){emitter.particle.velocity = v});
-	folder1.add(text, 'e.particle.velocityRandom',0,1).step(0.01).onChange(function(v){emitter.particle.velocityRandom = v});
-	folder1.add(text, 'e.particle.velocityDir.x',-100,100).onChange(function(v){emitter.particle.velocityDir.x = v});
-	folder1.add(text, 'e.particle.velocityDir.y',-100,100).onChange(function(v){emitter.particle.velocityDir.y = v});
-	folder1.add(text, 'e.particle.velocityDir.z',-100,100).onChange(function(v){emitter.particle.velocityDir.z = v});
-	folder1.add(text, 'e.particle.velocityDirRandom',0,100).onChange(function(v){emitter.particle.velocityDirRandom = v});
-	folder1.add(text, 'e.particle.duration',0,10).step(0.1).onChange(function(v){emitter.particle.duration = v;emitter.initializeParticles();});
-	folder1.add(text, 'e.particle.startSize',0,20).step(0.1).onChange(function(v){emitter.particle.startSize = v});
-	folder1.add(text, 'e.particle.endSize',0,20).step(0.1).onChange(function(v){emitter.particle.endSize = v});
-	folder1.addColor(text, 'e.particle.color').onChange(function(v){emitter.particle.color = new THREE.Color(v)});
-	folder1.add(text, 'e.particle.colorRandom',0,1).step(0.01).onChange(function(v){emitter.particle.colorRandom = v});
+	folder2.add(text, 'e.particle.velocity',0,100).step(0.5).onChange(function(v){emitter.particle.velocity = v});
+	folder2.add(text, 'e.particle.velocityRandom',0,1).step(0.01).onChange(function(v){emitter.particle.velocityRandom = v});
+	folder2.add(text, 'e.particle.velocityDir.x',-100,100).onChange(function(v){emitter.particle.velocityDir.x = v});
+	folder2.add(text, 'e.particle.velocityDir.y',-100,100).onChange(function(v){emitter.particle.velocityDir.y = v});
+	folder2.add(text, 'e.particle.velocityDir.z',-100,100).onChange(function(v){emitter.particle.velocityDir.z = v});
+	folder2.add(text, 'e.particle.velocityDirRandom',0,100).onChange(function(v){emitter.particle.velocityDirRandom = v});
+	folder2.add(text, 'e.particle.duration',0,10).step(0.1).onChange(function(v){emitter.particle.duration = v;emitter.initializeParticles();});
+	folder2.add(text, 'e.particle.startSize',0,20).step(0.1).onChange(function(v){emitter.particle.startSize = v});
+	folder2.add(text, 'e.particle.endSize',0,20).step(0.1).onChange(function(v){emitter.particle.endSize = v});
+	folder2.addColor(text, 'e.particle.colorStart').onChange(function(v){emitter.particle.colorStart = new THREE.Color(v)});
+	folder2.addColor(text, 'e.particle.colorEnd').onChange(function(v){emitter.particle.colorEnd = new THREE.Color(v)});
+	folder2.add(text, 'e.particle.colorRandom',0,1).step(0.01).onChange(function(v){emitter.particle.colorRandom = v});
+	folder2.add(text, 'e.particle.alphaStart',0,1).step(0.01).onChange(function(v){emitter.particle.alphaStart = v});
+	folder2.add(text, 'e.particle.alphaEnd',0,1).step(0.01).onChange(function(v){emitter.particle.alphaEnd = v});
 	
 	folder1.open();
 	folder2.open();
@@ -180,6 +176,8 @@ function init() {
 	
 	//MAIN PROGRAM
 	main();
+	
+	render();//render first frame?
 	
 	//Animate has render inside
 	animate();
