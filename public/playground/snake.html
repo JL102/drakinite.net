@@ -56,6 +56,9 @@
 					direction = 3;
 					break;
 			}
+			if(gameOver){
+				begin();
+			}
 			didMoveThisFrame = true;
 		});
 		
@@ -103,6 +106,9 @@
 			
 			createPoint();//creates eaty thingy
 			
+			
+			document.getElementById("gameover").style.visibility = "hidden";
+			
 			setTimeout(function(){
 				animate();
 			},1000/framerate);
@@ -139,7 +145,10 @@
 			
 			if(tail.length / 2 >= snakeLength){ //removes last tail thingy if tail is too long (aka if the snake didn't just eat a point)
 			
-				draw(tail[0],tail[1],bg);
+				if( !(tail[0] == pointX && tail[1] == pointY) ){//ensures you're not erasing a blue dot
+					draw(tail[0],tail[1],bg);
+				}
+				
 				tail = tail.slice(2);
 			}
 
@@ -182,6 +191,8 @@
 			ctx.fillStyle = "rgba(40, 0, 10, 0.4)";
 			ctx.fillRect(0,0,width,height);
 			gameOver = true;
+			
+			document.getElementById("gameover").style.visibility = "visible";
 		}
 		
 		function draw(x, y, color){//draws rect on a certain tile
@@ -192,7 +203,12 @@
 			
 			ctx.fillRect( x,y, tileWidth-1,tileHeight-1)
 		}
-		
-		begin();
+		document.addEventListener("DOMContentLoaded", function() {
+			begin();
+		});
 	</script>
+	<center id="gameover" style="visibility: hidden">
+		<h1>Game Over</h1>
+		<h2>Press any key to continue.</h2>
+	</center>
 </body>
