@@ -1,0 +1,69 @@
+<html>
+<head>
+	<style>
+		.draggable-template{
+			display: none;
+		}
+		.draggablebox{
+			position: absolute;
+			background-color: #333;
+			color: #ddd;
+			cursor: move;
+			padding: 15 5 15 5;
+			width: 130px;
+			text-align: center;
+			border-radius: 10px;
+		}
+		.draggable{
+			position:absolute;
+		}
+		::selection {
+			background-color:Transparent;
+		}
+		.circleBtn{
+			background: #999;
+			width: 15px;
+			height: 15px;
+			border-radius: 50%;
+			position: relative;
+			cursor: pointer;
+		}
+		.circleBtn:hover{
+			background: #ddd;
+		}
+		.btnTop{
+			top: 7px;
+			left: 57.5px;
+			z-index: 1;
+		}
+		.btnBottom{
+			top: 43px;
+			left: 57.5px;
+		}
+		svg{
+			position:absolute;
+			top: 0px;
+			left: 0px;
+			z-index: -1;
+		}
+	</style>
+	<link rel="stylesheet" href="w3.css" type="text/css"/>
+</head>
+<body ondragstart="return false;" ondrop="return false;">
+	<script src="ui.js"></script>
+	<script src="js/jquery-3.2.1.min.js"></script>
+	<script src="js/snap/dist/snap.svg-min.js"></script>
+	<div class="main">
+		<button class="w3-button w3-dark-gray" onclick="add('Emitter')">Add Emitter</button>
+		<button class="w3-button w3-dark-gray" onclick="add('Particle')">Add Particle</button>
+	</div>
+	<div class="draggable-template">
+		<div class="circleBtn btnTop"></div>
+		<div class="draggablebox">
+		THINGGGGG
+		</div>
+		<div class="circleBtn btnBottom"></div>
+	</div>
+	<svg height="500" width="500" id="svg"></svg>
+</body>
+</html>

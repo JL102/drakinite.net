@@ -7,9 +7,12 @@ var clock;
 var deltaTime;
  
 var emitters;
+var texts = [], text;
 var ae = 0; //ae = active emitter
 var newSizesArray = [], oldSizesArray = [];
 var timeSinceLastRand;
+
+var customAnimateScript;
 
 document.addEventListener("DOMContentLoaded", function(event) { 
 	init();
@@ -25,6 +28,8 @@ function main(){//For particles. Called by init.
 	}
 	emitters[0].enabled = true;
 	
+	
+	
 	createPanel();
 	
 }
@@ -33,16 +38,30 @@ function animate() {
     deltaTime = clock.getDelta(); //Time
 	time = Date.now();
 	
-	//camera.param.angle += .5 * deltaTime;
+	runCustomAnimateScript();
 	
 	for(var i = 0; i < emitters.length; i++){
-		emitters[i].updateParticles();
+		emitters[i].updateParticles(deltaTime);
 	}
 	
 	render();
 	
-	
 	requestAnimationFrame( animate );
+}
+
+function runCustomAnimateScript(){
+	//Filled from text input after updateCustomAnimateScript is called
+	//Called from within animate (which is run every frame)
+}
+
+function updateCustomAnimateScript(){
+	//Parse document.querySelectorAll("textarea[name='customAnimateScript']").value 
+	//into a script, and enter it into runCustomAnimateScript
+	var customAnimateScript = document.querySelectorAll("textarea[name='customAnimateScript']")[0].value;
+		runCustomAnimateScript = function(){
+		eval( customAnimateScript );
+	}
+	animate;
 }
 
 function addRemoveEmitters(v, i){
@@ -55,14 +74,22 @@ function addRemoveEmitters(v, i){
 	}
 }
 
+function switchEmitters(e){
+	//backs up setting for current emitter
+	texts[ae] = text;
+	
+	//sets settings for new emitter
+	ae = e;
+	text = texts[ae];
+}
+
 function createPanel() {
 	
 	var panel = new dat.GUI( { width: 310 } );
 	var folder0 = panel.addFolder( 'Scene' );
 	var folder1 = panel.addFolder( 'Emitter' );
-	var folder2 = panel.addFolder( 'Emitter Particle' );
-	var folder3 = panel.addFolder( 'Array' );
-	var text = {
+	var folder2 = panel.addFolder( 'Particle' );
+	text = {
 		'Background color':		"#000000",
 		'Emitter 1':			true,
 		'Emitter 2':			false,
@@ -73,10 +100,10 @@ function createPanel() {
 		'e.position.x':			0,
 		'e.position.y':			0,
 		'e.position.z':			0,
-		'e.type':				"Random",
 		'e.size.x':				0,
 		'e.size.y':				0,
 		'e.size.z':				0,
+		'e.type':				"Random",
 		'e.physics.air':		0,
 		'e.physics.gravity':	0,
 		'e.particle.velocity':	10,
@@ -94,22 +121,25 @@ function createPanel() {
 		'e.particle.alphaStart':				1,
 		'e.particle.alphaEnd':				1,
 	};
+	for(var i = 0; i < texts.length; i++){
+		texts[i] = text; //initializes text backup
+	}
 	folder0.addColor(text, 'Background color').onChange(function(v){ renderer.setClearColor( v, 1 ) });
 	folder0.add(text, "Emitter 1").onChange(function(v){ addRemoveEmitters(v, 0) });
 	folder0.add(text, "Emitter 2").onChange(function(v){ addRemoveEmitters(v, 1) });
 	folder0.add(text, "Emitter 3").onChange(function(v){ addRemoveEmitters(v, 2) });
 	folder0.add(text, "Emitter 4").onChange(function(v){ addRemoveEmitters(v, 3) });
-	folder1.add(text, 'EMITTER:', [1, 2, 3, 4]).onChange( function(v){ ae = v-1; });//v - 1 for user friendliness (starting at 1 instead of 0)
+	folder1.add(text, 'EMITTER:', [1, 2, 3, 4]).onChange( function(v){ switchEmitters(v - 1) });//v - 1 for user friendliness (starting at 1 instead of 0)
 	folder1.add(text, 'e.rate').min(0).onChange(function(v){emitters[ae].rate = v;emitters[ae].initializeParticles();});;
 	folder1.add(text, 'e.position.x',-100,100).onChange( function(v){ emitters[ae].position.x = v } );
 	folder1.add(text, 'e.position.y',-100,100).onChange(function(v){emitters[ae].position.y = v});
 	folder1.add(text, 'e.position.z',-100,100).onChange(function(v){emitters[ae].position.z = v});
 	folder1.add(text, 'e.type', ["Random", "Directional"]).onChange(function(v){emitters[ae].type = v});
-	folder1.add(text, 'e.size.x',0,200).onChange(function(v){emitters[ae].size.x = v});
-	folder1.add(text, 'e.size.y',0,200).onChange(function(v){emitters[ae].size.y = v});
-	folder1.add(text, 'e.size.z',0,200).onChange(function(v){emitters[ae].size.z = v});
+	folder1.add(text, 'e.size.x',0,400).onChange(function(v){emitters[ae].size.x = v});
+	folder1.add(text, 'e.size.y',0,400).onChange(function(v){emitters[ae].size.y = v});
+	folder1.add(text, 'e.size.z',0,400).onChange(function(v){emitters[ae].size.z = v});
 	folder1.add(text, 'e.physics.air',0,3).step(0.01).onChange(function(v){emitters[ae].physics.air = v});
-	folder1.add(text, 'e.physics.gravity',-1,1).step(0.01).onChange(function(v){emitters[ae].physics.gravity = v});
+	folder1.add(text, 'e.physics.gravity',-20,20).step(0.1).onChange(function(v){emitters[ae].physics.gravity = v});
 	folder2.add(text, 'e.particle.velocity',0,100).step(0.5).onChange(function(v){emitters[ae].particle.velocity = v});
 	folder2.add(text, 'e.particle.velocityRandom',0,1).step(0.01).onChange(function(v){emitters[ae].particle.velocityRandom = v});
 	folder2.add(text, 'e.particle.velocityDir.x',-100,100).onChange(function(v){emitters[ae].particle.velocityDir.x = v});
@@ -119,7 +149,7 @@ function createPanel() {
 	folder2.add(text, 'e.particle.duration',0,10).step(0.1).onChange(function(v){emitters[ae].particle.duration = v;emitters[ae].initializeParticles();});
 	folder2.add(text, 'e.particle.startSize',0,20).step(0.1).onChange(function(v){emitters[ae].particle.startSize = v});
 	folder2.add(text, 'e.particle.endSize',0,20).step(0.1).onChange(function(v){emitters[ae].particle.endSize = v});
-	folder2.addColor(text, 'e.particle.colorStart').onChange(function(v){emitters[ae].particle.colorStart = new THREE.Color(v)});
+	folder2.addColor(text, 'e.particle.colorStart').listen().onChange(function(v){emitters[ae].particle.colorStart = new THREE.Color(v)});
 	folder2.addColor(text, 'e.particle.colorEnd').onChange(function(v){emitters[ae].particle.colorEnd = new THREE.Color(v)});
 	folder2.add(text, 'e.particle.colorRandom',0,1).step(0.01).onChange(function(v){emitters[ae].particle.colorRandom = v});
 	folder2.add(text, 'e.particle.alphaStart',0,1).step(0.01).onChange(function(v){emitters[ae].particle.alphaStart = v});

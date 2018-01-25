@@ -3,12 +3,28 @@
   <head>
     <title>Drak's Particle Playground: v1.0</title>
     <style>
-      body {
-        margin: 0px;
-        background-color: #fff;
-        overflow: hidden;
-      }
+		body {
+			margin: 0px;
+			background-color: #fff;
+			overflow: hidden;
+		}
+		.script-container-box{
+			background-color: #222;
+			color: #ddd;
+			border: 1px solid #555;
+			position: absolute;
+			left: 0px;
+			top: 0px;
+			float: left;
+		}
+		.script-container{
+			
+		}
+		.script-button{
+		
+		}
     </style>
+	<link rel="stylesheet" href="w3.css" type="text/css"/>
   </head>
   <body>
 	<script src="js/perlin.js"></script>
@@ -18,6 +34,10 @@
     <script src="threejs/controls/OrbitControls.js"></script>
     <script src="threejs/libs/dat.gui.min.js"></script>
     <script src="particles.js"></script>
+	<div class="script-container-box">
+		<textarea class="script-container" name="customAnimateScript" cols="50" rows="10"></textarea>
+		<input type="button" class="w3-btn w3-gray w3-hover-opacity" value="Enter" onclick="updateCustomAnimateScript();"></input>
+	</div>
 	<script type="x-shader/x-vertex" id="vertexshader">
 
 			attribute float size;

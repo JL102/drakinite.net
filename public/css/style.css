@@ -28,3 +28,7 @@ body{
 	transition-timing-function: ease-out;
 	transition: 6s;
 }
+
+.drak-margin-25pc{
+	margin-top:25%!important;
+}
