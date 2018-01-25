@@ -1,0 +1,198 @@
+<html>
+<head>
+	<title>snake</title>
+</head>
+<body>
+	<canvas id="canvas"></canvas>
+	<script>
+		var canvas = document.getElementById("canvas");
+		var ctx = canvas.getContext("2d");
+		
+		var bg = "#eeeeee";
+		var snakeColor = "red";
+		var pointColor = "blue";
+		
+		var width, height;
+		var xTiles, yTiles;
+		var framerate;
+		var gameover;
+		
+		var tileWidth, tileHeight;
+		
+		var snakeLength, tail, headX, headY, pointX, pointY;
+		var direction;
+		
+		var didMoveThisFrame;
+		var nextFrameDo;
+				
+		document.addEventListener("keydown", function(e){
+			switch(e.keyCode){
+				case 37:
+					if(direction != 2)//to avoid reversing on self
+					if(didMoveThisFrame)
+					nextFrameDo = 0;
+					else
+					direction = 0;
+					break;
+				case 38:
+					if(direction != 3)
+					if(didMoveThisFrame)
+					nextFrameDo = 1;
+					else
+					direction = 1;
+					break;
+				case 39:
+					if(direction != 0)
+					if(didMoveThisFrame)
+					nextFrameDo = 2;
+					else
+					direction = 2;
+					break;
+				case 40:
+					if(direction != 1)
+					if(didMoveThisFrame)
+					nextFrameDo = 3;
+					else
+					direction = 3;
+					break;
+			}
+			didMoveThisFrame = true;
+		});
+		
+		function begin(){
+			bg = "#eeeeee";
+			snakeColor = "red";
+			pointColor = "blue";
+			
+			width = 400;
+			height = 400;
+			xTiles = 25; //num of tiles in x and y dir
+			yTiles = 25;
+			framerate = 7;
+			gameOver = false; //to make snake stop moving when game is over
+			
+			tileWidth = width/xTiles; //derived for use in draw
+			tileHeight = height/yTiles; 
+			
+			snakeLength = 3; //length of snake, increases when eats fud
+			tail = [];
+			headX = undefined; //x and y of location of head
+			headY = undefined;
+			pointX = -1;//-1 before it's set to avoid math errors or collision
+			pointY = -1;
+			direction = 2; //0 is left 1 is up 2 is right 3 is down
+			
+			didMoveThisFrame = false;
+			
+			canvas.width = width;
+			canvas.height = height;
+		
+			tail = [3,10,4,10];
+			headX = 5;
+			headY = 10;
+			
+			draw(tail[0],tail[1],snakeColor);
+			draw(tail[2],tail[3],snakeColor);
+			draw(headX, headY, snakeColor);
+			
+			for(var i = 0; i < xTiles; i++){ //draws tiles
+				for(var j = 0; j < yTiles; j++){
+					draw(i,j,bg);
+				}
+			}
+			
+			createPoint();//creates eaty thingy
+			
+			setTimeout(function(){
+				animate();
+			},1000/framerate);
+		}
+		
+		function animate(){
+		
+			tail.push(headX);//must be pushed before modified, for first frame
+			tail.push(headY);
+			
+			switch(direction){
+				case 0://left
+					headX--;
+					break;
+				case 1://up
+					headY--;
+					break;
+				case 2://right
+					headX++;
+					break;
+				case 3://down
+					headY++;
+					break;
+			}
+			
+			draw(headX, headY, snakeColor);//draws head
+			
+			if(headX == pointX && headY == pointY){//if the head eats a point thingy, increase length and make another point thingy
+				
+				snakeLength++;
+				createPoint();
+				framerate *= 1.05;//increases speed
+			}
+			
+			if(tail.length / 2 >= snakeLength){ //removes last tail thingy if tail is too long (aka if the snake didn't just eat a point)
+			
+				draw(tail[0],tail[1],bg);
+				tail = tail.slice(2);
+			}
+
+			
+			checkForDeath(); //checks if snake diez
+			
+					
+			if(!isNaN(nextFrameDo)){
+				direction = nextFrameDo;
+				nextFrameDo = undefined;
+			}
+			didMoveThisFrame = false;
+			
+			setTimeout(function(){
+				if(!gameOver){ //if game is still running, g'ahead
+					animate();
+				}
+			},1000/framerate);
+		}
+		
+		function createPoint(){
+			pointX = Math.floor(Math.random()*xTiles);
+			pointY = Math.floor(Math.random()*yTiles);
+			
+			draw(pointX, pointY, pointColor);
+		}
+				
+		function checkForDeath(){
+			for(var i = 0; i < tail.length; i+= 2){ //i ups by 2 cuz array is 2-dimensional
+				if(headX == tail[i] && headY == tail[i+1]){
+					finishGame();
+				}
+			}
+			if(headX < 0 || headY < 0 || headX >= xTiles || headY >= yTiles){
+				finishGame();
+			}
+		}		
+		
+		function finishGame(){
+			ctx.fillStyle = "rgba(40, 0, 10, 0.4)";
+			ctx.fillRect(0,0,width,height);
+			gameOver = true;
+		}
+		
+		function draw(x, y, color){//draws rect on a certain tile
+			var x = x * tileWidth;
+			var y = y * tileHeight;
+			
+			ctx.fillStyle = color;
+			
+			ctx.fillRect( x,y, tileWidth-1,tileHeight-1)
+		}
+		
+		begin();
+	</script>
+</body>
