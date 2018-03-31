@@ -10,11 +10,13 @@
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.9",
     "express": "~4.15.5",
-    "jade": "~1.11.0",
+    "pug": "~2.0.3",
     "mongodb": "~3.0.1",
     "monk": "~6.0.5",
     "morgan": "~1.9.0",
     "serve-favicon": "~2.4.5",
-    "node-dir": "~0.1.17"
+    "express-useragent": "1.0.12",
+    "node-dir": "~0.1.17",
+    "colors": "1.2.1"
   }
 }

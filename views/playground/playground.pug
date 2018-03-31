@@ -1,0 +1,7 @@
+extends ../layout
+block content
+	div(class="w3-green w3-threequarter")
+		ul
+			for file, i in files
+				li
+					a(href= file)=titles[i]

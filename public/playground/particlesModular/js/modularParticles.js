@@ -9,13 +9,13 @@ function Emitter(param){
 		param.physics = {};
 	}
 	
-	this.rate = 1000;
+	this.rate = param.rate ? param.rate : 1000;
 	this.position = param.position ? param.position : new THREE.Vector3(0,0,0);
 	this.size = param.size ? param.size : new THREE.Vector3(0,0,0);
 	this.type = "Random";
 	
 	this.velocity = param.velocity ? param.velocity : 10;
-	this.velocityRandom = 0;
+	this.velocityRandom = param.velocityRandom ? param.velocityRandom : 0;
 	
 	this.maxParticles = maxParticles;
 	this.instances = []; //"Instances" is any particle objects added to this emitter.

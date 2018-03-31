@@ -1,29 +1,64 @@
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
-var logger = require('morgan');
+//var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-
-var index = require('./routes/index');
-var users = require('./routes/users');
+var useragent = require('express-useragent');
+var colors = require('colors');
 
 var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+app.set('view engine', 'pug');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(logger('dev'));
+app.use(useragent.express());
+//app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(function(req, res, next){
+  
+  req.requestTime = Date.now();
+    
+  	//formatted request time for logging
+	var d = new Date(req.requestTime),
+    month = '' + (d.getMonth() + 1),
+    day = '' + d.getDate(),
+    year = d.getFullYear(),
+  hours = d.getHours(),
+  minutes = d.getMinutes(),
+  seconds = d.getSeconds();
+  month = month.length<2? '0'+month : month;
+  day = day.length<2? '0'+day : day;
+  var formattedReqTime = ( [year, month, day, [hours, minutes, seconds].join(':')].join('-'))
+
+  //user agent
+  req.shortagent = {
+  ip: req.headers['x-forwarded-for'] || req.connection.remoteAddress,
+  device: req.useragent.isMobile ? "mobile" : req.useragent.isDesktop ? "desktop" : (req.useragent.isiPad || req.useragent.isAndroidTablet) ? "tablet" : req.useragent.isBot ? "bot" : "other",
+  os: req.useragent.os,
+  browser: req.useragent.browser
+  }
+  //logs request
+  console.log((req.method).cyan+" Request from "+(req.shortagent.ip).cyan+" on "+(req.shortagent.device+"|"+req.shortagent.os+"|"+req.shortagent.browser).white+" to "+(req.url).cyan+" at "+(formattedReqTime).white);
+
+
+  next();
+});
+
+//Route setup: Require
+var index = require('./routes/index');
+var playground = require('./routes/playground');
+
+//Route setup: URLs
 app.use('/', index);
-app.use('/users', users);
+app.use('/playground', playground);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -42,5 +77,7 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+console.log("Ready".white);
 
 module.exports = app;

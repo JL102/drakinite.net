@@ -1,0 +1,244 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Drak's Particle Playground: v2.0</title>
+    <style>
+		body {
+			margin: 0px;
+			background-color: #fff;
+			overflow: hidden;
+		}
+    </style>
+  </head>
+  <body>
+	<script src="js/perlin.js"></script>
+	<script src="js/modularParticles.js"></script>
+    <script src="threejs/three.min.js"></script>
+    <script src="threejs/controls/OrbitControls.js"></script>
+    <script src="threejs/libs/dat.gui.min.js"></script>
+	<script type="x-shader/x-vertex" id="vertexshader">
+
+			attribute float size;
+			attribute vec3 customColor;
+			attribute float alpha;
+			
+			varying float vAlpha;
+			varying vec3 vColor;
+			void main() {
+				vAlpha = alpha;
+				vColor = customColor;
+				vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+				gl_PointSize = size * ( 300.0 / -mvPosition.z );
+				gl_Position = projectionMatrix * mvPosition;
+			}
+	</script>
+	<script type="x-shader/x-fragment" id="fragmentshader">
+			uniform vec3 color;
+			uniform sampler2D texture;
+			
+			varying float vAlpha;
+			varying vec3 vColor;
+			void main() {
+				gl_FragColor = vec4( color * vColor, vAlpha );
+				gl_FragColor = gl_FragColor * texture2D( texture, gl_PointCoord );
+			}
+	</script>
+	<script>
+var camera;
+var cameraPOI;
+var scene;
+var renderer = new THREE.WebGLRenderer({
+    preserveDrawingBuffer: true 
+});
+ 
+var clock;
+var deltaTime;
+ 
+var emitters;
+var texts = [], text;
+var ae = 0; //ae = active emitter
+var newSizesArray = [], oldSizesArray = [];
+var timeSinceLastRand;
+
+var customAnimateScript;
+
+document.addEventListener("DOMContentLoaded", function(event) { 
+	init();
+});
+
+function main(){//For particles. Called by init.
+	
+	emitter1 = new Emitter({
+		velocityRandom: 1
+	});
+	emitter2 = new Emitter({
+		rate: 3400,
+		velocity: 20,
+		velocityRandom: 1,
+		physics: {
+			air: 3
+		}
+	});
+	emitter3 = new Emitter({
+		velocityRandom: 1
+	});
+	emitter4 = new Emitter({
+		rate: 3400,
+		velocity: 20,
+		velocityRandom: 1,
+		physics: {
+			air: 3
+		}
+	});
+	bgEmitter = new Emitter({
+		size: new THREE.Vector3(200,0,200),
+		position: new THREE.Vector3(0,100,0),
+		rate: 3000,
+		physics: {
+			air: 3,
+			gravity: 3
+		}
+	})
+
+	fire = new Particle({
+		colorStart: new THREE.Color("#ffa100"),
+		colorEnd: new THREE.Color("#420000"),
+		startSize: 8,
+		endSize: 3,
+		startAlpha: 0.8,
+		endAlpha: 0.6,
+		duration: 1.4
+	});
+	particle2 = new Particle({
+		colorStart: new THREE.Color("black"),
+		colorEnd: new THREE.Color("gray"),
+		startSize: 4,
+		endSize: 0,
+		duration: 1.5,
+		startAlpha: 0,
+		endAlpha: 0.8,
+	});
+	blueFire = new Particle({
+		colorStart: new THREE.Color("#30b3ff"),
+		colorEnd: new THREE.Color("#0211e0"),
+		startSize: 2,
+		endSize: 3,
+		duration: 0.5,
+		startAlpha: 0.3,
+		endAlpha: 0.02
+	});
+	blueFire2 = new Particle({
+		colorStart: new THREE.Color("#000442"),
+		colorEnd: new THREE.Color("#a56347"),
+		startSize: 3,
+		endSize: 2,
+		duration: 2,
+		startAlpha: 0.1,
+		endAlpha: 0.05
+	});
+	bgPart = new Particle({
+		colorStart: new THREE.Color("#0b1119"),
+		startSize: 50,
+		endSize: 50,
+		duration: 1,
+		alphaStart: 0.1,
+		alphaEnd: 0.1
+	})
+	
+	emitter1.addParticle(fire);
+	emitter1.addParticle(particle2);
+	emitter2.addParticle(blueFire);
+	
+	emitter3.addParticle(fire);
+	emitter3.addParticle(particle2);
+	emitter4.addParticle(blueFire);
+	bgEmitter.addParticle(bgPart);
+	
+	
+	emitter1.initialize();
+	emitter2.initialize();
+	emitter3.initialize();
+	emitter4.initialize();
+	bgEmitter.initialize();
+	//createPanel();
+}
+
+function customAnimateScript(){
+	
+	emitter1.position.x = 20 * Math.sin(time/300);
+	emitter1.position.y = 20 * Math.cos(time/300);
+	emitter2.position.x = 20 * Math.sin((time+20)/300);
+	emitter2.position.y = 20 * Math.cos((time+20)/300);
+	
+	emitter3.position.x = 20 * Math.sin(time/300 + 3.14);
+	emitter3.position.y = 20 * Math.cos(time/300 + 3.14);
+	emitter4.position.x = 20 * Math.sin((time+20)/300 + 3.14);
+	emitter4.position.y = 20 * Math.cos((time+20)/300 + 3.141);
+		
+}
+
+function animate() {
+    deltaTime = 0.03;//clock.getDelta(); //Time
+	time = Date.now();
+	
+	//emitter(s).updateParticles(deltaTime);
+	emitter1.updateParticles(deltaTime);
+	emitter2.updateParticles(deltaTime);
+	emitter3.updateParticles(deltaTime);
+	emitter4.updateParticles(deltaTime);
+	//bgEmitter.updateParticles(deltaTime);
+	
+	customAnimateScript();
+
+	controls.update();
+	
+	render();
+	
+	requestAnimationFrame( animate );
+}
+
+function init() {
+ 
+	//SCENE/CAMERA INITIATION
+    clock = new THREE.Clock(true);
+	deltaTime = 16;//clock.getDelta(); //for initiation of particles
+    scene = new THREE.Scene();
+	camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 10000 );
+	
+	
+	//RENDERER
+    //renderer = new THREE.WebGLRenderer();
+    renderer.setSize( window.innerWidth, window.innerHeight );
+	renderer.setClearColor( 0x161620, 1 );
+    document.body.appendChild( renderer.domElement );
+	
+	//CONTROLS
+	controls = new THREE.OrbitControls( camera );
+	camera.position.set(0, 20, 100);
+	//controls.target.set( 0, 0, 0 );
+	controls.update();
+ 
+    window.addEventListener( 'resize', onWindowResize, false );
+	
+	//MAIN PROGRAM
+	main();
+	
+	render();//render first frame?
+	
+	//Animate has render inside
+	animate();
+}
+ 
+function render() {
+    renderer.render( scene, camera );
+}
+ 
+function onWindowResize() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize( window.innerWidth, window.innerHeight );
+    render();
+}
+	</script>
+  </body>
+</html>

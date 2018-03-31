@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var dir = require("node-dir");
+var fs = require("fs");
 
 console.log(process.argv);
 /*var files;
@@ -21,14 +21,7 @@ fs.readdir(fspath, function(err, items) {
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
-});
-
-router.get('/playground', function(req, res, next) {
-	res.render('playground', {
-		title: 'my playground'/*,
-		files: files*/
-	});
+  res.render('index', { title: '' });
 });
 
 module.exports = router;

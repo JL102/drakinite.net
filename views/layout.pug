@@ -1,0 +1,13 @@
+doctype html
+html
+	head
+		- title = title || "Untitled Page";
+		title=title
+		link(href='/css/w3.css', rel='stylesheet')
+		link(href='/css/style.css', rel='stylesheet')
+		script(src='/libs/jquery/dist/jquery.min.js')
+		script(src='/js/ui.js')
+	body
+		include nav
+		include main
+			block content
