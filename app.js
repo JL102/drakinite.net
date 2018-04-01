@@ -97,6 +97,7 @@ redirect.use(function(req, res, next){
 var vhost = module.exports = express();
 
 vhost.use(vhostFunc('jordanle.es', redirect)); //serves all subdomains via redirect app
+vhost.use(vhostFunc('j.drakinite.net', redirect)); //serves all subdomains via redirect app
 vhost.use(vhostFunc('drakinite.net', app)); //serves top level domain via main server app
 
 vhost.use(vhostFunc('j.localhost', redirect)); //serves all subdomains via redirect app
