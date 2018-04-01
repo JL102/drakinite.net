@@ -21,7 +21,7 @@ fs.readdir(fspath, function(err, items) {
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: '' });
+  res.render('index', { title: 'Index Page' });
 });
 
 module.exports = router;
