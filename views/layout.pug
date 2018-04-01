@@ -1,13 +1,16 @@
 doctype html
 html
 	head
-		- title = title || "Untitled Page";
-		title=title
+		- if(layoutType == "drak")
+			include drak/headerInclude
+		- if(layoutType == "jordan")
+			include jordan/headerInclude
 		link(href='/css/w3.css', rel='stylesheet')
 		link(href='/css/style.css', rel='stylesheet')
 		script(src='/libs/jquery/dist/jquery.min.js')
 		script(src='/js/ui.js')
 	body
-		include nav
-		include main
-			block content
+		- if(layoutType == "drak")
+			include drak/bodyLayout
+		- if(layoutType == "jordan")
+			include jordan/bodyLayout
