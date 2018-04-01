@@ -6,7 +6,7 @@
 .drak-blue,.drak-hover-blue:hover{color:#fff!important;background-color:#5A72BF!important}
 .drak-text-blue{color:#5A72BF!important}
 
-.drak-yellow,.drak-hover-yellow:hover{color:#fff!important;background-color:#FAF8C5!important}
+.drak-yellow,.drak-hover-yellow:hover{color:#000!important;background-color:#FAF8C5!important}
 .drak-text-yellow{color:#FAF8C5!important}
 
 .drak-darkyellow,.drak-hover-darkyellow:hover{color:#fff!important;background-color:#57563D!important}
@@ -23,6 +23,10 @@ body{
     background-size: contain;
 }
 
+.no-underline{
+	text-decoration: none;
+}
+
 .drak-title-width{
 	letter-spacing: 2px;
 	transition-timing-function: ease-out;
@@ -31,4 +35,14 @@ body{
 
 .drak-margin-25pc{
 	margin-top:25%!important;
+}
+
+.futura{
+	/*font-family: "futura";*/
+}
+
+@font-face{
+	font-family: "futura";
+	src: url('/fonts/futur.eot'),
+		url('/fonts/futur.ttf') format("truetype");
 }
