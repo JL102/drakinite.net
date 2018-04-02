@@ -6,6 +6,9 @@
 .drak-blue,.drak-hover-blue:hover{color:#fff!important;background-color:#5A72BF!important}
 .drak-text-blue{color:#5A72BF!important}
 
+.drak-black,.drak-hover-black:hover{color:#fff!important;background-color:#222!important}
+.drak-text-black{color:#222!important}
+
 .drak-yellow,.drak-hover-yellow:hover{color:#000!important;background-color:#FAF8C5!important}
 .drak-text-yellow{color:#FAF8C5!important}
 
@@ -40,9 +43,31 @@ body{
 .futura{
 	/*font-family: "futura";*/
 }
+.TravelingTypewriter{
+	font-family: "TravelingTypewriter";
+}
+.Roboto{
+	font-family: "Roboto-Thin";
+}
+.FuturFixedWidth{
+	font-family: "FuturFixedWidth";
+}
 
 @font-face{
 	font-family: "futura";
 	src: url('/fonts/futur.eot'),
 		url('/fonts/futur.ttf') format("truetype");
+}
+@font-face{
+	font-family: "TravelingTypewriter";
+	src: url('/fonts/TravelingTypewriter.otf') format("opentype"),
+		url('/fonts/TravelingTypewriter.ttf') format("truetype");
+}
+@font-face{
+	font-family: "Roboto-Thin";
+	src: url('/fonts/Roboto-Thin.ttf') format("truetype");
+}
+@font-face{
+	font-family: "FuturFixedWidth";
+	src: url('/fonts/FuturFixedWidth.ttf') format("truetype");
 }

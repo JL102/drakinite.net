@@ -1,6 +1,172 @@
 extends ../layout
 block content
-    center
-        h1(class="drak-title-width") OwO Hewwo dere, fwend!
-        p
-            a(href="/playground") pwease wook at mai pwaygwound? uwu
+    div(class="w3-center w3-text-white")
+        div(class="container")
+            h1(class="TravelingTypewriter headerTxt") drakinite
+            h1(class="Roboto down-arrow") v
+            img(src="/images/spring.jpg" class="bg-image" style="")
+        div(class="container")
+            div#centerExtContent
+                div.extContainer(style="margin: 24px 0px")
+                    a(href="https://twitter.com/TheDrakinite" class="w3-block w3-margin-top")
+                        img(src="/images/twitter-300px.png" style="height: 150px")
+                        div(class="FuturFixedWidth extLabel w3-show-inline-block") twitter
+                div.extContainer(style="margin: 24px 0px")
+                    a(href="https://www.youtube.com/c/DrakiniteOfficial" class="w3-block w3-margin-top")
+                        img(src="/images/youtube-300px.png" style="height: 150px")
+                        div(class="FuturFixedWidth extLabel w3-show-inline-block") youtube
+                div.extContainer(style="margin: 24px 0px")
+                    a(href="https://drakinite.deviantart.com/" class="w3-block w3-margin-top")
+                        img(src="/images/deviantart.png" style="height: 150px")
+                        div(class="FuturFixedWidth extLabel w3-show-inline-block") deviantart
+            img(src="/images/boathorse-1.jpg" class="bg-image" style="")
+        div(class="container drak-black")
+            h2(class="w3-text-grey Roboto" style="position:relative;top:90%") hai :p
+        //-div(class="container")
+            img(src="/images/placeholder-blur.jpg" class="bg-image" style="")
+    style.
+        .extContainer{            
+            transition-timing-function: ease-in;
+            transition: 0.5s;
+            padding: 16px 0px;
+        }
+        .extContainer:hover{
+            background-color: rgba(200,200,200,0.5);
+        }
+        .extLabel{
+            position: relative;
+            top: -60px;
+            font-size: 40px;
+            margin-left: 24px;
+            width: 250px;
+        }
+        .headerTxt{
+            position: relative;
+            top: 50%;
+            
+            font-size: 92px;
+            letter-spacing: 8px;
+            text-shadow: #222 0px 0 15px;
+        }
+        .down-arrow{
+            margin: auto;
+            position: relative;
+            top: 74%;
+            
+            transform: scaleX(2);
+            width: 50px;
+            font-size: 2.8em;
+            cursor: pointer;
+            transition-timing-function: ease-in;
+            transition: 0.5s;
+        }
+        .down-arrow:hover{
+            position: relative;
+            top: 75%;
+        }
+        .container{
+            position: relative;
+            overflow: hidden;
+        }
+        .bg-image{
+            position: absolute;
+            z-index: -1;
+            
+            user-drag: none; 
+            user-select: none;
+            -moz-user-select: none;
+            -webkit-user-drag: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+        }
+    script.
+        var ticking = false,
+            previousScrollY = 0,
+            numberImages = $('.bg-image').length;
+        
+        $(window).resize(doResizeWidth);
+        window.addEventListener('scroll', function(e){
+            previousScrollY = window.scrollY;
+            
+            if(!ticking){
+                requestAnimationFrame(function(){
+                    scrollImages(previousScrollY);
+                    ticking = false;
+                })
+            }
+            ticking = true;
+        });
+        $(".down-arrow").click(function(){
+           $('html, body').animate({
+                scrollTop: ($($('.container')[1]).offset().top)
+            },750);            
+        })
+        
+        function doResizeWidth(){
+            
+            var content = $("#centerExtContent");
+            var windowHeight = $(window).innerHeight();
+            var diff = (windowHeight - content.height())/2 - 24;
+            
+            content.css('position', 'relative');
+            content.css('top', diff);
+            
+            var windowHeight = $(window).innerHeight();
+            var windowWidth = $(window).innerWidth();
+            var images = $('.bg-image');
+            //height
+            $('.container').css('height', windowHeight);
+            //left
+            
+            for(var i = 0; i < images.length; i++){
+                var image = $(images[i]);
+                
+                var width = image.width();
+                var height = image.height();
+                
+                var ratio = width/height;
+                var windowRatio = windowWidth / windowHeight;
+                
+                if(ratio > windowRatio){
+                    image.css('width', 'auto');
+                    image.css('height', '125%');
+                }else{
+                    image.css('width', windowWidth);
+                    image.css('height', 'auto');
+                }
+                width = parseInt(image.css('width'));
+                height = parseInt(image.css('height'));
+                
+                var diffX = -0.5* (width - windowWidth);
+                //var diffY = -0.5* (height - windowHeight);
+                
+                image.css('left', diffX);
+                //image.css('top', diffY);
+                scrollImages(window.scrollY);
+            }
+        }
+        function scrollImages(scrollY){
+            var bodyHeight = document.body.clientHeight * (numberImages-1)/numberImages;
+            var percScroll = 1 - scrollY / bodyHeight;
+            //console.log(percScroll);
+            
+            for(var i = 0; i < numberImages; i++){
+                var image = $($('.bg-image')[i]);
+                
+                var height = image.height();
+                var windowHeight = $(window).innerHeight();
+                
+                //console.log(height - windowHeight);
+                
+                var diffY = - 0.5*percScroll * (height - windowHeight);
+                //console.log(diffY);
+                image.css('top', diffY);
+            }
+            
+        }
+        
+        requestAnimationFrame(doResizeWidth);
+        requestAnimationFrame(function(){
+            scrollImages(400)
+        });
+        setTimeout(doResizeWidth, 350);
