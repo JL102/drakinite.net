@@ -16,6 +16,7 @@ var customAnimateScript;
 
 document.addEventListener("DOMContentLoaded", function(event) { 
 	init();
+	console.log("hi! \nYou'd have to take a look at the code to see how this is modular. \nBut I assure you it is \n-Jordan")
 });
 
 function main(){//For particles. Called by init.

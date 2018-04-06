@@ -138,6 +138,10 @@ function key(e){
 }
 
 function click(){
+    //for user info thingy
+    document.getElementById("info").style.display = "none";
+    
+    //main code
        currentText++;
     var condition = 0;
     var loop = function() {
