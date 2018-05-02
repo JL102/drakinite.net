@@ -1,4 +1,6 @@
 {
     "ignore": false,
-    "title": "Three.JS Particle Engine"
+    "title": "Three.JS Particle Engine",
+    "image": "img-particles.png",
+    "description": "This is my first real delve into 3D programming and Three.JS. I made a particle engine similar to Trapcode's Particular, though I never ironed out all the bugs."
 }

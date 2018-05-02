@@ -4,7 +4,7 @@ var fs = require('fs');
 router.get('/', function(req, res, next) {
 	
 	var path = "./public/playground/";
-	var title = "my playground";
+	var title = "My JS Playground";
 	var data = fs.readdirSync(path);
 	
 	if(!data){
@@ -14,6 +14,8 @@ router.get('/', function(req, res, next) {
 	}
 	
 	var titles = new Array(data.length);
+	var images = new Array(data.length);
+	var descriptions = new Array(data.length);
 	
 	for(var i = 0; i < data.length; i++){
 		
@@ -52,6 +54,12 @@ router.get('/', function(req, res, next) {
 							titles[i] = infoJson.title;
 							//console.log(info + " " + j);
 						}
+						if(infoJson.image){
+							images[i] = infoJson.image;
+						}
+						if(infoJson.description){
+							descriptions[i] = infoJson.description;
+						}
 					}
 				}
 			}
@@ -68,6 +76,8 @@ router.get('/', function(req, res, next) {
 	res.render('./playground/playground', {
 		titles: titles,
 		files: data,
+		images: images,
+		descriptions: descriptions,
 		title: title
 	});	
 });

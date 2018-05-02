@@ -1,3 +1,5 @@
 {
-    "title": "Snake Game"
+    "title": "Snake",
+    "image": "img-snake.png",
+    "description": "One day in computer science class, I was bored and decided to make Snake in JS from scratch."
 }

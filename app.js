@@ -43,9 +43,47 @@ jordan.use(function(req, res, next){
   next();
 });
 
+//modify res render func
+drak.use(useFunctions.modifyRender);
+jordan.use(useFunctions.modifyRender);
+
 //logger
 drak.use(useFunctions.logger);
 jordan.use(useFunctions.logger);
+
+//jordan's nav bar items
+jordan.locals.navItems = [
+  {
+    type: "link",
+    name: "Home",
+    href: "/"
+  },{
+    type: "link",
+    name: "About",
+    href: "/me"
+  },{
+    type: "dropdown",
+    name: "Portfolio",
+    href: "/portfolio",
+    dropdownItems: [
+      {
+        name: "Programming",
+        href: "/portfolio/programming"
+      },{
+        name: "Art",
+        href: "/portfolio/art"
+      }
+    ]
+  },{
+    type: "link",
+    name: "Playground",
+    href: "/playground"
+  },{
+    type: "link",
+    name: "Contact",
+    href: "/contact"
+  }
+];
 
 //Route setup: Require
 var drakIndex = require('./routes/drak/index');

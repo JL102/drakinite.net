@@ -1,33 +1,7 @@
-/* Custom colors template
-.w3-indigo,.w3-hover-indigo:hover{color:#fff!important;background-color:#3f51b5!important}
-.w3-text-indigo{color:#3f51b5!important}
-*/
+.drak-btn:hover{cursor:pointer;}
 
-.drak-blue,.drak-hover-blue:hover{color:#fff!important;background-color:#5A72BF!important}
-.drak-text-blue{color:#5A72BF!important}
-
-.drak-black,.drak-hover-black:hover{color:#fff!important;background-color:#222!important}
-.drak-text-black{color:#222!important}
-
-.drak-yellow,.drak-hover-yellow:hover{color:#000!important;background-color:#FAF8C5!important}
-.drak-text-yellow{color:#FAF8C5!important}
-
-.drak-darkyellow,.drak-hover-darkyellow:hover{color:#fff!important;background-color:#57563D!important}
-.drak-text-darkyellow{color:#57563D!important}
-
-.drak-darkblue,.drak-hover-darkblue:hover{color:#fff!important;background-color:#2F329C!important}
-.drak-text-darkblue{color:#2F329C!important}
-
-
-body{
-	/*background-image: url("/images/horse.jpg");*/
-	background-repeat-y: no-repeat;
-    background-repeat-x: no-repeat;
-    background-size: contain;
-}
-
-.no-underline{
-	text-decoration: none;
+.no-underline, .no-underline a, a .no-underline{
+	text-decoration: none!important;
 }
 
 .drak-title-width{
@@ -36,38 +10,19 @@ body{
 	transition: 6s;
 }
 
+.w3-margin-sides{
+	margin-left: 16px!important;
+	margin-right: 16px!important;
+}
+
 .drak-margin-25pc{
 	margin-top:25%!important;
 }
 
-.futura{
-	/*font-family: "futura";*/
-}
-.TravelingTypewriter{
-	font-family: "TravelingTypewriter";
-}
-.Roboto{
-	font-family: "Roboto-Thin";
-}
-.FuturFixedWidth{
-	font-family: "FuturFixedWidth";
-}
 
-@font-face{
-	font-family: "futura";
-	src: url('/fonts/futur.eot'),
-		url('/fonts/futur.ttf') format("truetype");
+.drak-bold{
+	font-weight: 500;
 }
-@font-face{
-	font-family: "TravelingTypewriter";
-	src: url('/fonts/TravelingTypewriter.otf') format("opentype"),
-		url('/fonts/TravelingTypewriter.ttf') format("truetype");
-}
-@font-face{
-	font-family: "Roboto-Thin";
-	src: url('/fonts/Roboto-Thin.ttf') format("truetype");
-}
-@font-face{
-	font-family: "FuturFixedWidth";
-	src: url('/fonts/FuturFixedWidth.ttf') format("truetype");
+.drak-light{
+	font-weight: 100;
 }

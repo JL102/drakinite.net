@@ -2,16 +2,17 @@ doctype html
 html
 	head
 		- if(layoutType == "drak")
-			include drak/headerInclude
+			include drak/.headerInclude
 		- if(layoutType == "jordan")
-			include jordan/headerInclude
+			include jordan/.headerInclude
 		link(href='/css/w3.css', rel='stylesheet')
 		link(href='/css/style.css', rel='stylesheet')
+		link(href='/css/colors.css', rel='stylesheet')
+		link(href='/css/fonts.css', rel='stylesheet')
 		script(src='/js/jquery.min.js')
-		script(src='/js/ui.js')
 		meta(name="viewport" content="width=device-width, initial-scale=0.6, maximum-scale=1.0, user-scalable=no")
 	body
 		- if(layoutType == "drak")
-			include drak/bodyLayout
+			include drak/.bodyLayout
 		- if(layoutType == "jordan")
-			include jordan/bodyLayout
+			include jordan/.bodyLayout

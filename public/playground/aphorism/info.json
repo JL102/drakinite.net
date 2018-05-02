@@ -1,4 +1,6 @@
 {
     "ignore": false,
-    "title": "School project \"Aphorism\""
+    "title": "\"Aphorism\"",
+    "image": "img-aphorism2.png",
+    "description": "This was a high school English project I made in early 2016, on Transcendentalism. I had to analyze the quote from Ralph Emerson, and decided to make something using HTML and Snap SVG."
 }

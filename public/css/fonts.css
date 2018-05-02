@@ -1,0 +1,28 @@
+.TravelingTypewriter{
+	font-family: "TravelingTypewriter";
+}
+.Roboto{
+	font-family: "Roboto-Thin";
+}
+.FuturFixedWidth{
+	font-family: "FuturFixedWidth";
+}
+
+@font-face{
+	font-family: "futura";
+	src: url('/fonts/futur.eot'),
+		url('/fonts/futur.ttf') format("truetype");
+}
+@font-face{
+	font-family: "TravelingTypewriter";
+	src: url('/fonts/TravelingTypewriter.otf') format("opentype"),
+		url('/fonts/TravelingTypewriter.ttf') format("truetype");
+}
+@font-face{
+	font-family: "Roboto-Thin";
+	src: url('/fonts/Roboto-Thin.ttf') format("truetype");
+}
+@font-face{
+	font-family: "FuturFixedWidth";
+	src: url('/fonts/FuturFixedWidth.ttf') format("truetype");
+}

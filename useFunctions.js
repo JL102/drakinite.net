@@ -35,9 +35,28 @@ functions.logger = function(req, res, next){
         " to " + (req.url).cyan +
         " at " + (formattedReqTime).white;
     console.log(out);
-    console.log(req.url);
     
     next();
+}
+
+functions.modifyRender = function(req, res, next){
+  res.render = (function(link, param){
+		var cached_function = res.render;
+		
+		return function(link, param){
+			
+			var beforeRenderTime = Date.now() - req.requestTime;
+			
+			var result = cached_function.apply(this, arguments);
+			
+      var renderTime = Date.now() - req.requestTime - beforeRenderTime;
+      
+			console.log("Completed route in "+beforeRenderTime+" ms; Rendered page in "+renderTime+" ms");
+			
+			return result;
+		}
+	}());
+	next();
 }
   
 // shared catch 404 and forward to error handler

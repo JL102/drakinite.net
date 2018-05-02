@@ -1,3 +1,5 @@
 {
-    "title": "Modular Particle Engine"
+    "title": "Modular Particle Engine",
+    "image": "img-particlesmod.png",
+    "description": "I started to try and make a particle engine that's set up more like Superluminal's Stardust. What's cool about this guy is that the floor and the ball both have the same white particle type."
 }
