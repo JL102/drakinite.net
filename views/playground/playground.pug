@@ -1,28 +1,7 @@
 extends ../layout
 block content
-	style.
-		.playground-block{
-			max-width: 700px;
-			vertical-align: top;
-		}
-		.playground-desc{
-			margin-bottom: 32px;
-		}
-		.playground-image-container{
-			max-width: 700px;
-			max-height: 300px;
-			overflow: hidden;
-		}
-		.playground-image{
-			position: relative;
-			top: 0px;
-			left: 0px;
-			transition: left .5s ease-in-out, width .5s ease-in-out;
-		}
-		.not-found-image{
-			position: relative;
-			top: -215px;		
-		}
+	link(rel="stylesheet" href="playground-style.css" type="text/css")
+	script(src="playground-client.js")
 	div(class="w3-section")
 		h3(class="drak-bold") My JS Playground
 		h3(class="drak-light") This is where I do my little JavaScript/HTML experiments. Here are some noteable ones I've published.
@@ -39,69 +18,3 @@ block content
 					h4(class="playground-desc")
 						span(class="drak-bold") #{titles[i]}
 						span(class="drak-light")  #{descriptions[i]}
-	script.
-		var containers, images, maxWidth, maxHeight, maxAspectRatio;
-		var ticking = false;
-		
-		$(document).ready(function(){
-			containers = $(".playground-image-container");
-			images = $(".playground-image");
-			maxWidth = parseInt($(".playground-image-container").css("max-width"));
-			maxHeight = parseInt($(".playground-image-container").css("max-height"));
-			maxAspectRatio = maxWidth / maxHeight;
-			
-			for(let i = 0; i < containers.length; i++){
-				var width = images[i].width;
-				var height = images[i].height;
-								
-				var aspectRatio = width/height;
-								
-				//to remove that auto sizing
-				images[i].classList.remove("w3-image");
-				
-				var diffHeight = height - maxHeight;
-				$(images[i]).css("top", -1 * diffHeight / 8);
-				$(images[i]).attr("startTop", -1 * diffHeight / 8);
-				
-				if(aspectRatio > maxAspectRatio){
-					images[i].height = maxHeight * 1.5;
-				}else{
-					images[i].width = maxWidth;
-				}
-				
-				$(images[i]).parent().parent().mouseenter(function(){
-					$(images[i]).css("width", images[i].width * 1.25);
-					$(images[i]).css("left", -0.125 * images[i].width);
-				}).mouseleave(function(){
-					$(images[i]).css("width", "");
-					$(images[i]).css("left", "");
-				});
-			}
-			
-			$(document).on("scroll", doScroll);
-			function doScroll(e){
-				
-				if(!ticking){
-					requestAnimationFrame(function(){
-						var scrollY = window.scrollY;
-						var maxScroll = document.body.clientHeight - window.innerHeight;
-						
-						var percScrolled = scrollY / maxScroll;
-						
-						for(var i = 0; i < images.length; i++){
-							var height = images[i].height;
-							var diffHeight = height - maxHeight;
-							
-							var startTop = parseInt($(images[i]).attr("startTop"));
-							
-							$(images[i]).css("top", -1 * percScrolled * diffHeight/4 + startTop);
-							
-							//console.log(-1 * percScrolled * diffHeight/4;// + startTop);
-						}
-						
-						ticking = false;
-					});
-					ticking = true;
-				}
-			}
-		})

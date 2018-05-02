@@ -18,13 +18,22 @@ router.get('/', function(req, res, next) {
 	var descriptions = new Array(data.length);
 	
 	for(var i = 0; i < data.length; i++){
+		let data2 = undefined;
+		
+		//console.log(data[i]);
 		
 		//if it's a dir and not file
 		if( data[i].indexOf('.') == -1 )
-			var data2 = fs.readdirSync(path + data[i]);
+			data2 = fs.readdirSync(path + data[i]);
 		
 		//if i didn't read dir then go to next iteration of loop
 		if(!data2){
+			data.splice(i, 1);
+			titles.splice(i, 1);
+			images.splice(i, 1);
+			descriptions.splice(i, 1);
+			//must de-iterate i
+			i--;
 			continue;
 		}
 		
@@ -43,9 +52,10 @@ router.get('/', function(req, res, next) {
 					if(infoJson.ignore == true){
 						
 						//Splice arrays to remove item from list
-						//console.log("Ignoring " + data[i]);
 						data.splice(i, 1);
 						titles.splice(i, 1);
+						images.splice(i, 1);
+						descriptions.splice(i, 1);
 						//must de-iterate i because objects move left in array
 						i--;
 					}else{
@@ -61,6 +71,12 @@ router.get('/', function(req, res, next) {
 							descriptions[i] = infoJson.description;
 						}
 					}
+				}else{
+					//Splice everything if there's no info.json
+					data.splice(i, 1);
+					titles.splice(i, 1);
+					images.splice(i, 1);
+					descriptions.splice(i, 1);
 				}
 			}
 		}
