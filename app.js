@@ -16,7 +16,7 @@ var useFunctions = require('./useFunctions');
 //---Drak required app.use
 drak.set('views', path.join(__dirname, 'views'));
 drak.set('view engine', 'pug');
-//drak.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+drak.use(favicon(path.join(__dirname, 'public', 'images/favicon-32x.ico')));
 drak.use(useragent.express());
 drak.use(bodyParser.json());
 drak.use(bodyParser.urlencoded({ extended: false }));
@@ -51,6 +51,7 @@ jordan.use(useFunctions.modifyRender);
 drak.use(useFunctions.logger);
 jordan.use(useFunctions.logger);
 
+//jordan.locals.navItems = useFunctions.loadArray("./views/jordan/navItems.json")
 //jordan's nav bar items
 jordan.locals.navItems = [
   {
