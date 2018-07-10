@@ -8,8 +8,8 @@ block content
 	br
 	div(class="w3-center")
 		for file, i in files
-			div(class="w3-show-inline-block w3-margin-sides playground-block")
-				a(href=file class="no-underline")
+			div(class="")
+				a(href=file class="no-underline w3-show-inline-block w3-margin-sides playground-block")
 					div(class="playground-image-container")
 						if( images[i] )
 							img(class="w3-image playground-image" src=file+"/"+images[i])

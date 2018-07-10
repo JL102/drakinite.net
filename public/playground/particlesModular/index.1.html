@@ -1,26 +1,31 @@
 <!DOCTYPE HTML>
 <html>
   <head>
-    <title>WebGL/Three.js: Particles</title>
+    <title>Drak's Particle Playground: v2.0</title>
     <style>
-      body {
-        margin: 0px;
-        background-color: #fff;
-        overflow: hidden;
-      }
+		body {
+			margin: 0px;
+			background-color: #fff;
+			overflow: hidden;
+		}
     </style>
   </head>
   <body>
+		<script src="js/perlin.js"></script>
+		<script src="js/modularParticles.js"></script>
     <script src="threejs/three.min.js"></script>
-		<script src="main.js"></script>
     <script src="threejs/controls/OrbitControls.js"></script>
+    <script src="threejs/libs/dat.gui.min.js"></script>
+    <script src="main.js"></script>
 	<script type="x-shader/x-vertex" id="vertexshader">
-
 			attribute float size;
 			attribute vec3 customColor;
+			attribute float alpha;
 			
+			varying float vAlpha;
 			varying vec3 vColor;
 			void main() {
+				vAlpha = alpha;
 				vColor = customColor;
 				vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
 				gl_PointSize = size * ( 300.0 / -mvPosition.z );
@@ -31,9 +36,10 @@
 			uniform vec3 color;
 			uniform sampler2D texture;
 			
+			varying float vAlpha;
 			varying vec3 vColor;
 			void main() {
-				gl_FragColor = vec4( color * vColor, 1.0 );
+				gl_FragColor = vec4( color * vColor, vAlpha );
 				gl_FragColor = gl_FragColor * texture2D( texture, gl_PointCoord );
 			}
 	</script>

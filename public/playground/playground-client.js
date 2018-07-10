@@ -8,7 +8,7 @@ var initSizes = function(){
     maxHeight = parseInt($(".playground-image-container").css("max-height"));
     maxAspectRatio = maxWidth / maxHeight;
     
-    for(let i = 0; i < containers.length; i++){
+    for(let i = 0; i < images.length; i++){
         var width = images[i].width;
         var height = images[i].height;
                         
@@ -28,14 +28,16 @@ var initSizes = function(){
         }
         
         $(images[i]).parent().parent().mouseenter(function(){
-            $(images[i]).css("width", images[i].width * 1.25);
-            $(images[i]).css("left", -0.125 * images[i].width);
+            var width = $(images[i]).attr("width");
+            $(images[i]).css("width", width * 1.25);
+            $(images[i]).css("left", -0.125 * width);
         }).mouseleave(function(){
             $(images[i]).css("width", "");
             $(images[i]).css("left", "");
         });
     }
     
+    /*
     $(document).on("scroll", doScroll);
     function doScroll(e){
         
@@ -62,7 +64,7 @@ var initSizes = function(){
             ticking = true;
         }
     }
-    console.log("hi");
+    */
 };
 $(document).ready(initSizes);
 var didResizeRecently = false;

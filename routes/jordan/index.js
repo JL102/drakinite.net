@@ -9,9 +9,6 @@ router.get('/', function(req, res) {
 router.get('/me', function(req, res){
   res.render("./jordan/.unbuiltPage");
 })
-router.get('/portfolio*', function(req, res){
-  res.render("./jordan/.unbuiltPage");
-})
 router.get('/contact', function(req, res){
   res.render("./jordan/.unbuiltPage");
 })

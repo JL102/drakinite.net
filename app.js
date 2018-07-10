@@ -90,6 +90,7 @@ jordan.locals.navItems = [
 var drakIndex = require('./routes/drak/index');
 var jordanIndex = require('./routes/jordan/index');
 var playground = require('./routes/playground');
+var portfolio = require('./routes/jordan/portfolio');
 
 //---Route setup: URLs
 //drak
@@ -98,6 +99,7 @@ drak.use('/playground', playground);
 //jordan
 jordan.use('/', jordanIndex);
 jordan.use('/playground', playground)
+jordan.use('/portfolio', portfolio)
 
 //---Error Handlers
 drak.use(useFunctions.catch404);

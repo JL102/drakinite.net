@@ -1,27 +1,43 @@
 extends ../layout
 block content
     div(class="w3-center w3-text-white")
-        div(class="container")
+        div(class="container full-height")
             h1(class="TravelingTypewriter headerTxt") drakinite
             h1(class="Roboto down-arrow") v
             img(src="/images/spring.jpg" class="bg-image" style="")
-        div(class="container")
+        div(class="container full-height")
             div#centerExtContent
                 div.extContainer(style="margin: 24px 0px")
                     a(target="_blank" href="https://twitter.com/TheDrakinite" class="w3-block w3-margin-top")
-                        img(src="/images/twitter-300px.png" style="height: 150px")
+                        img(class="extImg" src="/images/twitter-300px.png")
                         div(class="FuturFixedWidth extLabel w3-show-inline-block") twitter
                 div.extContainer(style="margin: 24px 0px")
                     a(target="_blank" href="https://www.youtube.com/c/DrakiniteOfficial" class="w3-block w3-margin-top")
-                        img(src="/images/youtube-300px.png" style="height: 150px")
+                        img(class="extImg" src="/images/youtube-300px.png")
                         div(class="FuturFixedWidth extLabel w3-show-inline-block") youtube
                 div.extContainer(style="margin: 24px 0px")
                     a(target="_blank" href="https://drakinite.deviantart.com/" class="w3-block w3-margin-top")
-                        img(src="/images/deviantart.png" style="height: 150px")
+                        img(class="extImg" src="/images/deviantart.png")
                         div(class="FuturFixedWidth extLabel w3-show-inline-block") deviantart
             img(src="/images/boathorse-1.jpg" class="bg-image" style="")
-        div(class="container drak-black")
-            h2(class="w3-text-grey Roboto" style="position:relative;top:90%") hai :p
+        div(class="container drak-black w3-text-grey" style="height: 220px")
+            div(class="w3-left w3-left-align w3-margin")
+                h4
+                    span Made using 
+                    a(href="https://nodejs.org/en/") node.js
+                    span ,  
+                    a(href="https://expressjs.com/") express
+                    span , 
+                    a(href="https://www.w3schools.com/w3css/") w3.css
+                    span , and 
+                    a(href="https://jquery.com/") JQuery
+                    span .
+                br 
+                h4
+                    span Copyright Drakinite 2018. All rights reserved.
+                br 
+                h4
+                    a(href="mailto:contact@jordanle.es") Contact
         //-div(class="container")
             img(src="/images/placeholder-blur.jpg" class="bg-image" style="")
     style.
@@ -39,6 +55,9 @@ block content
             font-size: 40px;
             margin-left: 24px;
             width: 250px;
+        }
+        .extImg{
+            height: 150px;
         }
         .headerTxt{
             position: relative;
@@ -79,6 +98,15 @@ block content
             -webkit-user-select: none;
             -ms-user-select: none;
         }
+        @media (max-width:600px){
+            .extLabel{
+                font-size: 30px;
+                top: -40px;
+            }
+            .extImg{
+                height: 100px;
+            }
+        }
     script.
         var ticking = false,
             previousScrollY = 0,
@@ -115,7 +143,7 @@ block content
             var windowWidth = $(window).innerWidth();
             var images = $('.bg-image');
             //height
-            $('.container').css('height', windowHeight);
+            $('.full-height').css('height', windowHeight);
             //left
             
             for(var i = 0; i < images.length; i++){
