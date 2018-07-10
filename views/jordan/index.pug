@@ -1,9 +1,56 @@
 extends ../layout
 block content
-    center
-        h1(class="drak-title-width") hello there, friend
-        h3 Welcome to my website, developed by Jordan Lees.
-        p
-            span This homepage isn't set up yet. Visit my JS Playground 
-            a(href="/playground/")
-                span here.
+    style.
+        .home-block{
+            width: 50%;
+        }
+        .home-block span{
+            position: relative;
+        }
+        .home-image{
+            position: relative;
+            width: 100%;
+            top: 0px;
+            left: 0px;
+        }
+    div(id="hidden" style="display: none")
+        div(class="w3-left w3-grey home-block") 
+            span engineer
+            img(class="home-image" src="/images/cpu-square.jpg")
+        div(class="w3-left w3-grey home-block") 
+            span developer
+            img(class="home-image" src="/images/code-square.jpg")
+        div(class="w3-left w3-grey home-block") 
+            span artist
+            img(class="home-image" src="/images/art-square.jpg")
+        div(class="w3-left w3-grey home-block") 
+            span poop
+            img(class="home-image" src="/images/no-image.png")
+    script.
+        var blocks = $(".home-block");
+        var windowHeight = $(window).innerHeight();
+        var heightMinusBar = windowHeight - $("#nav").innerHeight();
+        var blockHeight = heightMinusBar / 2;
+        var blockWidth = $(window).innerWidth() / 2;
+        
+        if(blockHeight < blockWidth){
+            var largeSide = blockWidth;
+            var largeSideKey = "w";
+        }else{
+            var smallSide = blockWidth;
+            var largeSide = blockHeight;
+            var largeSideKey = "h";
+        }
+        
+        var 
+        
+        blocks.css("height", blockHeight);
+        blocks.css("width", blockWidth);
+        
+        for(var i = 0; i < 4; i++){
+            var image = $($("#home-image")[i]);
+            
+            image.style.top +=
+        }
+        
+        $("#hidden").show();
