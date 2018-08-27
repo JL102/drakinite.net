@@ -5,9 +5,7 @@
  */
 
 var app = require('./app');
-var debug = require('debug')('nodetest1:server');
 var http = require('http');
-var express = require('express');
 var https = require('https');
 var fs = require('fs');
 
@@ -27,14 +25,17 @@ const credentials = {
  * Create HTTP server.
  */
 
-var httpServer = express.createServer();
-// set up a route to redirect http to https
-httpServer.get('*', function(req, res) {  
+var redirect = require('express')();
+redirect.use(require('express').Router().get('/',function(req, res){
   res.redirect('https://' + req.headers.host + req.url);
-})
-httpServer.listen(80);
+}));
+
+var httpServer = http.createServer(redirect);
+
 
 var httpsServer = https.createServer(credentials, app);
+
+httpServer.listen(80);
 httpsServer.listen(443);
 
 //server.on('error', onError);
