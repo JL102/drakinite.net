@@ -13,6 +13,9 @@ var drak = express();
 var jordan = express();
 var useFunctions = require('./useFunctions');
 
+drak.use(useFunctions.drakRedirect);
+jordan.use(useFunctions.jordanRedirect);
+
 //---Drak required app.use
 drak.set('views', path.join(__dirname, 'views'));
 drak.set('view engine', 'pug');

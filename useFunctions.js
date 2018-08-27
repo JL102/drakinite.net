@@ -1,5 +1,14 @@
 var functions = {};
 
+functions.drakRedirect = require('express').Router();
+functions.drakRedirect.get('/*', function(req, res){
+  res.redirect("https://drakinite.net" + req.url);
+})
+functions.jordanRedirect = require('express').Router();
+functions.jordanRedirect.get('/*', function(req, res){
+  res.redirect("https://jordanle.es" + req.url);
+})
+
 //shared logger function
 functions.logger = function(req, res, next){
   
