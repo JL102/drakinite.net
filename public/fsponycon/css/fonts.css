@@ -1,0 +1,10 @@
+.century-gothic{
+	font-family:
+		"Century Gothic",		/* Windows (HP printer) */
+		"Avant Garde Gothic",	/* HP font name */
+		"Avant Garde",		/* MacOS */
+		"URW Gothic L",		/* Unix+X+FontConfig */
+	/* Fallback options */
+		helvetica,			/* Unix+X, MacOS */
+		sans-serif
+}

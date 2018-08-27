@@ -1,0 +1,29 @@
+
+/* BG Colors */
+.fs-light-gray,.fs-hover-light-gray:hover{color:#000!important;background-color:#bcc5e4!important}
+.fs-orange,.fs-hover-orange:hover{color:#fff!important;background-color:#fa8411!important}
+.fs-yellow,.fs-hover-yellow:hover{color:#000!important;background-color:#ffca2c!important}
+.fs-cyan,.fs-hover-cyan:hover{color:#000!important;background-color:#5bb9dd!important}
+.fs-purple,.fs-hover-purple:hover{color:#fff!important;background-color:#662275!important}
+.fs-pink,.fs-hover-pink:hover{color:#000!important;background-color:#bf7ab3!important}
+.fs-alphawhite,.fs-hover-alphawhite{background-color:#ffffff75!important}
+
+.drak-black,.drak-hover-black{color:#fff!important;background-color:#222!important}
+.fs-cloudy{background-color:#ffffff50!important;}
+.fs-clear{background-color: rgba(0,0,0,0)!important;}
+
+/* Text colors */
+.fs-text-light-gray,.fs-hover-text-light-gray:hover{color:#bcc5e4!important}
+.fs-text-orange,.fs-hover-text--orange:hover{color:#fa8411!important}
+.fs-text-yellow,.fs-hover-text--yellow:hover{color:#ffca2c!important}
+.fs-text-cyan,.fs-hover-text--cyan:hover{color:#5bb9dd!important}
+.fs-text-purple,.fs-hover-text--purple:hover{color:#662275!important}
+.fs-text-pink,.fs-hover-text--pink:hover{color:#bf7ab3!important}
+
+/* Border colors */
+.fs-border-light-gray,.fs-hover-border-light-gray:hover{border-color:#bcc5e4!important}
+.fs-border-orange,.fs-hover-border-orange:hover{border-color:#fa8411!important}
+.fs-border-yellow,.fs-hover-border-yellow:hover{border-color:#ffca2c!important}
+.fs-border-cyan,.fs-hover-border-cyan:hover{border-color:#5bb9dd!important}
+.fs-border-purple,.fs-hover-border-purple:hover{border-color:#662275!important}
+.fs-border-pink,.fs-hover-border-pink:hover{border-color:#bf7ab3!important}

@@ -1,0 +1,122 @@
+extends layout
+block content
+	- var color
+	case content
+		when "home"
+			- color = "fs-cyan"
+		when "about-us"
+			- color = "fs-light-gray"
+		when "guests"
+			- color = "fs-purple"
+		when "vending"
+			- color = "fs-pink"
+	main(class=color)
+		header
+			div(id="select_bar_large" class="w3-left w3-large century-gothic fs-cloudy show-large")
+				if content == "home"
+					a(href="home" class="w3-button w3-show-block w3-right-align fs-hover-cyan") Home
+				else
+					a(href="home" class="w3-button w3-show-block w3-right-align w3-white fs-hover-cyan") Home
+				if content == "about-us"
+					a(href="about-us" class="w3-button w3-show-block w3-right-align fs-hover-light-gray") About Us
+				else
+					a(href="about-us" class="w3-button w3-show-block w3-right-align w3-white fs-hover-light-gray") About Us
+				if content == "guests"
+					a(href="guests" class="w3-button w3-show-block w3-right-align fs-hover-purple") Guests
+				else
+					a(href="guests" class="w3-button w3-show-block w3-right-align w3-white fs-hover-purple") Guests
+				if content == "vending"
+					a(href="vending" class="w3-button w3-show-block w3-right-align fs-hover-pink") Vending
+				else
+					a(href="vending" class="w3-button w3-show-block w3-right-align w3-white fs-hover-pink") Vending
+				a(href="" class="w3-button w3-show-block w3-right-align w3-white fs-hover-orange") Register
+			div(id="select_bar_small" class="w3-mobile show-small w3-large century-gothic")
+				button(id="dropdown_button" class=`fs-clear w3-text-white w3-button ${color}`) ≡
+				span(class="select_bar_visible w3-show-inline-block w3-left-align")
+					case content
+						when "home"
+							span Home
+				div(class="select_bar_hidden")
+					if content != "home"
+						a(href="home" class="w3-button w3-show-block w3-left-align fs-hover-cyan fs-cyan") Home
+					if content != "about-us"
+						a(href="about-us" class="w3-button w3-show-block w3-left-align fs-hover-light-gray fs-light-gray") About Us
+					if content != "guests"
+						a(href="guests" class="w3-button w3-show-block w3-left-align fs-hover-purple fs-purple") Guests
+					if content != "vending"
+						a(href="vending" class="w3-button w3-show-block w3-left-align fs-hover-pink fs-pink") Vending
+					a(href="" class="w3-button w3-show-block w3-left-align fs-hover-orange fs-orange") Register
+			div(id="header_image_container" class="w3-rest w3-mobile")
+				image(id="header_image" src="images/twitter banner.jpg")
+		case content
+			when "home"
+				include home
+			when "about-us"
+				include about-us
+			when "guests"
+				include guests
+			when "vending"
+				include vending
+		section(class="w3-center")
+			a(class="w3-padding" href="")
+				img(class="social_media" src="images/twitter.png")
+			a(class="w3-padding" href="")
+				img(class="social_media" src="images/email-2.png")
+			a(class="w3-padding" href="")
+				img(class="social_media" src="images/facebook.png")
+		footer(class="drak-black w3-margin-top")
+			h4(class="w3-text-grey")
+				div(class="w3-padding")
+					span Made with ♥ by 
+					a(href="drakinite.net") Drakinite.
+				div(class="w3-padding")
+					span Any questions? Shoot us an 
+					a(href="mailto:@@@@@") email 
+					span or 
+					a(href="https://twitter.com/FSPonyCon") tweet to us!
+		script.
+			var imageWidth, containerWidth;
+			if($(window).width() > 600){
+				$("#header_image").on("load", function(){
+					requestAnimationFrame(onResize);
+				});
+			}
+			
+			var isResizing = false;
+			$(window).resize(function(e){
+				if(!isResizing){
+					requestAnimationFrame(onResize);
+				}
+				isResizing = true;
+			});
+			function onResize(e){
+				$("#header_image").removeAttr("style");
+				
+				if($(window).width() > 600){
+					$("#header_image").css({position: "relative"});
+					
+					containerWidth = $("#header_image_container").width();
+					imageWidth = $("#header_image").width();
+					
+					if(imageWidth > containerWidth){
+						var difference = imageWidth - containerWidth;
+						var left = -1 * Math.floor(difference / 2);
+						$("#header_image").css({
+							left: left
+						});
+					}else{
+						$("#header_image").css({
+							width: "100%",
+							height: "auto"
+						});
+						var containerHeight = $("#header_image_container").height();
+						var imageHeight = $("#header_image").height();
+						var heightDifference = imageHeight - containerHeight;
+						var top = -1 * Math.floor(heightDifference / 2);
+						$("#header_image").css({
+							top: top
+						});
+					}
+				}
+				isResizing = false;
+			}
