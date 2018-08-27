@@ -26,10 +26,14 @@ const credentials = {
  * Create HTTP server.
  */
 
-var httpServer = http.createServer(app);
-var httpsServer = https.createServer(credentials, app);
-
+var httpServer = express.createServer();
+// set up a route to redirect http to https
+httpServer.get('*', function(req, res) {  
+  res.redirect('https://' + req.headers.host + req.url);
+})
 httpServer.listen(80);
+
+var httpsServer = https.createServer(credentials, app);
 httpsServer.listen(443);
 
 //server.on('error', onError);

@@ -93,9 +93,6 @@ var playground = require('./routes/playground');
 var portfolio = require('./routes/jordan/portfolio');
 var fsponycon = require('./routes/drak/fsponycon');
 
-drak.use(useFunctions.drakRedirect);
-jordan.use(useFunctions.jordanRedirect);
-
 //---Route setup: URLs
 //drak
 drak.use('/', drakIndex);
