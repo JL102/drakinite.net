@@ -3,6 +3,7 @@ var functions = {};
 functions.drakRedirect = require('express').Router();
 functions.drakRedirect.get('/*', function(req, res){
   var isSSL = (req.socket.encrypted ? true : false);
+  console.log(isSSL);
   if(!isSSL){
     res.redirect("https://drakinite.net" + req.url);
   }

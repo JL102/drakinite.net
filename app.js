@@ -13,9 +13,6 @@ var drak = express();
 var jordan = express();
 var useFunctions = require('./useFunctions');
 
-drak.use(useFunctions.drakRedirect);
-jordan.use(useFunctions.jordanRedirect);
-
 //---Drak required app.use
 drak.set('views', path.join(__dirname, 'views'));
 drak.set('view engine', 'pug');
@@ -95,6 +92,10 @@ var jordanIndex = require('./routes/jordan/index');
 var playground = require('./routes/playground');
 var portfolio = require('./routes/jordan/portfolio');
 var fsponycon = require('./routes/drak/fsponycon');
+
+drak.use(useFunctions.drakRedirect);
+jordan.use(useFunctions.jordanRedirect);
+
 //---Route setup: URLs
 //drak
 drak.use('/', drakIndex);
