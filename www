@@ -7,19 +7,26 @@
 var app = require('./app');
 var debug = require('debug')('nodetest1:server');
 var http = require('http');
+var fs = require('fs');
 
 /**
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '80');
+var port = normalizePort(process.env.PORT || '443');
 app.set('port', port);
+
+//Load LetsEncrypt key.
+const options = {
+  cert: fs.readFileSync("/etc/letsencrypt/live/drakinite.net/fullchain.pem");
+  key: fs.readFileSync("/etc/letsencrypt/live/drakinite.net/privkey.pem")
+}
 
 /**
  * Create HTTP server.
  */
 
-var server = http.createServer(app);
+var server = http.createServer(options, app);
 
 /**
  * Listen on provided port, on all network interfaces.
