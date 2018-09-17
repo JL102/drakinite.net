@@ -9,34 +9,25 @@ var http = require('http');
 var https = require('https');
 var fs = require('fs');
 
-/**
- * Get port from environment and store in Express.
- */
-
-var port = normalizePort(process.env.PORT || '80');
-app.set('port', port);
+//var port = normalizePort(process.env.PORT || '80');
+//app.set('port', port);
 
 const credentials = {
   cert: fs.readFileSync("/etc/letsencrypt/live/drakinite.net/fullchain.pem"),
   key: fs.readFileSync("/etc/letsencrypt/live/drakinite.net/privkey.pem")
 }
 
-/**
- * Create HTTP server.
- */
+var httpsServer = https.createServer(credentials, app);
+httpsServer.listen(443);
 
 var redirect = require('express')();
-redirect.use(require('express').Router().get('/',function(req, res){
-  res.redirect('https://' + req.headers.host + req.url);
+redirect.use('/', require('express').Router().get('/',function(req, res){
+  //res.redirect('https://' + req.headers.host + req.url);
+  res.sendStatus(200);
 }));
 
-var httpServer = http.createServer(redirect);
-
-
-var httpsServer = https.createServer(credentials, app);
-
+var httpServer = http.createServer(app);
 httpServer.listen(80);
-httpsServer.listen(443);
 
 //server.on('error', onError);
 //server.on('listening', onListening);
