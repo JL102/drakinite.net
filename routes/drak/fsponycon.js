@@ -1,9 +1,45 @@
 var router = require("express").Router();
 
 router.get('/', function(req, res){
+	
+	/*
+	var mongoose = req.mongoose;
+	
+	var pageItemsSchema = new mongoose.Schema({
+		page: String,
+		item: Number,
+		type: String,
+		content: String
+	});
+	
+	var PageItem = mongoose.model('PageItem', pageItemsSchema);
+	
+	var homePage = new PageItem({
+		page: 'home',
+		item: 3,
+		type: 'header',
+		content: 'header created from mongoose schema'
+	});
+	
+	homePage.save(function(e, page){
+		if(e) return console.error(e);
+		console.log("saved");
+	})
+	*/
+	
 	res.redirect('/fsponycon/home');
 })
 router.get('/home', function(req, res){
+	
+	var PageItem = req.PageItem;
+	
+	req.PageItem.find(function(e, pageItems){
+		if(e) return console.error(e);
+		pageItems = pageItems ? pageItems : {};
+		console.log(pageItems);
+	});
+	
+	
 	res.render('drak/fsponycon/index', {
 		content: "home"
 	});

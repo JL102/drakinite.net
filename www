@@ -12,13 +12,17 @@ var fs = require('fs');
 //var port = normalizePort(process.env.PORT || '80');
 //app.set('port', port);
 
-const credentials = {
-  cert: fs.readFileSync("/etc/letsencrypt/live/drakinite.net/fullchain.pem"),
-  key: fs.readFileSync("/etc/letsencrypt/live/drakinite.net/privkey.pem")
+if(fs.existsSync("/etc/letsencrypt/live/drakinite.net/fullchain.pem")
+  && fs.existsSync("/etc/letsencrypt/live/drakinite.net/privkey.pem")){
+     
+  const credentials = {
+    cert: fs.readFileSync("/etc/letsencrypt/live/drakinite.net/fullchain.pem"),
+    key: fs.readFileSync("/etc/letsencrypt/live/drakinite.net/privkey.pem")
+  }
+  var httpsServer = https.createServer(credentials, app);
+  httpsServer.listen(443);
 }
 
-var httpsServer = https.createServer(credentials, app);
-httpsServer.listen(443);
 
 var redirect = require('express')();
 redirect.use('/', require('express').Router().get('/',function(req, res){

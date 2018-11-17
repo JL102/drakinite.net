@@ -80,49 +80,50 @@ block content
 					a(href="mailto:@@@@@") email 
 					span or 
 					a(href="https://twitter.com/FSPonyCon") tweet to us!
-		script.
-			var imageWidth, containerWidth;
-			if($(window).width() > 600){
-				$("#header_image").on("load", function(){
-					requestAnimationFrame(onResize);
-				});
-			}
-			
-			var isResizing = false;
-			$(window).resize(function(e){
-				if(!isResizing){
-					requestAnimationFrame(onResize);
-				}
-				isResizing = true;
+	script.
+		var imageWidth, containerWidth;
+		if($(window).width() > 600){
+			$("#header_image").on("load", function(){
+				requestAnimationFrame(onResize);
 			});
-			function onResize(e){
-				$("#header_image").removeAttr("style");
-				
-				if($(window).width() > 600){
-					$("#header_image").css({position: "relative"});
-					
-					containerWidth = $("#header_image_container").width();
-					imageWidth = $("#header_image").width();
-					
-					if(imageWidth > containerWidth){
-						var difference = imageWidth - containerWidth;
-						var left = -1 * Math.floor(difference / 2);
-						$("#header_image").css({
-							left: left
-						});
-					}else{
-						$("#header_image").css({
-							width: "100%",
-							height: "auto"
-						});
-						var containerHeight = $("#header_image_container").height();
-						var imageHeight = $("#header_image").height();
-						var heightDifference = imageHeight - containerHeight;
-						var top = -1 * Math.floor(heightDifference / 2);
-						$("#header_image").css({
-							top: top
-						});
-					}
-				}
-				isResizing = false;
+		}
+		
+		var isResizing = false;
+		$(window).resize(function(e){
+			if(!isResizing){
+				requestAnimationFrame(onResize);
 			}
+			isResizing = true;
+		});
+		function onResize(e){
+							
+			$("#header_image").removeAttr("style");
+			
+			if($(window).width() > 600){
+				$("#header_image").css({position: "relative"});
+				
+				containerWidth = $("#header_image_container").width();
+				imageWidth = $("#header_image").width();
+				
+				if(imageWidth > containerWidth){
+					var difference = imageWidth - containerWidth;
+					var left = -1 * Math.floor(difference / 2);
+					$("#header_image").css({
+						left: left
+					});
+				}else{
+					$("#header_image").css({
+						width: "100%",
+						height: "auto"
+					});
+					var containerHeight = $("#header_image_container").height();
+					var imageHeight = $("#header_image").height();
+					var heightDifference = imageHeight - containerHeight;
+					var top = -1 * Math.floor(heightDifference / 2);
+					$("#header_image").css({
+						top: top
+					});
+				}
+			}
+			isResizing = false;
+		}

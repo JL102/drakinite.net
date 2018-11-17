@@ -7,6 +7,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var useragent = require('express-useragent');
 var colors = require('colors');
+var mongoose = require('mongoose');
 
 //set up both apps
 var drak = express();
@@ -97,7 +98,37 @@ var fsponycon = require('./routes/drak/fsponycon');
 //drak
 drak.use('/', drakIndex);
 drak.use('/playground', playground);
+
+//Begin FS Pony Con Shit
+
+
+mongoose.connect('mongodb://localhost/fsponycon');
+
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function() {
+  console.log('database ready');
+});
+
+var pageItemsSchema = new mongoose.Schema({
+  page: String,
+  item: Number,
+  type: String,
+  content: String
+});
+
+var PageItem = mongoose.model('PageItem', pageItemsSchema);
+
+drak.use(function(req, res, next){
+  req.mongoose = mongoose;
+  req.db = db;
+  req.PageItem = PageItem;
+  next();
+});
 drak.use('/fsponycon', fsponycon);
+
+//End FS Pony Con Shit
+
 //jordan
 jordan.use('/', jordanIndex);
 jordan.use('/playground', playground)
