@@ -31,29 +31,23 @@ router.get('/', function(req, res){
 })
 router.get('/home', function(req, res){
 	
-	var PageItem = req.PageItem;
-	
-	req.PageItem.find(function(e, pageItems){
-		if(e) return console.error(e);
-		pageItems = pageItems ? pageItems : {};
-		console.log(pageItems);
-	});
-	
-	
 	res.render('drak/fsponycon/index', {
 		content: "home"
 	});
 });
+
 router.get('/about-us', function(req, res){
 	res.render('drak/fsponycon/index', {
 		content: "about-us"
 	});
 });
+
 router.get('/guests', function(req, res){
 	res.render('drak/fsponycon/index', {
 		content: "guests"
 	});
 });
+
 router.get('/vending', function(req, res){
 	res.render('drak/fsponycon/index', {
 		content: "vending"
