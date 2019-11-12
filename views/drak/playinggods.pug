@@ -1,0 +1,81 @@
+style.
+	body, html{
+		background-color: #222;
+		margin: 0;
+		padding: 0;
+	}
+	.xriahScroll{
+		overflow: hidden;
+	}
+	.xriahImg{
+		position: absolute;
+	}
+	#xriahBg{
+		z-index: 1;
+	}
+	#xriahBody{
+		z-index: 6;
+	}
+	#xriahLtnSm{
+		z-index: 3;
+	}
+	#xriahLtnMd{
+		z-index: 4;
+	}
+	#xriahLtnLg{
+		z-index: 5;
+	}
+script(src="/js/jquery.min.js")
+link(rel="stylesheet" type="text/css" href="/css/w3.css")
+div(class="w3-white w3-jumbo pad")
+	span hello
+	br 
+	br 
+	br 
+	span this is filler
+	br 
+	br 
+	br 
+	span buy my book
+	br 
+	br 
+	br 
+div(class="scroll" id="xriahScroll")
+	img#xriahBg(class="w3-image xriahImg" src="/playground/playinggods/xriah_bg.png")
+	img#xriahBody(class="w3-image xriahImg" src="/playground/playinggods/xriah_body.png")
+	img#xriahLtnSm(class="w3-image xriahImg" src="/playground/playinggods/xriah_lightningsmall.png")
+	img#xriahLtnMd(class="w3-image xriahImg" src="/playground/playinggods/xriah_lightningmed.png")
+	img#xriahLtnLg(class="w3-image xriahImg" src="/playground/playinggods/xriah_lightningbig.png")
+div(class="w3-dark-gray w3-jumbo pad")
+	span ayye
+	br 
+	br 
+	br 
+	span this is filler
+	br 
+	br 
+	br 
+	span buy my book
+	br 
+	br 
+	br 
+script.
+	var ticking = false,
+		previousScrollY = 0;
+	var startScroll = 0;
+	var endScroll = 1000;
+	
+	$(window)
+		
+	$(window).resize(doResizeWidth);
+	window.addEventListener('scroll', function(e){
+		previousScrollY = window.scrollY;
+		
+		if(!ticking){
+			requestAnimationFrame(function(){
+				scrollImages(previousScrollY);
+				ticking = false;
+			})
+		}
+		ticking = true;
+	});

@@ -98,4 +98,9 @@ router.get('/', function(req, res, next) {
 	});	
 });
 
+router.get('/playinggods', function(req, res){
+
+	res.render('./drak/playinggods');
+});
+
 module.exports = router;

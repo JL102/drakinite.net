@@ -7,12 +7,40 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var useragent = require('express-useragent');
 var colors = require('colors');
-var mongoose = require('mongoose');
+
+//Set pug views to render as production
+process.env.NODE_ENV = "production";
 
 //set up both apps
 var drak = express();
 var jordan = express();
 var useFunctions = require('./useFunctions');
+
+/* Checks process arguments.
+	If -dev or --dev, isDev = true.
+	If -debug or --debug, debug = true.
+	If -d or --d, both = true.
+*/
+drak.isDev = jordan.debug = false; //isDev is typically used as a locals var in view engine.
+drak.debug = jordan.debug = false; //debug is used for logging.
+for(var i in process.argv){
+	switch(process.argv[i]){
+		case "-dev":
+		case "--dev":
+			console.log("Dev");
+			drak.isDev = jordan.isDev = true;
+			break;
+		case "-d":
+		case "--d":
+			console.log("Dev");
+			drak.isDev = jordan.isDev = true;
+		case "-debug":
+		case "--debug":
+			console.log("Debug");
+			drak.debug = jordan.debug = true;
+			break;
+	}
+}
 
 //---Drak required app.use
 drak.set('views', path.join(__dirname, 'views'));
@@ -36,12 +64,12 @@ jordan.use(express.static(path.join(__dirname, 'public')));
 
 //set type for use in layout and logger
 drak.use(function(req, res, next){
-  res.locals.layoutType = "drak";
-  next();
+	res.locals.layoutType = "drak";
+	next();
 });
 jordan.use(function(req, res, next){
-  res.locals.layoutType = "jordan";
-  next();
+	res.locals.layoutType = "jordan";
+	next();
 });
 
 //modify res render func
@@ -55,36 +83,36 @@ jordan.use(useFunctions.logger);
 //jordan.locals.navItems = useFunctions.loadArray("./views/jordan/navItems.json")
 //jordan's nav bar items
 jordan.locals.navItems = [
-  {
-    type: "link",
-    name: "Home",
-    href: "/"
-  },{
-    type: "link",
-    name: "About",
-    href: "/me"
-  },{
-    type: "dropdown",
-    name: "Portfolio",
-    href: "/portfolio",
-    dropdownItems: [
-      {
-        name: "Programming",
-        href: "/portfolio/programming"
-      },{
-        name: "Art",
-        href: "/portfolio/art"
-      }
-    ]
-  },{
-    type: "link",
-    name: "Playground",
-    href: "/playground"
-  },{
-    type: "link",
-    name: "Contact",
-    href: "/contact"
-  }
+	{
+		type: "link",
+		name: "Home",
+		href: "/"
+	},{
+		type: "link",
+		name: "About",
+		href: "/me"
+	},{
+		type: "dropdown",
+		name: "Portfolio",
+		href: "/portfolio",
+		dropdownItems: [
+			{
+				name: "Programming",
+				href: "/portfolio/programming"
+			},{
+				name: "Art",
+				href: "/portfolio/art"
+			}
+		]
+	},{
+		type: "link",
+		name: "Playground",
+		href: "/playground"
+	},{
+		type: "link",
+		name: "Contact",
+		href: "/contact"
+	}
 ];
 
 //Route setup: Require
@@ -99,35 +127,8 @@ var fsponycon = require('./routes/drak/fsponycon');
 drak.use('/', drakIndex);
 drak.use('/playground', playground);
 
-//Begin FS Pony Con Shit
-
-
-mongoose.connect('mongodb://localhost/fsponycon');
-
-var db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', function() {
-  console.log('database ready');
-});
-
-var pageItemsSchema = new mongoose.Schema({
-  page: String,
-  item: Number,
-  type: String,
-  content: String
-});
-
-var PageItem = mongoose.model('PageItem', pageItemsSchema);
-
-drak.use(function(req, res, next){
-  req.mongoose = mongoose;
-  req.db = db;
-  req.PageItem = PageItem;
-  next();
-});
+//Old website for fsponycon
 drak.use('/fsponycon', fsponycon);
-
-//End FS Pony Con Shit
 
 //jordan
 jordan.use('/', jordanIndex);
@@ -144,6 +145,7 @@ jordan.use(useFunctions.serveError);
 
 var vhost = module.exports = express();
 
+
 vhost.use(vhostFunc('jordanle.es', jordan)); //serves all subdomains via redirect drak
 vhost.use(vhostFunc('drakinite.net', drak)); //serves top level domain via main server drak
 
@@ -151,3 +153,12 @@ vhost.use(vhostFunc('j.localhost', jordan)); //serves all subdomains via redirec
 vhost.use(vhostFunc('localhost', drak)); //serves top level domain via main server drak
 vhost.use(vhostFunc('j.jdesk', jordan)); //serves all subdomains via redirect drak
 vhost.use(vhostFunc('jdesk', drak)); //serves top level domain via main server drak
+
+//Certbot challenge
+var challenge = express();
+challenge.use('/', function(req, res){
+	res.send("eacd1oYLd6DceweiKw28BZYPGSXLZT1KVTCqryeSALA");
+});
+vhost.use(vhostFunc('_acme-challenge.drakinite.net', challenge));
+
+useFunctions.log("SERVER REBOOTED\r\nReady");

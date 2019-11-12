@@ -1,0 +1,135 @@
+extends ../layout
+block content
+	script.
+		console.log("Well hello there! You curious about how I made this site and page? I built it using W3.css, Node, and Pug.")
+	style.
+		.share-button-label{
+			display: inline;
+			position: relative;
+			top: -8px;
+		}
+		.share-button{
+			display: inline;
+			margin: 0px 8px;
+		}
+		.share-button-fb{
+			position: relative;
+			top: -6px;
+		}
+		.inline-icon{
+			max-height: 16px;
+			margin: 0px 4px;
+			position: relative;
+			top: 2px;
+		}
+	//Facebook
+	<div id="fb-root"></div>
+	<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v5.0"></script>
+	
+	div(class="badge-bg") &nbsp;
+	div(class="w3-center w3-text-white")
+		div(class="drak-yellow drak-text-black w3-padding-small w3-section")
+			h1(class="badge-header")
+				div(class="w3-show-inline-block w3-margin-right" style="position: relative; top: -54px; height: 0px;")
+					img(src="images/favicon-128x.ico" style="float: right; height: 80px;")
+				strong Want a custom badge of your sona?
+		//header paragraph
+		div(class="drak-yellow drak-text-black w3-padding-small w3-section")
+			div(class="w3-auto")
+				h3(class="badge-header") 
+					span(class="w3-text-black") FREE PICKUP AT MIDWEST FURFEST 2019 &nbsp;-&nbsp;  
+					span(class="w3-text-dark-gray") $3 FOR US SHIPPING
+				p
+					span You've come to the right place! My name is Drakinite, and I am printing high-quality character/name badges, 
+					span which are perfect for convention-going.
+					br 
+					img(class="w3-image w3-show-inline inline-icon" src="images/gmail.png" alt="")
+					a(href="mailto:drakinite@gmail.com") Email me 
+					span or 
+					img(class="w3-image w3-show-inline inline-icon" src="images/twitter-300px.png" alt="")
+					a(href="https://twitter.com/TheDrakinite") DM me on Twitter
+					span &nbsp;if interested! Please include your choice of badge type (see below), 
+					span character art/refs, text, and color/background preferences. 
+					br 
+					span I accept debit/credit card, PayPal, and Venmo. 
+					
+				p
+					div(class="share-button share-button-label")
+						i Shares are greatly appreciated!
+					div(class="share-button")
+						//-https://publish.twitter.com/?buttonLarge=on&buttonText=Testing!&buttonType=TweetButton&buttonUrl=https%3A%2F%2Fdrakinite.net%2Ftest&buttonVia=TheDrakinite&widget=Button
+						<a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-size="large" data-text="Testing!" data-url="https://drakinite.net/test" data-via="TheDrakinite" data-show-count="false">Tweet</a>
+						<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+					div(class="share-button share-button-fb")
+						//-https://developers.facebook.com/docs/plugins/share-button/
+						<div class="fb-share-button" data-href="https://drakinite.net/badges" data-layout="button" data-size="large">
+							<a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fdrakinite.net%2Fbadges&amp;src=sdkpreparse" class="fb-xfbml-parse-ignore">Share
+							</a>
+						</div>
+		div(class="w3-section")
+			div(class="w3-mobile w3-half")
+				//$20 banner
+				div(class="drak-yellow drak-text-black w3-padding-small w3-section")
+					h1(class="badge-header")
+						strong $20: PROVIDE YOUR OWN ART
+				//$20 info
+				div(class="drak-yellow drak-text-black w3-padding-small w3-section")
+					div(class="w3-left-align w3-margin-left")
+						h5(class="badge-header")
+							span Bring existing art of your fursona or pony OC and I will turn it into a badge!
+						p(class="")
+							span Pictured here are examples of this badge type. If you already have a drawing of your own
+							span sona, and you have permission from the artist to use it, then I can make your very own name badge
+							span using that drawing. 
+			//$20 tier images
+			div(class="w3-mobile w3-half")
+				div(class="w3-col s6 w3-padding-small")
+					img(src="images/badges/ashie.png" class="w3-image badge-image"
+						alt="Ashie's Badge" title="Badge for Ashie; Art by twitter.com/SmolSammichOwO")
+				div(class="w3-col s6 w3-padding-small")
+					img(src="images/badges/mlpfimguy.png" class="w3-image badge-image"
+						alt="Mlpfimguy's Badge" title="Badge for Mlpfimguy; Art by twitter.com/OofyColorful")
+				div(class="w3-col s6 w3-padding-small")
+					img(src="images/badges/lemming1.png" class="w3-image badge-image"
+						alt="The Lemming King's Badge" title="Badge for The Lemming King; Art by twitter.com/Lemming_King")
+				div(class="w3-col s6 w3-padding-small")
+					img(src="images/badges/drakinite.png" class="w3-image badge-image"
+						alt="Drakinite's Badge" title="Badge for Drakinite (me); Art by twitter.com/Lemming_King")
+		p(class="w3-col") 
+		div(class="w3-section")
+			div(class="w3-mobile w3-half")
+				//$35 banner
+				div(class="drak-yellow drak-text-black w3-padding-small w3-section")
+					h1(class="badge-header")
+						strong $35: CUSTOM DRAWING
+				//$20 info
+				div(class="drak-yellow drak-text-black w3-padding-small w3-section")
+					div(class="w3-left-align w3-margin-left")
+						h5(class="badge-header")
+							span Provide a reference for your character and I will create a new drawing for your badge!
+						p(class="")
+							span Pictured here are examples of this badge type. If you wish to have a new drawing made of
+							span your sona, then send me a reference, and I will make it for you.
+			//$20 tier images
+			div(class="w3-mobile w3-half")
+				div(class="w3-col s6 w3-padding-small")
+					img(src="images/badges/lemming2.png" class="w3-image badge-image"
+						alt="Sample Badge for The Lemming King" title="Sample custom badge; Art by twitter.com/TheDrakinite")
+				div(class="w3-col s6 w3-padding-small")
+					img(src="images/badges/soniccrew.png" class="w3-image badge-image"
+						alt="Soniccrew128's Badge" title="Badge for Soniccrew128; Art by twitter.com/TheDrakinite")
+				div(class="w3-col s6 w3-padding-small")
+					img(src="images/badges/ani.png" class="w3-image badge-image"
+						alt="Ani's Badge" title="Badge for Ani; Art by twitter.com/TheDrakinite")
+				div(class="w3-col s6 w3-padding-small")
+					img(src="images/badges/shepherds-delight.png" class="w3-image badge-image"
+						alt="Shepherd's Delight's Badge" title="Badge for Shepherd's Delight; Art by twitter.com/TheDrakinite")
+		footer(class="w3-padding-small drak-yellow w3-col w3-margin-top w3-text-dark-gray w3-left-align")
+			p(class="w3-margin-left" style="font-size: 0.9em;") 
+				span Thank you for viewing my page and considering commissioning me. 
+				span I am a student without much money, but I love art, and this is a way for me 
+				span to get extra funds for my trips and school. 
+				span The badges I make are very high quality, with thick lamination, and they can be 
+				span clipped onto a shirt or onto a lanyard. 
+				a(href="https://twitter.com/TheDrakinite/status/1192108247316140033" target="_blank") Here's a picture of what they look like.
+				span  Thank you again!
