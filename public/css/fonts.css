@@ -7,11 +7,13 @@
 .FuturFixedWidth{
 	font-family: "FuturFixedWidth";
 }
+.Futura{
+	font-family: "Futura";
+}
 
 @font-face{
-	font-family: "futura";
-	src: url('/fonts/futur.eot'),
-		url('/fonts/futur.ttf') format("truetype");
+	font-family: "Futura";
+	src: url('/fonts/futur.ttf') format("truetype");
 }
 @font-face{
 	font-family: "TravelingTypewriter";
