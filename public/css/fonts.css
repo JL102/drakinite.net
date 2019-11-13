@@ -11,9 +11,18 @@
 	font-family: "Futura";
 }
 
+.strong{
+	font-weight: bold;
+}
+
+.italic{
+	font-style: italic;
+}
+
 @font-face{
 	font-family: "Futura";
-	src: url('/fonts/futur.ttf') format("truetype");
+	src: url('/fonts/futur.otf') format("opentype"),
+		url('/fonts/futur.ttf') format("truetype");
 }
 @font-face{
 	font-family: "TravelingTypewriter";

@@ -9,7 +9,7 @@ var useragent = require('express-useragent');
 var colors = require('colors');
 
 //Set pug views to render as production
-process.env.NODE_ENV = "production";
+//process.env.NODE_ENV = "production";
 
 //set up both apps
 var drak = express();

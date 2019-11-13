@@ -1,5 +1,16 @@
-extends ../layout
-block content
+doctype html
+html
+	head
+		link(href='/css/w3.css', rel='stylesheet')
+		link(href='/css/style.css', rel='stylesheet')
+		link(href='/css/colors.css', rel='stylesheet')
+		link(href='/css/fonts.css', rel='stylesheet')
+		meta(name="description" content="I'm printing custom name/character badges, for Midwest FurFest 2019 or any other convention! Get yours now!")
+		meta(data-rh="true" property="twitter:image" content="https://drakinite.net/images/badges/twitter-preview.png")
+		meta(data-rh="true" name="image" itemprop="image" content="https://drakinite.net/images/badges/twitter-preview.png")
+		meta(data-rh="true" name="thumbnail" itemprop="thumbnailUrl" content="https://drakinite.net/images/badges/drakinite.png")
+		meta(name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0")
+	body
 	script.
 		console.log("Well hello there! You curious about how I made this site and page? I built it using W3.css, Node, and Pug.")
 	style.
@@ -38,7 +49,7 @@ block content
 			div(class="w3-auto")
 				h3(class="badge-header") 
 					span(class="w3-text-black") FREE PICKUP AT MIDWEST FURFEST 2019 &nbsp;-&nbsp;  
-					span(class="w3-text-dark-gray") $3 FOR US SHIPPING
+					span(class="w3-text-gray") $3 FOR US SHIPPING
 				p
 					span You've come to the right place! My name is Drakinite, and I am printing high-quality character/name badges, 
 					span which are perfect for convention-going.
@@ -58,7 +69,7 @@ block content
 						i Shares are greatly appreciated!
 					div(class="share-button")
 						//-https://publish.twitter.com/?buttonLarge=on&buttonText=Testing!&buttonType=TweetButton&buttonUrl=https%3A%2F%2Fdrakinite.net%2Ftest&buttonVia=TheDrakinite&widget=Button
-						<a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-size="large" data-text="Testing!" data-url="https://drakinite.net/test" data-via="TheDrakinite" data-show-count="false">Tweet</a>
+						<a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-size="large" data-text="Check out Drakinite&#39;s custom OC badges!" data-url="https://drakinite.net/badges" data-via="TheDrakinite" data-hashtags="FurFest" data-show-count="false">Tweet</a>
 						<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 					div(class="share-button share-button-fb")
 						//-https://developers.facebook.com/docs/plugins/share-button/
@@ -76,7 +87,7 @@ block content
 				div(class="drak-yellow drak-text-black w3-padding-small w3-section")
 					div(class="w3-left-align w3-margin-left")
 						h5(class="badge-header")
-							span Bring existing art of your fursona or pony OC and I will turn it into a badge!
+							span Provide existing art of your fursona or pony OC and I will turn it into a badge!
 						p(class="")
 							span Pictured here are examples of this badge type. If you already have a drawing of your own
 							span sona, and you have permission from the artist to use it, then I can make your very own name badge
