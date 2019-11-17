@@ -48,6 +48,9 @@ html
 		.blue-section{
 			background-color: #5962b3;
 		}
+		.gray-section{
+			background-color: #85abad;
+		}
 		.green-section{
 			background-color: #b1fba5;
 		}
@@ -60,16 +63,18 @@ html
 	<div id="fb-root"></div>
 	<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v5.0"></script>
 	div(class="w3-center w3-text-white")
-		div(class="header w3-padding-16")
-			div(class="yellow-banner drak-text-black w3-padding-small w3-section")
+		div(class="w3-col w3-padding-16 blue-section")
+			div(class="drak-yellow w3-padding-small w3-section w3-card")
 				h1(class="badge-header")
 					div(class="w3-show-inline-block w3-margin-right" style="position: relative; top: -54px; height: 0px;")
 						img(src="images/favicon-128x.ico" style="float: right; height: 80px;")
 					strong Want a custom badge of your sona?
+			div(class="w3-hide-medium w3-hide-large")
+				a(href="/images/badges/badges.jpg" target="_blank")
+					img(src="/images/badges/badges.jpg" class="w3-image w3-card" style="max-width: 80%;")
 			//header paragraph
-			div(class="w3-section" style="overflow-y: hidden;")
-				div(class="yellow-banner w3-padding-small")
-					div(class="w3-auto")
+			div(class="w3-section w3-auto w3-col")
+				div(class="drak-yellow w3-padding-small w3-threequarter w3-card")
 						h3(class="badge-header") 
 							span(class="w3-text-black") FREE PICKUP AT MIDWEST FURFEST 2019 &nbsp;-&nbsp;  
 							span(class="w3-text-gray") $3 FOR US SHIPPING
@@ -100,17 +105,17 @@ html
 									<a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fdrakinite.net%2Fbadges&amp;src=sdkpreparse" class="fb-xfbml-parse-ignore">Share
 									</a>
 								</div>
-			//div(class="w3-rest")
-				div(class="header-image")
-				//img(src="/images/badges/badges.jpg" style="max-width: 100%;")
-		div(class="w3-col w3-padding-16 blue-section")
+				div(class="w3-quarter")
+					a(href="/images/badges/badges.jpg" target="_blank")
+						img(src="/images/badges/badges.jpg" class="w3-image w3-card w3-hide-small" style="max-width: 200px;")
+		div(class="w3-col w3-padding-16 gray-section")
 			div(class="w3-mobile w3-half")
 				//$20 banner
-				div(class="drak-yellow drak-text-black w3-padding-small w3-section")
+				div(class="drak-yellow drak-text-black w3-padding-small w3-section w3-card")
 					h1(class="badge-header")
 						strong $20: PROVIDE YOUR OWN ART
 				//$20 info
-				div(class="drak-yellow drak-text-black w3-padding-small w3-section")
+				div(class="drak-yellow drak-text-black w3-padding-small w3-section w3-card")
 					div(class="w3-left-align w3-margin-left")
 						h5(class="badge-header")
 							span Provide existing art of your fursona or pony OC and I will turn it into a badge!
@@ -145,11 +150,11 @@ html
 		div(class="w3-col w3-padding-16 green-section")
 			div(class="w3-mobile w3-half")
 				//$35 banner
-				div(class="drak-yellow drak-text-black w3-padding-small w3-section")
+				div(class="drak-yellow drak-text-black w3-padding-small w3-section w3-card")
 					h1(class="badge-header")
 						strong $35: CUSTOM DRAWING
 				//$20 info
-				div(class="drak-yellow drak-text-black w3-padding-small w3-section")
+				div(class="drak-yellow drak-text-black w3-padding-small w3-section w3-card")
 					div(class="w3-left-align w3-margin-left")
 						h5(class="badge-header")
 							span Provide a reference for your character and I will create a new drawing for your badge!
@@ -180,7 +185,7 @@ html
 				div(class="w3-col s6 w3-padding-small")
 					img(src="images/badges/shepherds-delight.png" class="w3-image badge-image"
 						alt="Shepherd's Delight's Badge" title="Badge for Shepherd's Delight; Art by twitter.com/TheDrakinite")
-		footer(class="w3-padding-small drak-yellow w3-col w3-text-dark-gray w3-left-align")
+		footer(class="w3-padding-small drak-yellow w3-col w3-text-dark-gray w3-left-align w3-card")
 			p(class="w3-margin-left" style="font-size: 0.9em;") 
 				span Thank you for viewing my page and considering commissioning me. 
 				span I am a student without much money, but I love art, and this is a way for me 
