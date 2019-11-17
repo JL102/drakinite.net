@@ -10,7 +10,7 @@ router.get('/badge', async function (req, res, next) {
   res.redirect('/badges');
 })
 
-router.get('/badges', async function (req, res, next) {
+router.get('/badges*', async function (req, res, next) {
   res.render('./drak/badges', { title: 'Get a Custom Sona Badge!' });
 })
 
