@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Allow: /badges
+Disallow: /fsponycon
+Disallow: /playground

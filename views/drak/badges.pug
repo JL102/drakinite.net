@@ -1,16 +1,18 @@
 doctype html
 html
 	head
+		title= (title || "Unknown Page") + " | Drakinite"
+		meta(name="theme-color" content="#1C58A5")
 		link(href='/css/w3.css', rel='stylesheet')
 		link(href='/css/style.css', rel='stylesheet')
-		link(href='/css/colors.css', rel='stylesheet')
-		link(href='/css/fonts.css', rel='stylesheet')
+		link(href='/css/colors.css?v=3', rel='stylesheet')
+		link(href='/css/fonts.css?v=1', rel='stylesheet')
 		meta(name="description" content="I'm printing custom name/character badges, for Midwest FurFest 2019 or any other convention! Get yours now!")
 		meta(data-rh="true" property="twitter:image" content="https://drakinite.net/images/badges/twitter-preview.png")
 		meta(data-rh="true" name="image" itemprop="image" content="https://drakinite.net/images/badges/twitter-preview.png")
 		meta(data-rh="true" name="thumbnail" itemprop="thumbnailUrl" content="https://drakinite.net/images/badges/drakinite.png")
 		meta(name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0")
-	body
+	body(class="badge-bg")
 	script.
 		console.log("Well hello there! You curious about how I made this site and page? I built it using W3.css, Node, and Pug.")
 	style.
@@ -36,8 +38,6 @@ html
 	//Facebook
 	<div id="fb-root"></div>
 	<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v5.0"></script>
-	
-	div(class="badge-bg") &nbsp;
 	div(class="w3-center w3-text-white")
 		div(class="drak-yellow drak-text-black w3-padding-small w3-section")
 			h1(class="badge-header")
@@ -89,8 +89,8 @@ html
 						h5(class="badge-header")
 							span Provide existing art of your fursona or pony OC and I will turn it into a badge!
 						p(class="")
-							span Pictured here are examples of this badge type. If you already have a drawing of your own
-							span sona, and you have permission from the artist to use it, then I can make your very own name badge
+							span Pictured here are examples of this badge type. If you already have a drawing of your own 
+							span sona, and you have permission from the artist to use it, then I can make your very own name badge 
 							span using that drawing. 
 			//$20 tier images
 			div(class="w3-mobile w3-half")
@@ -119,7 +119,7 @@ html
 						h5(class="badge-header")
 							span Provide a reference for your character and I will create a new drawing for your badge!
 						p(class="")
-							span Pictured here are examples of this badge type. If you wish to have a new drawing made of
+							span Pictured here are examples of this badge type. If you wish to have a new drawing made of 
 							span your sona, then send me a reference, and I will make it for you.
 			//$20 tier images
 			div(class="w3-mobile w3-half")
