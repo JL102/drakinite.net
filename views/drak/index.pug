@@ -15,7 +15,7 @@ block content
         div(class="container full-height")
             h1(class="TravelingTypewriter headerTxt") drakinite
             h1(class="Roboto down-arrow") v
-            img(src="/images/spring.jpg" class="bg-image" style="")
+            img(src="/images/spring.jpg" class="bg-image" id="bgImage1")
         div(class="container full-height")
             div#centerExtContent
                 div.extContainer(style="margin: 24px 0px")
@@ -30,7 +30,7 @@ block content
                     a(target="_blank" href="https://drakinite.deviantart.com/" class="w3-block w3-margin-top")
                         img(class="extImg" src="/images/deviantart.png")
                         div(class="FuturFixedWidth extLabel w3-show-inline-block") deviantart
-            img(src="/images/boathorse-1.jpg" class="bg-image" style="")
+            img(src="/images/boathorse-1.jpg" class="bg-image" id="bgImage2")
         div(class="container drak-black w3-text-grey" style="height: 220px")
             div(class="w3-left w3-left-align w3-margin")
                 h4
@@ -45,7 +45,7 @@ block content
                     span .
                 br 
                 h4
-                    span Copyright Drakinite 2018. All rights reserved.
+                    span Copyright Drakinite 2020. All rights reserved.
                 h4
                     span First image by 
                     a(href="https://twitter.com/imnotgalawaille?lang=en") Galawaille
@@ -59,6 +59,8 @@ block content
         var ticking = false,
             previousScrollY = 0,
             numberImages = $('.bg-image').length;
+        
+        $('.bg-image').on('load', doResizeWidth);
         
         $(window).resize(doResizeWidth);
         window.addEventListener('scroll', function(e){
@@ -145,4 +147,4 @@ block content
         requestAnimationFrame(function(){
             scrollImages(400)
         });
-        setTimeout(doResizeWidth, 1);
+        //setTimeout(doResizeWidth, 1);

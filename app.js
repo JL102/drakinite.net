@@ -151,8 +151,8 @@ vhost.use(vhostFunc('drakinite.net', drak)); //serves top level domain via main 
 
 vhost.use(vhostFunc('j.localhost', jordan)); //serves all subdomains via redirect drak
 vhost.use(vhostFunc('localhost', drak)); //serves top level domain via main server drak
-vhost.use(vhostFunc('j.jdesk', jordan)); //serves all subdomains via redirect drak
-vhost.use(vhostFunc('jdesk', drak)); //serves top level domain via main server drak
+vhost.use(vhostFunc('j.jserver', jordan)); //serves all subdomains via redirect drak
+vhost.use(vhostFunc('jserver', drak)); //serves top level domain via main server drak
 
 //Certbot challenge
 var challenge = express();
