@@ -1,0 +1,11 @@
+h1=label
+h3(id="count")=count
+script.
+	var socket = new WebSocket('ws://localhost:80');
+	socket.onopen = () => {
+		// Causes the server to print "Hello"
+		socket.send('Hello');
+	};
+	socket.onmessage = (message) => {
+		document.getElementById('count').innerText = message.data;
+	}
