@@ -5,12 +5,12 @@ head
 	script(src='/js/jquery.min.js')
 	style.
 		#message{
-			font-size: 28px;
+			font-size: 48px;
 			position: relative;
 			top: -50px;
 		}
 body
-	audio(id="audio" src="/sounds/Ding.wav" volume="0.2" autoplay allow="autoplay")
+	audio(id="audio" src="/sounds/Ding.wav" volume="0.2")
 	p(class="Allan" id="message")
 		span #{label}:
 		span(id="count")=count
