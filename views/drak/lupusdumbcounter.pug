@@ -1,11 +1,19 @@
 h1=label
 h3(id="count")=count
 script.
-	var socket = new WebSocket('ws://localhost:80');
-	socket.onopen = () => {
-		// Causes the server to print "Hello"
-		socket.send('Hello');
+	const websocketBase = '#{websocketLink}';
+	
+	var socket80 = new WebSocket(`${websocketBase}:80`);
+	var socket443 = new WebSocket(`${websocketBase}:443`);
+	socket80.onopen = () => {
+		socket80.send('Hello');
 	};
-	socket.onmessage = (message) => {
+	socket80.onmessage = onmessage;
+	socket443.onopen = () => {
+		socket443.send('Hello');
+	};
+	socket443.onmessage = onmessage;
+	
+	function onmessage(message) {
 		document.getElementById('count').innerText = message.data;
 	}

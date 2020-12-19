@@ -19,9 +19,12 @@ router.get('/lupusdumbcounter', async (req, res, next) => {
 	
 	var dumbThingLabel = req.query.dumbThingLabel || 'Wrong Layers';
 	
+	const websocketLink = `ws://${req.hostname}`;
+	
 	res.render('./drak/lupusdumbcounter', {
 		label: dumbThingLabel,
 		count: LDC.getValue(),
+		websocketLink: websocketLink,
 	});
 });
 
