@@ -3,11 +3,11 @@
 	<name>drakinite.net</name>
 	<description>Drakinite&apos;s web server.</description>
 	<executable>C:\Program Files\nodejs\node.exe</executable>
-	<logmode>rotate</logmode>
 	<argument>--harmony</argument>
-	<argument>C:\Users\Drak\AppData\Roaming\npm\node_modules\node-windows\lib\wrapper.js</argument>
+	<argument>C:\Users\Drak\Desktop\drakinite.net\node_modules\node-windows\lib\wrapper.js</argument>
 	<argument>--file</argument>
 	<argument>C:\Users\Drak\Desktop\drakinite.net\www</argument>
+	<argument>--scriptoptions=</argument>
 	<argument>--log</argument>
 	<argument>drakinite.net wrapper</argument>
 	<argument>--grow</argument>
@@ -20,6 +20,12 @@
 	<argument>n</argument>
 	<argument>--stopparentfirst</argument>
 	<argument>undefined</argument>
+	<logmode>rotate</logmode>
 	<stoptimeout>30sec</stoptimeout>
+	<serviceaccount>
+		<domain>JSERVER</domain>
+		<user>LocalSystem</user>
+		<password></password>
+	</serviceaccount>
 	<workingdirectory>C:\Users\Drak\Desktop\drakinite.net</workingdirectory>
 </service>
