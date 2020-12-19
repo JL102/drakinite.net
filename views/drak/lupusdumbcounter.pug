@@ -5,19 +5,31 @@ head
 	script(src='/js/jquery.min.js')
 	style.
 		#message{
+			color: white;
+			text-shadow:
+				-1.414px -1.414px 0 #000,
+				0   -2px 0 #000,
+				1.414px -1.414px 0 #000,
+				2px  0   0 #000,
+				1.414px  1.414px 0 #000,
+				0    2px 0 #000,
+				-1.414px  1.414px 0 #000,
+				-2px  0   0 #000;
 			font-size: 48px;
 			position: relative;
 			top: -70px;
 		}
 body
 	audio(id="audio" src="/sounds/Ding.wav" volume="0.2")
-	p(class="Allan" id="message")
-		span #{label}:
-		span(id="count")=count
+	div(id="message")
+		p(class="Allan")
+			//img(class="yzma" src="/images/dumbstuff/yzma.png")
+			span #{label}:
+			span(id="count")=count
 	script.
 		const websocketBase = '#{websocketLink}';
 		const reconnectTimeout = 300000; //300 seconds = 5 minutes
-		const messageTimeout = 5000;
+		const messageTimeout = 15000;
 		const volume = 0.2;
 		
 		var socket80 = {close: ()=>{}}, socket443 = {close: ()=>{}};
