@@ -1,31 +1,112 @@
-h1=label
-h3(id="count")=count
-script.
-	const websocketBase = '#{websocketLink}';
-	
-	var socket80 = {}, socket443 = {};
-	try {
-		socket80 = new WebSocket(`ws:/${websocketBase}:80`);
-	} 
-	catch(err) {
-		console.log('Failed to start socket80');
-	}
-	try {
-		socket443 = new WebSocket(`wss:/${websocketBase}:443`);
-	}
-	catch(err) {
-		console.log('Failed to start socket443');
-	}
-	
-	socket80.onopen = () => {
-		socket80.send('Hello');
-	};
-	socket80.onmessage = onmessage;
-	socket443.onopen = () => {
-		socket443.send('Hello');
-	};
-	socket443.onmessage = onmessage;
-	
-	function onmessage(message) {
-		document.getElementById('count').innerText = message.data;
-	}
+html
+head
+	link(href='/css/fonts.css?v=1', rel='stylesheet')
+	link(href='/css/w3.css', rel='stylesheet')
+	script(src='/js/jquery.min.js')
+	style.
+		#message{
+			font-size: 28px;
+			position: relative;
+			top: -50px;
+		}
+body
+	audio(id="audio" src="/sounds/Ding.wav" volume="0.2" autoplay allow="autoplay")
+	p(class="Allan" id="message")
+		span #{label}:
+		span(id="count")=count
+	script.
+		const websocketBase = '#{websocketLink}';
+		const reconnectTimeout = 300000; //300 seconds = 5 minutes
+		const messageTimeout = 5000;
+		const volume = 0.2;
+		
+		var socket80 = {close: ()=>{}}, socket443 = {close: ()=>{}};
+		var audio = $('#audio')[0];
+		var message = $('#message');
+		var waitTimeout;
+		audio.volume = 0.2;
+		connect();
+		
+		function animate(newText){
+			//down
+			message.animate({
+				top: '20px'
+			}, 200, 'swing', () => {
+				//bounceback
+				message.animate({
+					top: '0px'
+				}, 200, 'swing', () => {
+					//wait a little bit
+					setTimeout(() => {
+						//update message
+						$('#count').text(newText);
+						//play audio
+						audio.play();
+						//wait for message timeout
+						clearTimeout(waitTimeout);
+						waitTimeout = setTimeout(() => {
+							//bounce
+							message.animate({
+								top: '20px'
+							}, 200, 'swing', () => {
+								//bye
+								message.animate({
+									top: '-50px'
+								}, 200, 'swing', () => {
+									
+								})
+							});
+						}, messageTimeout)
+					}, 100);
+				});
+			});
+		}
+		
+		function connect(){
+			console.log('Connecting...');
+			//close to start off with
+			socket80.close();
+			socket443.close();
+			//reconnect
+			try {
+				socket80 = new WebSocket(`ws:/${websocketBase}:80`);
+				socket80.onopen = () => {
+					socket80.send('Ping');
+					console.log('Successfully connected to :80');
+					//only add onclose event after successful connection
+					socket80.onclose = onclose;
+				};
+				socket80.onmessage = onmessage;
+			} 
+			catch(err) {
+				console.log('Failed to start socket80');
+			}
+			try {
+				socket443 = new WebSocket(`wss:/${websocketBase}:443`);
+				socket443.onopen = () => {
+					socket443.send('Ping');
+					console.log('Successfully connected to :443');
+					//only add onclose event after successful connection
+					socket443.onclose = onclose;
+				};
+				socket443.onmessage = onmessage;
+			}
+			catch(err) {
+				console.log('Failed to start socket443');
+			}
+			
+			//set timer to reconnect
+			setTimeout(() => {
+				console.log('Timed out, reconnecting');
+				connect();
+			}, reconnectTimeout);
+		}
+		
+		
+		function onclose(evt) {
+			console.log(evt);
+		}
+		function onmessage(message) {
+			var amount = parseInt(message.data);
+			animate(amount);
+		}

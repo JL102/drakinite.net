@@ -10,6 +10,9 @@
 .Futura{
 	font-family: "Futura";
 }
+.Allan{
+	font-family: "Allan";
+}
 
 .strong{
 	font-weight: bold;
@@ -18,6 +21,7 @@
 .italic{
 	font-style: italic;
 }
+
 
 @font-face{
 	font-family: "Futura";
@@ -36,4 +40,13 @@
 @font-face{
 	font-family: "FuturFixedWidth";
 	src: url('/fonts/FuturFixedWidth.ttf') format("truetype");
+}
+@font-face{
+	font-family: "Allan";
+	src: url('/fonts/Allan-Regular.ttf');
+}
+@font-face{
+	font-family: "Allan";
+	src: url('/fonts/Allan-Bold.ttf');
+	font-weight: bold;
 }
