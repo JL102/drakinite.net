@@ -27,8 +27,13 @@ router.get('/lupusdumbcounter', async (req, res, next) => {
 
 router.get('/lupusdumbcounter/addpoint', async (req, res, next) => {
 	LDC.add();
-	res.status(200).send();
-})
+	res.send(String(LDC.getValue()));
+});
+
+router.get('/lupusdumbcounter/clear', async (req, res, next) => {
+	LDC.clear();
+	res.send(String(LDC.getValue()));
+});
 
 
 module.exports = router;
