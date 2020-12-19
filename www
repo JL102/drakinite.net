@@ -24,6 +24,7 @@ for(var i = 0; i < process.argv.length; i++){
   } 
 }
 
+process.env.PORT = process.env.PORT || '80';
 var httpPort = normalizePort(process.env.PORT || '80');
 
 //var port = normalizePort(process.env.PORT || '80');
