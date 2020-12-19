@@ -14,7 +14,7 @@
     "express-useragent": "1.0.12",
     "log": "^6.0.0",
     "mongodb": "~3.0.1",
-    "mongoose": "5.2.15",
+    "mongoose": "5.7.5",
     "monk": "~6.0.5",
     "node-dir": "~0.1.17",
     "node-windows": "^1.0.0-beta.5",
