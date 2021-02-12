@@ -120,6 +120,7 @@ var drakIndex = require('./routes/drak/index');
 var jordanIndex = require('./routes/jordan/index');
 var playground = require('./routes/playground');
 var portfolio = require('./routes/jordan/portfolio');
+var sweng = require('./routes/jordan/softwareengineering');
 var fsponycon = require('./routes/drak/fsponycon');
 
 //---Route setup: URLs
@@ -134,6 +135,7 @@ drak.use('/fsponycon', fsponycon);
 jordan.use('/', jordanIndex);
 jordan.use('/playground', playground)
 jordan.use('/portfolio', portfolio)
+jordan.use('/software-engineering', sweng)
 
 //---Error Handlers
 drak.use(useFunctions.catch404);

@@ -5,7 +5,7 @@ head
 	script(src='/js/jquery.min.js')
 	style.
 		#message{
-			color: white;
+			color: #F5D36D;
 			text-shadow:
 				-1.414px -1.414px 0 #000,
 				0   -2px 0 #000,
@@ -15,9 +15,9 @@ head
 				0    2px 0 #000,
 				-1.414px  1.414px 0 #000,
 				-2px  0   0 #000;
-			font-size: 48px;
+			font-size: 90px;
 			position: relative;
-			top: -70px;
+			top: -120px;
 		}
 body
 	audio(id="audio" src="/sounds/Ding.wav" volume="0.2")
@@ -63,7 +63,7 @@ body
 							}, 200, 'swing', () => {
 								//bye
 								message.animate({
-									top: '-70px'
+									top: '-120px'
 								}, 200, 'swing', () => {
 									
 								})
