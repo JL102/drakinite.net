@@ -3,6 +3,7 @@ head
 	link(href='/css/fonts.css?v=1', rel='stylesheet')
 	link(href='/css/w3.css', rel='stylesheet')
 	script(src='/js/jquery.min.js')
+	script(src='/js/reconnecting-websocket.js')
 	style.
 		#message{
 			color: #F5D36D;
@@ -32,7 +33,7 @@ body
 		const messageTimeout = 15000;
 		const volume = 0.2;
 		
-		var socket80 = {close: ()=>{}}, socket443 = {close: ()=>{}};
+		var socket80, socket443;
 		var audio = $('#audio')[0];
 		var message = $('#message');
 		var waitTimeout;
@@ -75,13 +76,15 @@ body
 		}
 		
 		function connect(){
+			var options = {
+				maxReconnectAttempts: 5,
+				timeoutInterval: 2500,
+				reconnectDecay: 1.8,
+			}
 			console.log('Connecting...');
-			//close to start off with
-			socket80.close();
-			socket443.close();
-			//reconnect
+			//connect
 			try {
-				socket80 = new WebSocket(`ws:/${websocketBase}:80`);
+				socket80 = new ReconnectingWebSocket(`ws:/${websocketBase}:80`, null, options);
 				socket80.onopen = () => {
 					socket80.send('Ping');
 					console.log('Successfully connected to :80');
@@ -94,7 +97,7 @@ body
 				console.log('Failed to start socket80');
 			}
 			try {
-				socket443 = new WebSocket(`wss:/${websocketBase}:443`);
+				socket443 = new ReconnectingWebSocket(`wss:/${websocketBase}:443`, null, options);
 				socket443.onopen = () => {
 					socket443.send('Ping');
 					console.log('Successfully connected to :443');
@@ -106,14 +109,7 @@ body
 			catch(err) {
 				console.log('Failed to start socket443');
 			}
-			
-			//set timer to reconnect
-			setTimeout(() => {
-				console.log('Timed out, reconnecting');
-				connect();
-			}, reconnectTimeout);
 		}
-		
 		
 		function onclose(evt) {
 			console.log(evt);
