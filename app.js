@@ -50,7 +50,12 @@ drak.use(useragent.express());
 drak.use(bodyParser.json());
 drak.use(bodyParser.urlencoded({ extended: false }));
 drak.use(cookieParser());
-drak.use(express.static(path.join(__dirname, 'public')));
+drak.use(express.static(path.join(__dirname, 'public'), {
+	setHeaders: function (res, path, stat) {
+		res.set('x-timestamp', Date.now());
+		res.set('Access-Control-Allow-Origin', 'http://arcade.equestriagaming.net');
+	  }	
+}));
 
 //---Jordan required app.use
 jordan.set('views', path.join(__dirname, 'views'));
