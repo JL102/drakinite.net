@@ -33,6 +33,11 @@ router.get('/lupusdumbcounter/addpoint', async (req, res, next) => {
 	res.send(String(LDC.getValue()));
 });
 
+router.get('/lupusdumbcounter/undo', async (req, res, next) => {
+	LDC.subtract();
+	res.send(String(LDC.getValue()));
+});
+
 router.get('/lupusdumbcounter/query', async (req, res, next) => {
 	res.send(String(LDC.getValue()));
 });
