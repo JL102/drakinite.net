@@ -1,25 +1,39 @@
-$(() => {
-	
+var scene = new THREE.Scene();
+var loader = new THREE.TextureLoader();
+var camera = new THREE.PerspectiveCamera( 65, window.innerWidth / window.innerHeight, 0.1, 1000 );
+
+var renderer = new THREE.WebGLRenderer({antialias: true});
+renderer.setSize( window.innerWidth, window.innerHeight );
+document.body.appendChild( renderer.domElement );
+
 //stats module
 if (Stats) {
 	var stats = new Stats();
 	// 0: fps, 1: ms, 2: mb, 3+: custom
-	stats.showPanel( 1 );
+	stats.showPanel( 0 );
 	document.body.appendChild( stats.dom );
 }
-else var stats = {begin: ()=>{}, end: () => {}, update: () => {}}
+else var stats = {begin: ()=>{}, end: () => {}}
+
+const NUM_ALBUMS_VISIBLE = 8;
+const PICTURE_SIZE = 6;
+const TOTAL_GEOMETRIES = 3 + (NUM_ALBUMS_VISIBLE * 2);
+const MIN_FRAME_TIME = 500;
+const FAST_MOVE_THRESHOLD = 50;
+var SPACING = 1.5;
+
+var resizeTicking = false;
+var lastResize = Date.now();
 
 class AlbumArtController{
 	constructor() {
 		this.arts = [];
 		this.paths = [];
 		this.noImage = loader.load('images/no-image.png');
-		this.gradient = loader.load('images/gradient.png');
 		for (var i = 1; i <= 100; i++) {
 			this.paths.push(`images/${i}.jpg`);
 		}
 	}
-	create
 	getArt(index) {
 		let art = this.arts[index];
 		if (art && art.image) {
@@ -33,17 +47,6 @@ class AlbumArtController{
 			return this.noImage;
 		}
 	}
-	cleanUp() {
-		for (let i in this.arts) {
-			let art = this.arts[i];
-			if (art && typeof art.dispose === 'function') {
-				art.dispose();
-			}
-			art = null;
-		}
-		this.arts = null;
-		this.paths = null;
-	}
 }
 
 
@@ -52,26 +55,24 @@ class Controller{
 		this.objects = [];
 		this.position = 0;
 		this.lastPosition = 0;
+		this.velocity = 0;
 		this.lastFrameTime = 0;
 		this.target = 0;
-		this._lastLeftMove = 0;
-		this._lastRightMove = 0;
-		this._lastRaycast = 0;
+		this.lastLeftMove = 0;
+		this.lastRightMove = 0;
 		this.enabled = true;
-		this._mousedOverObject = null;
 		
 		this.fastMoveEnabled = true;
 		
 		this.albumArts = new AlbumArtController();
-		//this.DOMControls = this._createDOMControls();
-		
-		const noImage = this.albumArts.noImage;
+		let noImage = this.albumArts.noImage;
+		let gradient = loader.load('images/gradient.png');
 		
 		this.maxPosition = 100;
 		
 		this.geometry = new THREE.PlaneBufferGeometry(PICTURE_SIZE, PICTURE_SIZE, 1, 1);
-		const gradientMaterial = new THREE.MeshPhongMaterial({
-			map: this.albumArts.gradient, 
+		let gradientMaterial = new THREE.MeshPhongMaterial({
+			map: gradient, 
 			opacity: 1,
 			transparent: true,
 		});
@@ -96,41 +97,33 @@ class Controller{
 				reflectionMesh: reflectionMesh,
 				gradientMesh: gradientMesh,
 				position: pos,
-				isMousedOver: false,
 			}
 			scene.add(mesh);
 			scene.add(reflectionMesh);
 			scene.add(gradientMesh);
 		}
 	}
-	/**
-	 * Animates the scene.
-	 * @returns {boolean} Whether a frame was rendered.
-	 */
 	animate() {
-		if (!this.enabled) return false;
+		if (!this.enabled) return;
+		let st = window.performance.now();
 		
-		const startTime = Date.now();
-		
-		let diff = this.target - this.position;
-		
-		if (diff === 0 && startTime - this.lastFrameTime < MIN_FRAME_TIME) return false;
-		
+		if (this.velocity === 0 && Date.now() - this.lastFrameTime < MIN_FRAME_TIME) return;
 		//manage velocity
 		
-		let velocity = 0;
 		// Move to target, faster when target is farther away
+		let diff = this.target - this.position;
 		if (Math.abs(diff) > 0.001) {
-			velocity = 0.15 * (diff);
+			this.velocity = 0.15 * (diff);
 		}
 		//if we are super close, just snap
 		else{
 			this._snap();
 		}
 		
-		this._setPosition(this.position + velocity);
+		this._setPosition(this.position + this.velocity);
 		
-		//Update each object
+		let a = window.performance.now();
+		
 		for (var i in this.objects) {
 			let object = this.objects[i];
 			
@@ -163,24 +156,17 @@ class Controller{
 			let rotY = ( (p==0) ? 0 : ( (p>0) ? Math.PI/-4 : Math.PI/4 ) ) * q;
 			let posX = p*SPACING + (p>0?1:-1)*Math.min(Math.abs(p),1)*2;
 			let posZ = -1*(Math.abs(q*3)) * r;
-			let showoffRot = (1 - q) * -0.25;									// x rotation for center album
-			let showoffDiff = PICTURE_SIZE * Math.sin(showoffRot);
 			object.mesh.rotation.y = rotY;
-			object.mesh.rotation.x = showoffRot;
 			object.mesh.position.x = posX;
 			object.mesh.position.z = posZ;
 			
 			object.reflectionMesh.rotation.y = rotY;
-			object.reflectionMesh.rotation.x = showoffRot;
 			object.reflectionMesh.position.x = posX;
-			object.reflectionMesh.position.z = posZ - showoffDiff;
-			object.reflectionMesh.position.y = -1*PICTURE_SIZE - showoffDiff * 0.15;
+			object.reflectionMesh.position.z = posZ;
 			
 			object.gradientMesh.rotation.y = rotY;
-			object.gradientMesh.rotation.x = showoffRot;
 			object.gradientMesh.position.x = posX;
-			object.gradientMesh.position.z = posZ - showoffDiff + 0.001;
-			object.gradientMesh.position.y = -1*PICTURE_SIZE - showoffDiff * 0.15;
+			object.gradientMesh.position.z = posZ + 0.001;
 			
 			object.position += this.position - this.lastPosition;
 			//snap
@@ -196,15 +182,19 @@ class Controller{
 			}
 		}
 		
-		const endTime = Date.now();
+		let b = window.performance.now();
+		
+		if (b - st > 2) {
+			console.log(`${a - st}, ${b - a}`);
+		}
+		
 		
 		//finally, set the lastPosition to the position at the end of this frame.
 		this.lastPosition = this.position;
-		this.lastFrameTime = endTime;
-		
-		return true;
+		this.lastFrameTime = Date.now();
 	}
 	_snap() {
+		this.velocity = 0;
 		if (Math.abs(Math.round(this.position) - this.position) != 0) {
 			//console.log(Math.round(this.position) - this.position)
 			console.log('snap');
@@ -215,69 +205,6 @@ class Controller{
 		//this.lastPosition = this.position;
 		this.position = pos;
 	}
-	_updateRaycast() {
-		
-		//Handle raycaster intersects
-		raycaster.setFromCamera( mouse, camera );
-		
-		const intersects = raycaster.intersectObjects(scene.children);
-		
-		if (intersects.length == 0) this._mousedOverObject = null;
-		else {
-			//find the closest intersect
-			let closestDistance = 1000;
-			let closestObject = null;
-			for (let i = 0; i < intersects.length; i++) {
-				let intersect = intersects[i];
-				if (intersect.distance < closestDistance) {
-					closestDistance = intersect.distance;
-					closestObject = intersect.object;
-				}
-			}
-			//find which object it is
-			for (var object of this.objects) {
-				if (object.mesh === closestObject && object.mesh.visible) {
-					object.isMousedOver = true;
-					this._mousedOverObject = object;
-				}
-				else {
-					object.isMousedOver = false;
-				}
-			}
-		}
-	}
-	_createDOMControls() {
-		let barContainer = document.createElement('div');
-		let barParent = document.createElement('div');
-		let bar = document.createElement('div');
-		let barDrag = document.createElement('div');
-		let arrowLeft = document.createElement('div');
-		let arrowRight = document.createElement('div');
-		
-		barContainer.classList.add('threeDView-seekBarContainer');
-		barParent.classList.add('threeDView-seekBarParent');
-		bar.classList.add('threeDView-seekBar');
-		barDrag.classList.add('threeDView-seekBar-drag');
-		arrowLeft.classList.add('threeDView-seekBar-arrowLeft');
-		arrowRight.classList.add('threeDView-seekBar-arrowRight');
-		
-		barContainer.appendChild(barParent);
-		barParent.appendChild(arrowLeft);
-		barParent.appendChild(arrowRight);
-		barParent.appendChild(bar);
-		bar.appendChild(barDrag);
-		
-		document.body.appendChild(barContainer);
-		
-		return {
-			barContainer: barContainer,
-			barParent: barParent,
-			bar: bar,
-			barDrag: barDrag,
-			arrowLeft: arrowLeft,
-			arrowRight: arrowRight,
-		}
-	}
 	moveLeft() {
 		
 		if (this.target > -1*this.maxPosition+1) {
@@ -285,10 +212,10 @@ class Controller{
 			
 			// if the key event is happening fast enough, give it a bigger kick (increment target 2x as much)
 			let now = Date.now();
-			if (now - this._lastLeftMove < FAST_MOVE_THRESHOLD && this.target > -1*this.maxPosition+2 && this.fastMoveEnabled) {
+			if (now - this.lastLeftMove < FAST_MOVE_THRESHOLD && this.target > -1*this.maxPosition+2 && this.fastMoveEnabled) {
 				this.target--;
 			}
-			this._lastLeftMove = now;
+			this.lastLeftMove = now;
 		}
 	}
 	moveRight() {
@@ -298,82 +225,46 @@ class Controller{
 			
 			// if the key event is happening fast enough, give it a bigger kick (increment target 2x as much)
 			let now = Date.now();
-			if (now - this._lastRightMove < FAST_MOVE_THRESHOLD && this.target < 1 && this.fastMoveEnabled) {
+			if (now - this.lastRightMove < FAST_MOVE_THRESHOLD && this.target < 1 && this.fastMoveEnabled) {
 				this.target++;
 			}
-			this._lastRightMove = now;
+			this.lastRightMove = now;
 		}
-	}
-	onMouseDown(e) {
-		if (e.which === 1) {
-			this._updateRaycast();
-			//Set the target to the clicked object
-			if (this._mousedOverObject && this._mousedOverObject.mesh.visible) {
-				this.target = Math.round(this.position - this._mousedOverObject.position);
+		return;
+		// Only move right if position < maximum
+		if (Math.floor(-1*this.position) > 0-(1*this.velocity<-0.001)) {
+			//Jump to *just* past the next position
+			let diff = 1 - (this.position - Math.floor(this.position));
+			//console.log(diff);
+			if (diff > -0.5 && diff < 0.9 && this.velocity > -0.0001) {
+				this._setPosition(this.position + diff + 0.001);
 			}
+			this.velocity = 0.05;
 		}
 	}
 	cleanUp() {
 		console.log(this);
-		
-		for (var object of this.objects) {
-			scene.remove(object.gradientMesh);
-			scene.remove(object.mesh);
-			scene.remove(object.reflectionMesh);
-			disposeNode(object.gradientMesh);
-			disposeNode(object.mesh);
-			disposeNode(object.reflectionMesh);
-		}
-		
-		this.albumArts.cleanUp();
-		
-		scene.remove(light);
-		light.dispose();
-		scene.remove(ambientLight);
-		ambientLight.dispose();
-		
 		this.enabled = false;
 		
 		document.body.removeChild(renderer.domElement);
 		scene = null;
 		renderer = null;
-		camera = null;
+		for (var object of this.objects) {
+			//disposeHierarchy(object, disposeNode);
+		}
+		//disposeHierarchy(scene, disposeNode);
 		this.albumArts = null;
 	}
 }
 
-stats.begin();
+var controller = new Controller();
 
-window.scene = new THREE.Scene();
-window.loader = new THREE.TextureLoader();
-window.camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.1, 1000 );
-
-window.mouse = new THREE.Vector2();
-window.raycaster = new THREE.Raycaster();
+// const worldAxis = new THREE.AxesHelper(3);
+// scene.add(worldAxis);
 
 
-window.renderer = new THREE.WebGLRenderer({antialias: true});
-renderer.setSize( window.innerWidth, window.innerHeight );
-document.body.appendChild( renderer.domElement );
-
-const NUM_ALBUMS_VISIBLE = 8;
-const PICTURE_SIZE = 6;
-const TOTAL_GEOMETRIES = 3 + (NUM_ALBUMS_VISIBLE * 2);
-const SCROLL_SPEED = 0.2;
-const RAYCAST_UPDATE_TIME = 150;						// Raycasting is non-trivial, so we shouldn't do it on every frame.
-const FAST_MOVE_THRESHOLD = 50;
-const MIN_FRAME_TIME = 150;
-var SPACING = 1.5;
-
-var resizeTicking = false;
-
-
-window.controller = new Controller();
-
-// const controls = new OrbitControls( camera, renderer.domElement );
-
-camera.position.y = 3.8;
-camera.position.z = 9.5;
+camera.position.z = 10;
+camera.position.y = 0;
 camera.lookAt(0,0,0);
 
 const light = new THREE.PointLight( 0xffffff, 2, 14, 1.5 );
@@ -383,36 +274,29 @@ scene.add( light );
 const ambientLight = new THREE.AmbientLight( 0x484848 ); // soft white light
 scene.add( ambientLight );
 
-animate();
-
-window.addEventListener('keydown', handleKeypress);
-window.addEventListener('mousemove', onMouseMove, false);
-window.addEventListener('resize', onWindowResize );
-renderer.domElement.addEventListener('mousedown', (e) => {controller.onMouseDown(e);});
-
-stats.update();
 
 function animate() {
 	if (renderer) {
 		stats.begin();
-		// stats.update();
 		
-		let didRender = controller.animate();
+		controller.animate();
 		
 		let st = window.performance.now();
-		if (didRender) renderer.render( scene, camera );
+		renderer.render( scene, camera );
 		let end = window.performance.now();
 		
 		if (end - st > 17) {
 			console.log(end - st);
 		}
 		
-		if (window.controls) controls.update();
-		
 		stats.end();
 		requestAnimationFrame( animate );
 	}
 }
+animate();
+
+document.body.addEventListener('keydown', handleKeypress);
+window.addEventListener( 'resize', onWindowResize );
 
 function handleKeypress(e) {
 	if (e.key === 'ArrowLeft') {
@@ -441,15 +325,6 @@ function onWindowResize() {
 	}
 }
 
-
-function onMouseMove( e ) {
-
-	// calculate mouse position in normalized device coordinates
-	// (-1 to +1) for both components
-
-	mouse.x = ( e.clientX / window.innerWidth ) * 2 - 1;
-	mouse.y = - ( e.clientY / window.innerHeight ) * 2 + 1;
-}
 
 function disposeNode (node)
 {
@@ -503,6 +378,14 @@ function disposeNode (node)
             }
         }
     }
-}
+}   // disposeNode
 
-});
+function disposeHierarchy (node, callback)
+{
+    for (var i = node.children.length - 1; i >= 0; i--)
+    {
+        var child = node.children[i];
+        disposeHierarchy (child, callback);
+        callback (child);
+    }
+}

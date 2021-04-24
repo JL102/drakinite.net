@@ -4,10 +4,60 @@
 		<title>3D Album View</title>
 		<style>
 			body { margin: 0; overflow: hidden;}
+			.threeDView-seekBarContainer{
+				position: fixed;
+				bottom: 32px;
+				left: 0px;
+				right: 0px;
+				width: 100%;
+				z-index: 10;
+			}
+			.threeDView-seekBarParent{
+				position: relative;
+				margin: auto;
+				width: 80%;
+				max-width: 750px;
+				height: 20px;
+				z-index: 1000;
+				background-color: rgb(190, 190, 190);
+			}
+			.threeDView-seekBar-arrowLeft,.threeDView-seekBar-arrowRight{
+				position: absolute;
+				height: 20px;
+				width: 20px;
+				background-color: #555;
+			}
+			.threeDView-seekBar-arrowLeft{
+				left: 0px;
+				color: white;
+			}
+			.threeDView-seekBar-arrowRight{
+				right: 0px;
+			}
+			.threeDView-seekBar{
+				height: 20px;
+				position: absolute;
+				left: 20px;
+				right: 20px;
+				background-color: rgb(255, 255, 255);
+			}
+			.threeDView-seekBar-drag{
+				position: absolute;
+				left: 2px;
+				top: 1px;
+				height: 18px;
+				width: 40px;
+				background-color: #222;
+			}
 		</style>
 	</head>
 	<body>
-		<script src="three.min.js"></script>
+		<script type="module">
+			import { OrbitControls } from 'https://threejs.org/examples/jsm/controls/OrbitControls.js';
+			window.OrbitControls = OrbitControls;
+		</script>
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+		<script src="three.js"></script>
 		<script src="stats.min.js"></script>
 		<script src="main.js"></script>
 	</body>
