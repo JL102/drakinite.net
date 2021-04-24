@@ -19,5 +19,11 @@ svc.on('install', function(){
 	svc.start();
 });
 
-// Uninstall the service.
-svc.uninstall();
+try {
+	// Uninstall the service.
+	svc.uninstall();
+}
+catch (err) {
+	console.error(err);
+	svc.install();
+}
