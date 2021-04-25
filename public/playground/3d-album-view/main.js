@@ -14,7 +14,7 @@ class AlbumArtController{
 		this.arts = [];
 		this.paths = [];
 		this.noImage = loader.load('images/no-image.png');
-		this.gradient = loader.load('images/gradient.png');
+		this.gradient = loader.load('images/gradient2.png');
 		for (var i = 1; i <= 100; i++) {
 			this.paths.push(`images/${i}.jpg`);
 		}
@@ -84,11 +84,16 @@ class Controller{
 			//Reflection mesh
 			let reflectionMesh = new THREE.Mesh(this.geometry, material);
 			reflectionMesh.position.y = -1 * PICTURE_SIZE;
-			reflectionMesh.rotation.z = -1 * Math.PI;
-			reflectionMesh.scale.x = -1;
+			//reflectionMesh.rotation.z = -1 * Math.PI;
+			reflectionMesh.scale.y = -1;
 			//Gradient (for reflection)
 			let gradientMesh = new THREE.Mesh(this.geometry, gradientMaterial);
 			gradientMesh.position.y = -1 * PICTURE_SIZE;
+			
+			let order = 'XYZ';
+			mesh.rotation.reorder(order);
+			reflectionMesh.rotation.reorder(order);
+			gradientMesh.rotation.reorder(order);
 			
 			let pos = i - NUM_ALBUMS_VISIBLE - 1;
 			this.objects[i] = {
@@ -121,7 +126,7 @@ class Controller{
 		let velocity = 0;
 		// Move to target, faster when target is farther away
 		if (Math.abs(diff) > 0.001) {
-			velocity = 0.15 * (diff);
+			velocity = SCROLL_SPEED * (diff);
 		}
 		//if we are super close, just snap
 		else{
@@ -165,22 +170,28 @@ class Controller{
 			let posZ = -1*(Math.abs(q*3)) * r;
 			let showoffRot = (1 - q) * -0.25;									// x rotation for center album
 			let showoffDiff = PICTURE_SIZE * Math.sin(showoffRot);
+			let rotZ = showoffRot * rotY * 0.5; 								// to correct for double rotation
+			
+			//temp
+			object.q = q; object.r = r;
+			
 			object.mesh.rotation.y = rotY;
 			object.mesh.rotation.x = showoffRot;
+			object.mesh.rotation.z = -1 * rotZ;
 			object.mesh.position.x = posX;
 			object.mesh.position.z = posZ;
 			
 			object.reflectionMesh.rotation.y = rotY;
-			object.reflectionMesh.rotation.x = showoffRot;
+			object.reflectionMesh.rotation.z = rotZ;
 			object.reflectionMesh.position.x = posX;
-			object.reflectionMesh.position.z = posZ - showoffDiff;
-			object.reflectionMesh.position.y = -1*PICTURE_SIZE - showoffDiff * 0.15;
+			object.reflectionMesh.position.z = posZ - showoffDiff/2;
+			object.reflectionMesh.position.y = -1*PICTURE_SIZE - showoffDiff/2 * 0.13 * (1 - q);
 			
 			object.gradientMesh.rotation.y = rotY;
-			object.gradientMesh.rotation.x = showoffRot;
+			object.gradientMesh.rotation.z = rotZ;
 			object.gradientMesh.position.x = posX;
-			object.gradientMesh.position.z = posZ - showoffDiff + 0.001;
-			object.gradientMesh.position.y = -1*PICTURE_SIZE - showoffDiff * 0.15;
+			object.gradientMesh.position.z = posZ - showoffDiff/2 + 0.001;
+			object.gradientMesh.position.y = -1*PICTURE_SIZE - showoffDiff/2 * 0.13 * (1 - q);
 			
 			object.position += this.position - this.lastPosition;
 			//snap
@@ -359,7 +370,7 @@ document.body.appendChild( renderer.domElement );
 const NUM_ALBUMS_VISIBLE = 8;
 const PICTURE_SIZE = 6;
 const TOTAL_GEOMETRIES = 3 + (NUM_ALBUMS_VISIBLE * 2);
-const SCROLL_SPEED = 0.2;
+var   SCROLL_SPEED = 0.175;
 const RAYCAST_UPDATE_TIME = 150;						// Raycasting is non-trivial, so we shouldn't do it on every frame.
 const FAST_MOVE_THRESHOLD = 50;
 const MIN_FRAME_TIME = 150;
@@ -400,7 +411,7 @@ function animate() {
 		let didRender = controller.animate();
 		
 		let st = window.performance.now();
-		if (didRender) renderer.render( scene, camera );
+		if (didRender||true) renderer.render( scene, camera );
 		let end = window.performance.now();
 		
 		if (end - st > 17) {
