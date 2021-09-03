@@ -8,13 +8,15 @@ var bodyParser = require('body-parser');
 var useragent = require('express-useragent');
 var colors = require('colors');
 
+require('dotenv').config();
+
 //Set pug views to render as production
 //process.env.NODE_ENV = "production";
 
 //set up both apps
-var drak = express();
-var jordan = express();
-var useFunctions = require('./useFunctions');
+const drak = express();
+const jordan = express();
+const useFunctions = require('./useFunctions');
 
 /* Checks process arguments.
 	If -dev or --dev, isDev = true.
@@ -27,22 +29,28 @@ for(var i in process.argv){
 	switch(process.argv[i]){
 		case "-dev":
 		case "--dev":
-			console.log("Dev");
+			useFunctions.log("Dev");
 			drak.isDev = jordan.isDev = true;
 			break;
 		case "-d":
 		case "--d":
-			console.log("Dev");
+			useFunctions.log("Dev");
 			drak.isDev = jordan.isDev = true;
 		case "-debug":
 		case "--debug":
-			console.log("Debug");
+			useFunctions.log("Debug");
 			drak.debug = jordan.debug = true;
 			break;
 	}
 }
+drak.use((req, res, next) => {
+	res.set('Access-Control-Allow-Origin', '*');
+	next();
+})
 
 //---Drak required app.use
+
+
 drak.set('views', path.join(__dirname, 'views'));
 drak.set('view engine', 'pug');
 drak.use(favicon(path.join(__dirname, 'public', 'images/favicon-32x.ico')));
@@ -52,8 +60,20 @@ drak.use(bodyParser.urlencoded({ extended: false }));
 drak.use(cookieParser());
 drak.use(express.static(path.join(__dirname, 'public'), {
 	setHeaders: function (res, path, stat) {
+		//var origin = res.req.headers.origin;
+		//useFunctions.log(origin);
 		res.set('x-timestamp', Date.now());
-		res.set('Access-Control-Allow-Origin', 'http://arcade.equestriagaming.net');
+		// res.set('Access-Control-Allow-Origin', 'http://arcade.equestriagaming.net');
+		res.set('Access-Control-Allow-Origin', '*');
+		
+		// Long cache age for SWF files (don't wanna have to upload over and over)
+		if (path.endsWith('.swf')) {
+			res.set('Cache-control', 'public, max-age=604800')
+		}
+		// 5 hours for any other item
+		else {
+			res.set('Cache-control', 'public, max-age=18000')
+		}
 	  }	
 }));
 
@@ -121,17 +141,20 @@ jordan.locals.navItems = [
 ];
 
 //Route setup: Require
-var drakIndex = require('./routes/drak/index');
-var jordanIndex = require('./routes/jordan/index');
-var playground = require('./routes/playground');
-var portfolio = require('./routes/jordan/portfolio');
-var sweng = require('./routes/jordan/softwareengineering');
-var fsponycon = require('./routes/drak/fsponycon');
+const drakIndex = require('./routes/drak/index');
+const drakUpload = require('./routes/drak/upload');
+const jordanIndex = require('./routes/jordan/index');
+const playground = require('./routes/playground');
+const portfolio = require('./routes/jordan/portfolio');
+const sweng = require('./routes/jordan/softwareengineering');
+const fsponycon = require('./routes/drak/fsponycon');
+const { logger } = require('./useFunctions');
 
 //---Route setup: URLs
 //drak
 drak.use('/', drakIndex);
 drak.use('/playground', playground);
+// drak.use('/upload', drakUpload);
 
 //Old website for fsponycon
 drak.use('/fsponycon', fsponycon);
@@ -152,9 +175,26 @@ jordan.use(useFunctions.serveError);
 
 var vhost = module.exports = express();
 
+// static file uploads
+var files = express();
+files.use(express.static(path.join(__dirname, 'public', 'uploads'), {
+	setHeaders: function (res, path, stat) {
+		res.set('x-timestamp', Date.now());
+		res.set('Access-Control-Allow-Origin', '*');
+	  }
+}));
+files.use((req, res) => { res.sendStatus(404); });
+
+
+vhost.use((req, res, next) => {
+	res.set('Access-Control-Allow-Origin', '*');
+	next();
+});
 
 vhost.use(vhostFunc('jordanle.es', jordan)); //serves all subdomains via redirect drak
 vhost.use(vhostFunc('drakinite.net', drak)); //serves top level domain via main server drak
+vhost.use(vhostFunc('files.drakinite.net', files)); //serves top level domain via main server drak
+vhost.use(vhostFunc('upload.drakinite.net', drakUpload));
 
 vhost.use(vhostFunc('j.localhost', jordan)); //serves all subdomains via redirect drak
 vhost.use(vhostFunc('localhost', drak)); //serves top level domain via main server drak
