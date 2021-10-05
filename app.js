@@ -192,6 +192,7 @@ vhost.use((req, res, next) => {
 });
 
 vhost.use(vhostFunc('jordanle.es', jordan)); //serves all subdomains via redirect drak
+vhost.use(vhostFunc('www.jordanle.es', jordan));
 vhost.use(vhostFunc('drakinite.net', drak)); //serves top level domain via main server drak
 vhost.use(vhostFunc('files.drakinite.net', files)); //serves top level domain via main server drak
 vhost.use(vhostFunc('upload.drakinite.net', drakUpload));
@@ -200,6 +201,18 @@ vhost.use(vhostFunc('j.localhost', jordan)); //serves all subdomains via redirec
 vhost.use(vhostFunc('localhost', drak)); //serves top level domain via main server drak
 vhost.use(vhostFunc('j.jserver', jordan)); //serves all subdomains via redirect drak
 vhost.use(vhostFunc('jserver', drak)); //serves top level domain via main server drak
+
+// temporary, for unlockedcraft traffic
+const ulc = express();
+ulc.set('view engine', 'pug');
+ulc.use(favicon(path.resolve('D:\\OneDrive\\Projects\\UnlockedCraft\\server-icon.png')));
+ulc.use(express.static(path.join(__dirname, 'public')));
+ulc.get('/', (req, res) => {
+	res.render('./unlockedcraft-temp', {
+		title: 'UnlockedCraft',
+	});
+});
+vhost.use(vhostFunc('unlockedcraft.com', ulc));
 
 //Certbot challenge
 var challenge = express();

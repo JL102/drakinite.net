@@ -14,5 +14,7 @@ html
 	body
 		- if(layoutType == "drak")
 			include drak/.bodyLayout
-		- if(layoutType == "jordan")
+		- else if(layoutType == "jordan")
 			include jordan/.bodyLayout
+		- else 
+			block content

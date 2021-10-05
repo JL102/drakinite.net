@@ -1,27 +1,20 @@
-.TravelingTypewriter{
-	font-family: "TravelingTypewriter";
-}
-.Roboto{
-	font-family: "Roboto-Thin";
-}
-.FuturFixedWidth{
-	font-family: "FuturFixedWidth";
-}
-.Futura{
-	font-family: "Futura";
-}
-.Allan{
-	font-family: "Allan";
-}
+.TravelingTypewriter{font-family: "TravelingTypewriter";}
+.Roboto{font-family: "Roboto-Thin";}
+.FuturFixedWidth{font-family: "FuturFixedWidth";}
+.Futura{font-family: "Futura";}
+.Allan{font-family: "Allan";}
+.Milford{font-family: "MilfordCondensedBold";}
 
-.strong{
-	font-weight: bold;
-}
+.strong{font-weight: bold;}
+.italic{font-style: italic;}
+.allcaps{text-transform: uppercase;}
 
-.italic{
-	font-style: italic;
-}
-
+@font-face{
+	font-family: "MilfordCondensedBold";
+	src: url('/fonts/MILFCD_B.otf') format("opentype"),
+		url('/fonts/MILFCD_B.eot'),
+		url('/fonts/MILFCD_B.ttf') format("truetype");
+} 
 
 @font-face{
 	font-family: "Futura";
