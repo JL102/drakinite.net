@@ -62,6 +62,12 @@ block content
 			#myprojects #pg-image{
 				max-width: 45%!important;
 			}
+			.pg-button {
+				font-size: 13px!important;
+				padding-top: 12px;
+				padding-bottom: 12px;
+			}
+			/*
 			#myprojects div:not(.w3-btn) {
 				padding: 0!important;
 			}
@@ -73,6 +79,7 @@ block content
 				margin-top: 0!important;
 				margin-bottom: 0!important;
 			}
+			*/
 			#myprojects .w3-ul li{
 				padding: 4px 4px;
 			}
@@ -128,10 +135,10 @@ block content
 							li • Immersive art gallery, searchable with tags
 							li • Support for the visually impaired
 							li • Site owners can edit content whenever they wish
-					div(class="w3-half w3-padding")
+					div(class="w3-padding")
 						a(href="https://www.playinggods.net" target="_blank" class="no-underline")
 							div(class="pg-button pg-text") CHECK OUT THE SITE
-					div(class="w3-half w3-padding")
+					div(class="w3-padding")
 						a(href="#" target="_blank" class="no-underline" class="hireme")
 							div(class="pg-button pg-text") WANT TO HIRE ME?
 			//- Scoutradioz
@@ -164,7 +171,7 @@ block content
 							div(class="sr-button w3-btn") Want to use Scoutradioz? 
 				div(id="sr-city")
 					img(src="/images/work-examples/scoutradioz-city-light.png" style="width: 100%;")
-			img(src="/images/work-examples/scoutradioz-playinggods.png" class="bg-image" data-image-1)
+			img(src="/images/work-examples/scoutradioz-playinggods.png" class="bg-image" data-image-1 id="workImg")
 		div(class="container full-height")
 			div#centerExtContent
 				div.extContainer(style="margin: 24px 0px")
@@ -212,6 +219,10 @@ block content
 			numberImages = 3, //$('.bg-image').length;
 			footerHeight = 220;
 		
+		// for horizontal/vertical scoutradioz/PG BG img
+		var horizontalWorkSrc = "/images/work-examples/scoutradioz-playinggods.png";
+		var verticalWorkSrc = "/images/work-examples/scoutradioz-playinggods-vertical.png";
+		
 		$('.bg-image').on('load', doResizeWidth);
 		
 		$('.hireme').attr('href', atob('bWFpbHRvOmRyYWtpbml0ZUBtYWlsYm94Lm9yZw=='));
@@ -248,8 +259,12 @@ block content
 			var images = $('.bg-image');
 			//height
 			$('.full-height').css('height', windowHeight);
-			//left
+			if (windowWidth <= 600) {
+				$('#myprojects').css('height', windowHeight * 1.5);
+				console.log('wee')
+			}
 			
+			//left
 			for(var i = 0; i < images.length; i++){
 				var image = $(images[i]);
 				
@@ -275,6 +290,20 @@ block content
 				image.css('left', diffX);
 				//image.css('top', diffY);
 				scrollImages(window.scrollY);
+			}
+			
+			// PG and SR BG image
+			if (windowWidth <= 600) {
+				if ($('#workImg').attr('src') != verticalWorkSrc) {
+					$('#workImg').attr('src', verticalWorkSrc);
+					console.log('Switching to vert')
+				}
+			}
+			else {
+				if ($('#workImg').attr('src') != horizontalWorkSrc) {
+					$('#workImg').attr('src', horizontalWorkSrc);
+					console.log('Switching to horiz')
+				}
 			}
 		}
 		function scrollImages(scrollY){
