@@ -260,8 +260,7 @@ block content
 			//height
 			$('.full-height').css('height', windowHeight);
 			if (windowWidth <= 600) {
-				$('#myprojects').css('height', windowHeight * 1.5);
-				console.log('wee')
+				$('#myprojects').css('height', windowHeight * 1.65);
 			}
 			
 			//left
@@ -296,13 +295,11 @@ block content
 			if (windowWidth <= 600) {
 				if ($('#workImg').attr('src') != verticalWorkSrc) {
 					$('#workImg').attr('src', verticalWorkSrc);
-					console.log('Switching to vert')
 				}
 			}
 			else {
 				if ($('#workImg').attr('src') != horizontalWorkSrc) {
 					$('#workImg').attr('src', horizontalWorkSrc);
-					console.log('Switching to horiz')
 				}
 			}
 		}
