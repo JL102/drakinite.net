@@ -37,8 +37,23 @@ router.get('/', function(req, res, next) {
 			continue;
 		}
 		
+		function removeFromList() {
+			//Splice arrays to remove item from list
+			data.splice(i, 1);
+			titles.splice(i, 1);
+			images.splice(i, 1);
+			descriptions.splice(i, 1);
+			//must de-iterate i because objects move left in array
+			i--;
+		}
+		
+		if (!data2.includes('info.json')) {
+			removeFromList();
+		}
+		
 		//loop through subdirectories
 		for(var j = 0; j < data2.length; j++){
+			
 			
 			//look for info.json
 			if(data2[j] == "info.json"){
@@ -50,14 +65,7 @@ router.get('/', function(req, res, next) {
 					var infoJson = JSON.parse(info);
 
 					if(infoJson.ignore == true){
-						
-						//Splice arrays to remove item from list
-						data.splice(i, 1);
-						titles.splice(i, 1);
-						images.splice(i, 1);
-						descriptions.splice(i, 1);
-						//must de-iterate i because objects move left in array
-						i--;
+						removeFromList();
 					}else{
 						//if not ignore, set title
 						if(infoJson.title){
@@ -73,10 +81,7 @@ router.get('/', function(req, res, next) {
 					}
 				}else{
 					//Splice everything if there's no info.json
-					data.splice(i, 1);
-					titles.splice(i, 1);
-					images.splice(i, 1);
-					descriptions.splice(i, 1);
+					removeFromList();
 				}
 			}
 		}

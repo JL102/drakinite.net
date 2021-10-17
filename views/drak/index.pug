@@ -1,150 +1,318 @@
 extends ../layout
 block content
-    style.
-        @media(max-width: 600px){
-            html { 
-                zoom: 0.8; 
-                -moz-transform: scale(0.8); 
-                -moz-transform-origin: 0 0;
-                font-size: 0.8em;
-            } 
-        }
-        
-    link(rel="stylesheet" type="text/css" href="css/drakinite-ui.css")
-    div(class="w3-center w3-text-white")
-        div(class="container full-height")
-            h1(class="TravelingTypewriter headerTxt") drakinite
-            h1(class="Roboto down-arrow") v
-            img(src="/images/spring.jpg" class="bg-image" id="bgImage1")
-        div(class="container full-height")
-            div#centerExtContent
-                div.extContainer(style="margin: 24px 0px")
-                    a(target="_blank" href="https://twitter.com/TheDrakinite" class="w3-block w3-margin-top")
-                        img(class="extImg" src="/images/twitter-300px.png")
-                        div(class="FuturFixedWidth extLabel w3-show-inline-block") twitter
-                div.extContainer(style="margin: 24px 0px")
-                    a(target="_blank" href="https://www.youtube.com/c/DrakiniteOfficial" class="w3-block w3-margin-top")
-                        img(class="extImg" src="/images/youtube-300px.png")
-                        div(class="FuturFixedWidth extLabel w3-show-inline-block") youtube
-                div.extContainer(style="margin: 24px 0px")
-                    a(target="_blank" href="https://drakinite.deviantart.com/" class="w3-block w3-margin-top")
-                        img(class="extImg" src="/images/deviantart.png")
-                        div(class="FuturFixedWidth extLabel w3-show-inline-block") deviantart
-            img(src="/images/boathorse-1.jpg" class="bg-image" id="bgImage2")
-        div(class="container drak-black w3-text-grey" style="height: 220px")
-            div(class="w3-left w3-left-align w3-margin")
-                h4
-                    span Made using 
-                    a(href="https://nodejs.org/en/") node.js
-                    span ,  
-                    a(href="https://expressjs.com/") express
-                    span , 
-                    a(href="https://www.w3schools.com/w3css/") w3.css
-                    span , and 
-                    a(href="https://jquery.com/") JQuery
-                    span .
-                br 
-                h4
-                    span Copyright Drakinite 2020. All rights reserved.
-                h4
-                    span First image by 
-                    a(href="https://twitter.com/imnotgalawaille?lang=en") Galawaille
-                    span  | Second image by 
-                    a(href="https://twitter.com/ashieboop?lang=en") Ashie
-                h4
-                    a(href="mailto:contact@jordanle.es") Contact
-        //-div(class="container")
-            img(src="/images/placeholder-blur.jpg" class="bg-image" style="")
-    script.
-        var ticking = false,
-            previousScrollY = 0,
-            numberImages = $('.bg-image').length;
-        
-        $('.bg-image').on('load', doResizeWidth);
-        
-        $(window).resize(doResizeWidth);
-        window.addEventListener('scroll', function(e){
-            previousScrollY = window.scrollY;
-            
-            if(!ticking){
-                requestAnimationFrame(function(){
-                    scrollImages(previousScrollY);
-                    ticking = false;
-                })
-            }
-            ticking = true;
-        });
-        $(".down-arrow").click(function(){
-           $('html, body').animate({
-                scrollTop: ($($('.container')[1]).offset().top)
-            },750);            
-        })
-        
-        function doResizeWidth(){
-            
-            var content = $("#centerExtContent");
-            var windowHeight = $(window).innerHeight();
-            var diff = (windowHeight - content.height())/2 - 24;
-            
-            content.css('position', 'relative');
-            content.css('top', diff);
-            
-            var windowHeight = $(window).innerHeight();
-            var windowWidth = $(window).innerWidth();
-            var images = $('.bg-image');
-            //height
-            $('.full-height').css('height', windowHeight);
-            //left
-            
-            for(var i = 0; i < images.length; i++){
-                var image = $(images[i]);
-                
-                var width = image.width();
-                var height = image.height();
-                
-                var ratio = width/height;
-                var windowRatio = windowWidth / windowHeight;
-                
-                if(ratio > windowRatio){
-                    image.css('width', 'auto');
-                    image.css('height', '130%');
-                }else{
-                    image.css('width', windowWidth);
-                    image.css('height', 'auto');
-                }
-                width = parseInt(image.css('width'));
-                height = parseInt(image.css('height'));
-                
-                var diffX = -0.5* (width - windowWidth);
-                //var diffY = -0.5* (height - windowHeight);
-                
-                image.css('left', diffX);
-                //image.css('top', diffY);
-                scrollImages(window.scrollY);
-            }
-        }
-        function scrollImages(scrollY){
-            var bodyHeight = document.body.clientHeight * (numberImages-1)/numberImages;
-            var percScroll = 1 - scrollY / bodyHeight;
-            //console.log(percScroll);
-            
-            for(var i = 0; i < numberImages; i++){
-                var image = $($('.bg-image')[i]);
-                
-                var height = image.height();
-                var windowHeight = $(window).innerHeight();
-                
-                //console.log(height - windowHeight);
-                
-                var diffY = - 0.5*percScroll * (height - windowHeight);
-                //console.log(diffY);
-                image.css('top', diffY);
-            }
-            
-        }
-        
-        requestAnimationFrame(doResizeWidth);
-        requestAnimationFrame(function(){
-            scrollImages(400)
-        });
-        //setTimeout(doResizeWidth, 1);
+	style.
+		.halfImg{
+			overflow-x: hidden;
+			position: relative;
+		}
+		.pg-header{
+			color: #ffee99;
+		}
+		.pg-text{
+			font-size: 1.1em;
+			color: #ffe253;
+		}
+		.pg-text .w3-ul li{
+			border-bottom-color: #fffde63d;
+		}
+		.pg-button{
+			width: 100%;
+			margin-top: 8px;
+			padding-top: 18px;
+			padding-bottom: 18px;
+			border: 2px solid #ffe253;
+			transition: all 0.2s ease-in-out;
+			font-size: 15px!important;
+		}
+		.pg-button:hover{
+			color: white!important;
+			background-color: #ffd5004d!important;
+			border-color: white;
+		}
+		.sr-text{
+			font-family: "Segoe UI", Arial, sans-serif;
+			color: white;
+		}
+		.sr-text .w3-ul li{
+			border-bottom-color: #dddddd50;
+		}
+		.sr-button {
+			background-color: #FAB74F;
+			color: black;
+			min-width: 100px;
+			margin: 15px 8px 0px 8px;
+			border-radius: 12px;
+			transition: 0.2s;
+			box-shadow: none!important;
+		}
+		.sr-button:hover {
+			color: rgb(22, 21, 20)!important;
+			background-color: #ffffff!important;
+		}
+		#sr-city{
+			position: absolute;
+			bottom: 0px;
+			left: 50%;
+			right: 0px;
+		}
+		@media(max-width: 600px) {
+			#myprojects #sr-image{
+				max-width: 65%!important;
+			}
+			#myprojects #pg-image{
+				max-width: 45%!important;
+			}
+			#myprojects div:not(.w3-btn) {
+				padding: 0!important;
+			}
+			#myprojects .w3-btn {
+				margin-top: 6px!important;
+				padding: 6px 12px;
+			}
+			#myprojects div{
+				margin-top: 0!important;
+				margin-bottom: 0!important;
+			}
+			#myprojects .w3-ul li{
+				padding: 4px 4px;
+			}
+			#myprojects{
+				font-size: 0.8em;
+			}
+			#myprojects h1{
+				font-size: 24px;
+			}
+			#myprojects h3{
+				font-size: 18px;
+			}
+			#sr-city{
+				left: 0px;
+			}
+		}
+		/*
+		@media(max-width: 600px){
+			html { 
+				zoom: 0.8; 
+				-moz-transform: scale(0.8); 
+				-moz-transform-origin: 0 0;
+				font-size: 0.8em;
+			} 
+		}
+		*/
+		
+	link(rel="stylesheet" type="text/css" href="css/drakinite-ui.css")
+	div(class="w3-center w3-text-white")
+		div(class="container full-height")
+			h1(class="TravelingTypewriter headerTxt") drakinite
+			h1(class="Roboto down-arrow") v
+			img(src="/images/spring.jpg" class="bg-image" id="bgImage1" data-image-0)
+		div(class="container w3-row full-height" id="myprojects")
+			div(class="w3-padding-16" style="position: absolute; width: 100%;")
+				h1(class="FuturFixedWidth textShadow") my projects
+			br 
+			br 
+			br 
+			//- Playing Gods
+			div(class="w3-half")
+				a(href="https://www.playinggods.net" target="_blank")
+					div(id="pg-image" style="width: 60%; max-width: 350px; margin: auto;")
+						img(src="/images/work-examples/logo_playinggods.webp" class="w3-image")
+				div(class="w3-padding")
+					h3(class="Kimberley pg-header") PROFESSIONAL WEBSITE FOR AN AUDIOBOOK SERIES
+					div(class="ElliotSans pg-text")
+						ul(class="w3-ul")
+							li • Fully custom landing page and site layout 
+							li • Responsive, mobile-first design 
+							li • Beautiful idle animations using GPU shaders
+							li • News posts and optional mailing list with categories
+							li • Immersive art gallery, searchable with tags
+							li • Support for the visually impaired
+							li • Site owners can edit content whenever they wish
+					div(class="w3-half w3-padding")
+						a(href="https://www.playinggods.net" target="_blank" class="no-underline")
+							div(class="pg-button pg-text") CHECK OUT THE SITE
+					div(class="w3-half w3-padding")
+						a(href="#" target="_blank" class="no-underline" class="hireme")
+							div(class="pg-button pg-text") WANT TO HIRE ME?
+			//- Scoutradioz
+			div(class="w3-half")
+				div(id="sr-image" style="max-width: 85%; margin: auto;")
+					img(src="/images/work-examples/scoutradioz-white-md.png" class="w3-image")
+				div(class="w3-padding sr-text")
+					h3(class="") 
+						span OPEN-SOURCE SCOUTING APP FOR 
+						a(href="https://www.firstinspires.org" target="_blank")
+							i FIRST
+						span(style="font-size: 0.5em; position: relative; top: 1px; left: -2px;") ® 
+						span ROBOTICS COMPETITION
+					div(class="sr-text")
+						ul(class="w3-ul")
+							li • Allows teams to track other robots' performance during competitions
+							li • Displays reports on all aspects of teams' performances
+							li 
+								span • Integrates with data from 
+								a(href="https://thebluealliance.com/" target="_blank") external APIs
+								span  to display match information
+							li • Individualized match assignments for students
+							li • Open for any FRC team/organization to use, with an admin control panel for settings, scouting audits and more
+							li • Hosted on Amazon Web Services
+						a(href="https://scoutradioz.com" target="_blank" style="text-decoration: none;") 
+							div(class="sr-button w3-btn") Check Out the Site
+						a(href="https://github.com/firstteam102/scoringapp-serverless/" target="_blank" style="text-decoration: none;") 
+							div(class="sr-button w3-btn") View it on GitHub
+						a(href="https://docs.google.com/forms/d/1aFylB_3PbgIK2ridVfpgz8Z2r9QUZv6E-z57gjBUnPE/viewform" target="_blank" style="text-decoration: none;") 
+							div(class="sr-button w3-btn") Want to use Scoutradioz? 
+				div(id="sr-city")
+					img(src="/images/work-examples/scoutradioz-city-light.png" style="width: 100%;")
+			img(src="/images/work-examples/scoutradioz-playinggods.png" class="bg-image" data-image-1)
+		div(class="container full-height")
+			div#centerExtContent
+				div.extContainer(style="margin: 24px 0px")
+					a(target="_blank" href="https://twitter.com/TheDrakinite" class="w3-block w3-margin-top")
+						img(class="extImg" src="/images/twitter-300px.png")
+						div(class="FuturFixedWidth extLabel w3-show-inline-block") twitter
+				div.extContainer(style="margin: 24px 0px")
+					a(target="_blank" href="https://www.youtube.com/c/DrakiniteOfficial" class="w3-block w3-margin-top")
+						img(class="extImg" src="/images/youtube-300px.png")
+						div(class="FuturFixedWidth extLabel w3-show-inline-block") youtube
+				div.extContainer(style="margin: 24px 0px")
+					a(target="_blank" href="https://drakinite.deviantart.com/" class="w3-block w3-margin-top")
+						img(class="extImg" src="/images/deviantart.png")
+						div(class="FuturFixedWidth extLabel w3-show-inline-block") deviantart
+			img(src="/images/boathorse-1.jpg" class="bg-image" id="bgImage2" data-image-2)
+		div(class="container drak-black w3-text-grey" style="height: 220px")
+			div(class="w3-left w3-left-align w3-margin")
+				h4
+					span Made using 
+					a(href="https://nodejs.org/en/") node.js
+					span ,  
+					a(href="https://expressjs.com/") express
+					span , 
+					a(href="https://www.w3schools.com/w3css/") w3.css
+					span , and 
+					a(href="https://jquery.com/") JQuery
+					span .
+				br 
+				h4
+					span Copyright Drakinite 
+					span #{new Date().getFullYear()}. 
+					span All rights reserved.
+				h4
+					span First image by 
+					a(href="https://twitter.com/imnotgalawaille?lang=en") Galawaille
+					span  | Second image by 
+					a(href="https://twitter.com/ashieboop?lang=en") Ashie
+				h4
+					a(href="" class="hireme") Contact
+		//-div(class="container")
+			img(src="/images/placeholder-blur.jpg" class="bg-image" style="")
+	script.
+		var ticking = false,
+			previousScrollY = 0,
+			numberImages = 3, //$('.bg-image').length;
+			footerHeight = 220;
+		
+		$('.bg-image').on('load', doResizeWidth);
+		
+		$('.hireme').attr('href', atob('bWFpbHRvOmRyYWtpbml0ZUBtYWlsYm94Lm9yZw=='));
+		
+		$(window).resize(doResizeWidth);
+		window.addEventListener('scroll', function(e){
+			previousScrollY = window.scrollY;
+			
+			if(!ticking){
+				requestAnimationFrame(function(){
+					scrollImages(previousScrollY);
+					ticking = false;
+				})
+			}
+			ticking = true;
+		});
+		$(".down-arrow").click(function(){
+		   $('html, body').animate({
+				scrollTop: ($($('.container')[1]).offset().top)
+			},750);            
+		})
+		
+		function doResizeWidth(){
+			
+			var content = $("#centerExtContent");
+			var windowHeight = $(window).innerHeight();
+			var diff = (windowHeight - content.height())/2 - 24;
+			
+			content.css('position', 'relative');
+			content.css('top', diff);
+			
+			var windowHeight = $(window).innerHeight();
+			var windowWidth = $(window).innerWidth();
+			var images = $('.bg-image');
+			//height
+			$('.full-height').css('height', windowHeight);
+			//left
+			
+			for(var i = 0; i < images.length; i++){
+				var image = $(images[i]);
+				
+				var width = image.width();
+				var height = image.height();
+				
+				var ratio = width/height;
+				var windowRatio = windowWidth / windowHeight;
+				
+				if(ratio > windowRatio){
+					image.css('width', 'auto');
+					image.css('height', '130%');
+				}else{
+					image.css('width', windowWidth);
+					image.css('height', 'auto');
+				}
+				width = parseInt(image.css('width'));
+				height = parseInt(image.css('height'));
+				
+				var diffX = -0.5* (width - windowWidth);
+				//var diffY = -0.5* (height - windowHeight);
+				
+				image.css('left', diffX);
+				//image.css('top', diffY);
+				scrollImages(window.scrollY);
+			}
+		}
+		function scrollImages(scrollY){
+			//- var bodyHeight = document.body.clientHeight * (numberImages-1)/numberImages;
+			//- var percScroll = 1 - scrollY / bodyHeight;
+			var percScroll = scrollY / (document.body.clientHeight - window.innerHeight - footerHeight);
+			//- if (percScroll > 1 ) percScroll = 1;
+			
+			
+			//- console.log(percScroll);
+			
+			var windowHeight = $(window).innerHeight();
+			
+			for(let i = 0; i < numberImages; i++){
+				let image = $(`[data-image-${i}]`);
+				
+				let height = image.height();
+				let imgMin = (i-1) / (numberImages-1);
+				if (imgMin < 0) imgMin = 0;
+				let imgMax = (i+1) / (numberImages-1);
+				
+				let personalScroll = 1 - (percScroll - imgMin) / (imgMax - imgMin);
+				//- str += `[${((personalScroll)).toFixed(3)}, ${(1 / (imgMax - imgMin)).toFixed(3)}]; `;
+				
+				personalScroll = Math.max(Math.min(personalScroll, 1), 0);
+				
+				let diffY = -0.6*personalScroll * (height - windowHeight);
+				image.css('top', diffY);
+			}
+			
+		}
+		
+		function lerp(x, y, t) {
+			return (1 - t) * x + t * y;
+		}
+		
+		requestAnimationFrame(doResizeWidth);
+		requestAnimationFrame(function(){
+			scrollImages(400)
+		});
+		//setTimeout(doResizeWidth, 1);

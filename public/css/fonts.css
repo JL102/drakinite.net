@@ -4,6 +4,8 @@
 .Futura{font-family: "Futura";}
 .Allan{font-family: "Allan";}
 .Milford{font-family: "MilfordCondensedBold";}
+.ElliotSans{font-family: "Elliot Sans", 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; letter-spacing: 0.2px;}
+.Kimberley{font-family: "Kimberley", 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; letter-spacing: 1px;}
 
 .strong{font-weight: bold;}
 .italic{font-style: italic;}
@@ -42,4 +44,16 @@
 	font-family: "Allan";
 	src: url('/fonts/Allan-Bold.ttf');
 	font-weight: bold;
+}
+/* playinggods.net fonts */
+
+@font-face{
+	font-family: 'Kimberley';
+	src: url('/fonts/Kimberley_bk.otf') format('opentype');
+	font-weight: 400;
+}
+
+@font-face{
+	font-family: "Elliot Sans";
+	src: url('/fonts/ElliotSans-Regular.ttf') format('truetype');
 }
