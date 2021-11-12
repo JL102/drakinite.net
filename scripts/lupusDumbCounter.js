@@ -13,6 +13,10 @@ var LDC = {
 	subtract: function() {
 		this.value -= 1;
 	},
+	set: function (value) {
+		this.value = value;
+		this.sendMessage(this.value);
+	},
 	clear: function() {
 		this.value = 0;
 		this.sendMessage(this.value);

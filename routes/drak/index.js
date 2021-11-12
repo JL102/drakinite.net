@@ -28,6 +28,14 @@ router.get('/lupusdumbcounter', async (req, res, next) => {
 	});
 });
 
+router.get('/lupusdumbcounter/youreallythinkso', async (req, res, next) => {
+	
+	if (req.query.supersecretkey == 'haha lmao') {
+		LDC.set(parseInt(req.query.value));
+		res.send(String(LDC.getValue()));
+	}
+});
+
 router.get('/lupusdumbcounter/addpoint', async (req, res, next) => {
 	LDC.add();
 	res.send(String(LDC.getValue()));

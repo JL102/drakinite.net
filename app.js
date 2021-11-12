@@ -194,6 +194,7 @@ vhost.use((req, res, next) => {
 vhost.use(vhostFunc('jordanle.es', jordan)); //serves all subdomains via redirect drak
 vhost.use(vhostFunc('www.jordanle.es', jordan));
 vhost.use(vhostFunc('drakinite.net', drak)); //serves top level domain via main server drak
+vhost.use(vhostFunc('www.drakinite.net', drak)); //serves top level domain via main server drak
 vhost.use(vhostFunc('files.drakinite.net', files)); //serves top level domain via main server drak
 vhost.use(vhostFunc('upload.drakinite.net', drakUpload));
 
