@@ -22,6 +22,7 @@ head
 		}
 body
 	audio(id="audio" src="/sounds/Ding.wav" volume="0.2")
+	audio(id="audioreversed" src="/sounds/Ding-Reversed.wav" volume="0.2")
 	div(id="message")
 		p(class="Allan")
 			//img(class="yzma" src="/images/dumbstuff/yzma.png")
@@ -35,12 +36,19 @@ body
 		
 		var socket80, socket443;
 		var audio = $('#audio')[0];
+		var audioreversed = $('#audioreversed')[0];
 		var message = $('#message');
 		var waitTimeout;
 		audio.volume = 0.2;
 		connect();
 		
-		function animate(newText){
+		function animate(newText, doReverse){
+			// reverse ding takes a while to go, so we should play it first
+			if (doReverse) {
+				audioreversed.pause();
+				audioreversed.currentTime = 0;
+				audioreversed.play();
+			} 
 			//down
 			message.animate({
 				top: '20px'
@@ -52,9 +60,19 @@ body
 					//wait a little bit
 					setTimeout(() => {
 						//update message
-						$('#count').text(newText);
-						//play audio
-						audio.play();
+						if (doReverse) {
+							// if we're reversing, we should wait till the reverse ding is loud
+							setTimeout(() => {
+								$('#count').text(newText);
+							}, 650);
+						}
+						else {
+							$('#count').text(newText);
+							//play audio
+							audio.pause();
+							audio.currentTime = 0;
+							audio.play();
+						}
 						//wait for message timeout
 						clearTimeout(waitTimeout);
 						waitTimeout = setTimeout(() => {
@@ -115,6 +133,12 @@ body
 			console.log(evt);
 		}
 		function onmessage(message) {
-			var amount = parseInt(message.data);
-			animate(amount);
+			var data = JSON.parse(message.data);
+			var amount = parseInt(data.value);
+			if (data.event === 'undo') {
+				animate(amount, true);
+			}
+			else {
+				animate(amount);
+			}
 		}
