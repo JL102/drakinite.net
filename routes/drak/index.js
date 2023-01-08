@@ -28,6 +28,19 @@ router.get('/lupusdumbcounter', async (req, res, next) => {
 	});
 });
 
+router.get('/lupusdumbcounter2', async (req, res, next) => {
+	
+	var dumbThingLabel = req.query.dumbThingLabel || 'Count';
+	
+	const websocketLink = req.hostname;
+	
+	res.render('./drak/lupusdumbcounter2', {
+		label: dumbThingLabel,
+		count: LDC.getValue(),
+		websocketLink: websocketLink,
+	});
+});
+
 router.get('/lupusdumbcounter/youreallythinkso', async (req, res, next) => {
 	
 	if (req.query.supersecretkey == 'haha lmao') {

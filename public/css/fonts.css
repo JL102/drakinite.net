@@ -6,6 +6,7 @@
 .Milford{font-family: "MilfordCondensedBold";}
 .ElliotSans{font-family: "Elliot Sans", 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; letter-spacing: 0.2px;}
 .Kimberley{font-family: "Kimberley", 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; letter-spacing: 1px;}
+.OptimusPrinceps{font-family: 'OptimusPrinceps', 'Times New Roman', serif;}
 
 .strong{font-weight: bold;}
 .italic{font-style: italic;}
@@ -56,4 +57,10 @@
 @font-face{
 	font-family: "Elliot Sans";
 	src: url('/fonts/ElliotSans-Regular.ttf') format('truetype');
+}
+
+/* Dark Souls mimic font */
+@font-face{
+	font-family: "OptimusPrinceps";
+	src: url('/fonts/OptimusPrinceps.ttf') format('truetype');
 }

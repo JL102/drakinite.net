@@ -1,0 +1,230 @@
+html
+head
+	link(href='/css/fonts.css?v=1', rel='stylesheet')
+	link(href='/css/w3.css', rel='stylesheet')
+	script(src='/js/jquery.min.js')
+	script(src='/js/reconnecting-websocket.js')
+	style.
+		body {
+			
+		}
+		:root{
+			--height: 80px;
+			--textHeight: 100px;
+			--blur: 25px;
+		}
+		.animate {
+			animation-duration: 5s;
+			animation-direction: normal;
+			animation-iteration-count: 1;
+			animation-timing-function: ease-out;
+		}
+		.animate#message {
+			animation-name: message, opacity;
+		}
+		.animate#submessage {
+			animation-name: submessage, submessageOpacity;
+		}
+		.animate#banner {
+			animation-name: banner, opacity;
+		}
+		.wrong-layer {
+			color: #b00909;
+		}
+		.dignity-restored {
+			color: #7BFEB0;
+		}
+		#message{
+			font-size: var(--textHeight);
+			height: 100%;
+			padding-top: 17px;
+			display: grid;
+			align-content: center;
+			justify-content: space-around;
+			opacity: 0;
+		}
+		#message-text {
+			transform: scaleX(0.9);
+		}
+		#submessage {
+			margin-top: 25px;
+			font-size: calc(var(--textHeight) * .5);
+			color: black;
+			display: flex;
+			align-content: center;
+			justify-content: center;
+			opacity: 0;
+		}
+		#container {
+			position: fixed;
+			width: calc(100% + var(--blur));
+			top: calc(50% - var(--height)/2 - var(--blur));
+			left: -1 * var(--blur);
+			right: -1 * var(--blur);
+			height: calc(var(--height) + var(--blur)*2);
+		}
+		#banner {
+			position: absolute;
+			z-index: -1;
+			height: 100%;
+			width: calc(100% + 100px);
+			top: 0;
+			bottom: 0;
+			right: -50px;
+			left: -50px;
+			--color1: rgba(0, 0, 0, 0);
+			--color2: rgba(0, 0, 0, 0.99);
+			background: linear-gradient(to bottom, var(--color1) 0px, var(--color2) var(--blur), var(--color2) calc(var(--blur) + var(--height)), var(--color1) calc(var(--blur)*2 + var(--height)));
+			filter: blur(10px);
+			opacity: 0;
+		}
+		@keyframes banner {
+			0% {
+				filter: blur(35px);
+			}
+			40%, 70% {
+				filter: blur(10px);
+			}
+			100% {
+				filter: blur(35px);
+			}
+		}
+		@keyframes message {
+			0% {
+				filter: blur(50px);
+				transform: scale(66%);
+			}
+			30%, 70% {
+				filter: blur(0px);
+				transform: scale(100%);
+			}
+			100% {
+				transform: scale(107.5%);
+			}
+		}
+		@keyframes opacity {
+			0%, 100% {
+				opacity: 0%;
+			}
+			20%, 75% {
+				opacity: 100%;
+			}
+		}
+		@keyframes submessage {
+			0%, 10% {
+				filter: blur(50px);
+				transform: scale(66%);
+			}
+			40%, 70% {
+				filter: blur(0px);
+				transform: scale(100%);
+			}
+			100% {
+				transform: scale(107.5%);
+			}
+		}
+		@keyframes submessageOpacity {
+			0%, 15%, 100% {
+				opacity: 0%;
+			}
+			35%, 75% {
+				opacity: 100%;
+			}
+		}
+body
+	audio(id="audio" src="/sounds/dark-souls-you-died.mp3" volume="1")
+	audio(id="audioundo" src="/sounds/dark-souls-retrieval.mp3" volume="1")
+	div(id="container")
+		div(id="banner" class='' data-animate) &nbsp;
+		div(id="message" class='OptimusPrinceps' data-animate)
+			span(id="message-text") PLACEHOLDER
+		div(id="submessage" class='OptimusPrinceps uppercase' data-animate)
+			span #{label}:&nbsp;
+			span(id="count")=count
+	script.
+		const websocketBase = '#{websocketLink}';
+		const reconnectTimeout = 300000; //300 seconds = 5 minutes
+		const messageTimeout = 15000;
+		const volume = 0.2;
+		
+		var socket80, socket443;
+		var audio = $('#audio')[0];
+		var audioundo = $('#audioundo')[0];
+		var animatedItems = $('[data-animate]');
+		var waitTimeout;
+		audio.volume = 0.2;
+		connect();
+		
+		function animate(newText, doReverse){
+			if (doReverse) {
+				audioundo.pause();
+				audioundo.currentTime = 0;
+				audioundo.play();
+				$('#message').removeClass('wrong-layer').addClass('dignity-restored');
+				$('#message-text').text('DIGNITY RESTORED');
+			}
+			else {
+				audio.pause();
+				audio.currentTime = 0;
+				audio.play();
+				$('#message').removeClass('dignity-restored').addClass('wrong-layer');
+				$('#message-text').text('WRONG LAYER');
+			}
+			$('#count').text(newText);
+			
+			//- Removing then re-adding the animate class will make the animation play once
+			animatedItems.removeClass('animate');
+			setTimeout(() => {
+				animatedItems.addClass('animate');
+			}, 1);
+		}
+		
+		function connect(){
+			var options = {
+				maxReconnectAttempts: 5,
+				timeoutInterval: 2500,
+				reconnectDecay: 1.8,
+			}
+			console.log('Connecting...');
+			//connect
+			try {
+				socket80 = new ReconnectingWebSocket(`ws:/${websocketBase}:80`, null, options);
+				socket80.onopen = () => {
+					socket80.send('Ping');
+					console.log('Successfully connected to :80');
+					//only add onclose event after successful connection
+					socket80.onclose = onclose;
+				};
+				socket80.onmessage = onmessage;
+			} 
+			catch(err) {
+				console.log('Failed to start socket80');
+			}
+			try {
+				socket443 = new ReconnectingWebSocket(`wss:/${websocketBase}:443`, null, options);
+				socket443.onopen = () => {
+					socket443.send('Ping');
+					console.log('Successfully connected to :443');
+					//only add onclose event after successful connection
+					socket443.onclose = onclose;
+				};
+				socket443.onmessage = onmessage;
+			}
+			catch(err) {
+				console.log('Failed to start socket443');
+			}
+		}
+		
+		function onclose(evt) {
+			console.log(evt);
+		}
+		function onmessage(message) {
+			var data = JSON.parse(message.data);
+			var amount = parseInt(data.value);
+			if (data.event === 'undo') {
+				animate(amount, true);
+			}
+			else {
+				animate(amount);
+			}
+		}
