@@ -19,11 +19,17 @@ svc.on('install', function(){
 	svc.start();
 });
 
-try {
-	// Uninstall the service.
-	svc.uninstall();
+if (svc.exists) {
+	try {
+		// Uninstall the service.
+		svc.uninstall();
+	}
+	catch (err) {
+		console.error(err);
+		svc.install();
+	}
 }
-catch (err) {
-	console.error(err);
+else {
+	console.log('Service doesn\'t exist, installing now');
 	svc.install();
 }

@@ -6,6 +6,7 @@ var favicon = require('serve-favicon');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var useragent = require('express-useragent');
+var HttpProxy = require('http-proxy')
 var colors = require('colors');
 
 require('dotenv').config();
@@ -16,6 +17,7 @@ require('dotenv').config();
 //set up both apps
 const drak = express();
 const jordan = express();
+const nextcloud = express();
 const useFunctions = require('./useFunctions');
 
 /* Checks process arguments.
@@ -86,6 +88,8 @@ jordan.use(bodyParser.json());
 jordan.use(bodyParser.urlencoded({ extended: false }));
 jordan.use(cookieParser());
 jordan.use(express.static(path.join(__dirname, 'public')));
+
+nextcloud.use(express.static(path.join(__dirname, 'public')))
 
 //set type for use in layout and logger
 drak.use(function(req, res, next){
@@ -191,8 +195,34 @@ vhost.use((req, res, next) => {
 	next();
 });
 
+const proxy = HttpProxy.createProxyServer({
+	target: 'http://localhost:11000',
+	timeout: 1000 * 60 * 3,
+	proxyTimeout: 1000 * 60 * 3,
+	// ws: true,
+	autoRewrite: true,
+});
+
+vhost.__proxy__ = proxy; // janky way of sending the proxy instance to www script
+
+// le proxy
+nextcloud.use((req, res) => {
+	// return res.status(200).send('Hello world');
+	console.log(`Proxying request ${req.url}`);
+	proxy.web(req, res, {
+		// followRedirects: true,
+		// autoRewrite: true,
+	}, (err, req, res, target) => {
+		// console.log('target=', target);
+		let str = new Date().toISOString() + ' Error: ' + err instanceof Error ? err.message : err;
+		console.error(str);
+		return res.status(500).send(str);			
+	})
+})
+
 vhost.use(vhostFunc('jordanle.es', jordan)); //serves all subdomains via redirect drak
 vhost.use(vhostFunc('www.jordanle.es', jordan));
+vhost.use(vhostFunc('nextcloud.jordanle.es', nextcloud)); // owncloud
 vhost.use(vhostFunc('drakinite.net', drak)); //serves top level domain via main server drak
 vhost.use(vhostFunc('www.drakinite.net', drak)); //serves top level domain via main server drak
 vhost.use(vhostFunc('files.drakinite.net', files)); //serves top level domain via main server drak
@@ -203,10 +233,12 @@ vhost.use(vhostFunc('localhost', drak)); //serves top level domain via main serv
 vhost.use(vhostFunc('j.jserver', jordan)); //serves all subdomains via redirect drak
 vhost.use(vhostFunc('jserver', drak)); //serves top level domain via main server drak
 
+vhost.use(vhostFunc('only-dns.jordanle.es', express.static(path.join(__dirname, 'public'))));
+
 // temporary, for unlockedcraft traffic
 const ulc = express();
 ulc.set('view engine', 'pug');
-ulc.use(favicon(path.resolve('D:\\OneDrive\\Projects\\UnlockedCraft\\server-icon.png')));
+// ulc.use(favicon(path.resolve('D:\\OneDrive\\Projects\\UnlockedCraft\\server-icon.png')));
 ulc.use(express.static(path.join(__dirname, 'public')));
 ulc.get('/', (req, res) => {
 	res.render('./unlockedcraft-temp', {

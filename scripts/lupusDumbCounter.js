@@ -20,7 +20,7 @@ var LDC = {
 	},
 	clear: function() {
 		this.value = 0;
-		this.sendMessage({value: this.value});
+		this.sendMessage({event: 'clear', value: this.value});
 	},
 	sendMessage: function(message) {
 		for (var socket of this.sockets) {

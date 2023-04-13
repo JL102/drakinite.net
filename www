@@ -30,12 +30,12 @@ var httpPort = normalizePort(process.env.PORT || '80');
 //var port = normalizePort(process.env.PORT || '80');
 //app.set('port', port);
 
-if(fs.existsSync("/etc/letsencrypt/live/drakinite.net/fullchain.pem")
-  && fs.existsSync("/etc/letsencrypt/live/drakinite.net/privkey.pem")){
+if(fs.existsSync("D:\\letsencrypt\\fullchain.pem")
+  && fs.existsSync("D:\\letsencrypt\\privkey.pem")){
      
   const credentials = {
-    cert: fs.readFileSync("/etc/letsencrypt/live/drakinite.net/fullchain.pem"),
-    key: fs.readFileSync("/etc/letsencrypt/live/drakinite.net/privkey.pem")
+    cert: fs.readFileSync("D:\\letsencrypt\\fullchain.pem"),
+    key: fs.readFileSync("D:\\letsencrypt\\privkey.pem")
   }
   var httpsServer = https.createServer(credentials, app);
   httpsServer.listen(443);
@@ -64,10 +64,22 @@ wsServer.on('connection', socket => {
 // the same ws upgrade process described here:
 // https://www.npmjs.com/package/ws#multiple-servers-sharing-a-single-https-server
 httpServer.on('upgrade', (request, socket, head) => {
+  console.log('Upgrade event http!');
   wsServer.handleUpgrade(request, socket, head, socket => {
     wsServer.emit('connection', socket, request);
   });
 });
+
+if (httpsServer) httpsServer.on('upgrade', (req, socket, head) => {
+  console.log('Upgrade event https!');
+  if (app.__proxy__) {
+    console.log('Proxying ws!');
+    app.__proxy__.ws(req, socket, head);
+  }
+  else {
+    console.error('App didn\'t export the proxy server instance!');
+  }
+})
 
 
 //server.on('error', onError);

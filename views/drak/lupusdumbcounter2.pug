@@ -54,6 +54,8 @@ head
 			align-content: center;
 			justify-content: center;
 			opacity: 0;
+			text-shadow: 2px 0 #fff, -2px 0 #fff, 0 2px #fff, 0 -2px #fff,
+				1px 1px #fff, -1px -1px #fff, 1px -1px #fff, -1px 1px #fff;
 		}
 		#container {
 			position: fixed;
@@ -221,7 +223,7 @@ body
 		function onmessage(message) {
 			var data = JSON.parse(message.data);
 			var amount = parseInt(data.value);
-			if (data.event === 'undo') {
+			if (data.event === 'undo' || data.event === 'clear') {
 				animate(amount, true);
 			}
 			else {

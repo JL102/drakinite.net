@@ -51,9 +51,14 @@ block content
 		}
 		#sr-city{
 			position: absolute;
+			z-index: 1;
 			bottom: 0px;
 			left: 50%;
 			right: 0px;
+		}
+		#sr-textbody{
+			position: relative;
+			z-index: 2;
 		}
 		#sr-image {
 			margin: 45px auto;
@@ -150,7 +155,7 @@ block content
 			div(class="w3-half")
 				div(id="sr-image" style="")
 					img(src="/images/work-examples/scoutradioz-white-md.png" class="w3-image")
-				div(class="w3-padding sr-text")
+				div(class="w3-padding sr-text" id="sr-textbody")
 					h3(class="") 
 						span OPEN-SOURCE SCOUTING APP FOR 
 						a(href="https://www.firstinspires.org" target="_blank")
