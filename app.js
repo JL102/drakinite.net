@@ -203,21 +203,24 @@ const proxy = HttpProxy.createProxyServer({
 	autoRewrite: true,
 });
 
-vhost.__proxy__ = proxy; // janky way of sending the proxy instance to www script
+vhost.proxyServer = proxy; // janky way of sending the proxy instance to www script
+vhost.proxyOnError = (err, req, res, target) => {
+	// server not responding to connection
+	if (err.code === 'ECONNREFUSED') {
+		res.set('Retry-After', '300'); // 5 minutes
+		return res.status(503).send('Nextcloud server is currently not running. A backup might be being performed.');
+	}
+	// other errors
+	else {
+		let str = `${new Date().toISOString()} - ${err}`;
+		console.error(str);
+		return res.status(500).send(str);
+	}	
+}
 
 // le proxy
 nextcloud.use((req, res) => {
-	// return res.status(200).send('Hello world');
-	console.log(`Proxying request ${req.url}`);
-	proxy.web(req, res, {
-		// followRedirects: true,
-		// autoRewrite: true,
-	}, (err, req, res, target) => {
-		// console.log('target=', target);
-		let str = new Date().toISOString() + ' Error: ' + err instanceof Error ? err.message : err;
-		console.error(str);
-		return res.status(500).send(str);			
-	})
+	proxy.web(req, res, {}, vhost.proxyOnError)
 })
 
 vhost.use(vhostFunc('jordanle.es', jordan)); //serves all subdomains via redirect drak

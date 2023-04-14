@@ -72,9 +72,14 @@ httpServer.on('upgrade', (request, socket, head) => {
 
 if (httpsServer) httpsServer.on('upgrade', (req, socket, head) => {
   console.log('Upgrade event https!');
-  if (app.__proxy__) {
+  if (app.proxyServer) {
     console.log('Proxying ws!');
-    app.__proxy__.ws(req, socket, head);
+    try {
+      app.proxyServer.ws(req, socket, head, {}, app.proxyOnError);
+    }
+    catch (err) {
+      console.error('Caught WS error in try-catch', err);
+    }
   }
   else {
     console.error('App didn\'t export the proxy server instance!');
