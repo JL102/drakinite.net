@@ -8,6 +8,7 @@ var bodyParser = require('body-parser');
 var useragent = require('express-useragent');
 var HttpProxy = require('http-proxy')
 var colors = require('colors');
+const updateDNS = require('./dns');
 
 require('dotenv').config();
 
@@ -168,6 +169,10 @@ jordan.use('/', jordanIndex);
 jordan.use('/playground', playground)
 jordan.use('/portfolio', portfolio)
 jordan.use('/software-engineering', sweng)
+jordan.use('/update-dns', async (req, res) => {
+	let ret = await updateDNS();
+	res.send(ret.replace(/\n/g, "<br>").replace(/ /g, "&nbsp;"));
+});
 
 //---Error Handlers
 drak.use(useFunctions.catch404);

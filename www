@@ -55,7 +55,7 @@ httpServer.listen(httpPort);
 const wsServer = new ws.Server({ noServer: true });
 wsServer.on('connection', socket => {
   socket.on('message', message => {
-    console.log(message);
+    console.log('WS Server MSG', message);
   });
   LDC.addWebsocket(socket);
 });
@@ -64,16 +64,16 @@ wsServer.on('connection', socket => {
 // the same ws upgrade process described here:
 // https://www.npmjs.com/package/ws#multiple-servers-sharing-a-single-https-server
 httpServer.on('upgrade', (request, socket, head) => {
-  console.log('Upgrade event http!');
+  // console.log('Upgrade event http!');
   wsServer.handleUpgrade(request, socket, head, socket => {
     wsServer.emit('connection', socket, request);
   });
 });
 
 if (httpsServer) httpsServer.on('upgrade', (req, socket, head) => {
-  console.log('Upgrade event https!');
+  // console.log('Upgrade event https!');
   if (app.proxyServer) {
-    console.log('Proxying ws!');
+    // console.log('Proxying ws!');
     try {
       app.proxyServer.ws(req, socket, head, {}, app.proxyOnError);
     }
