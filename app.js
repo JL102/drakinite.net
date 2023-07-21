@@ -154,6 +154,7 @@ const portfolio = require('./routes/jordan/portfolio');
 const sweng = require('./routes/jordan/softwareengineering');
 const fsponycon = require('./routes/drak/fsponycon');
 const { logger } = require('./useFunctions');
+const { TLSSocket } = require('tls');
 
 //---Route setup: URLs
 //drak
@@ -170,6 +171,7 @@ jordan.use('/playground', playground)
 jordan.use('/portfolio', portfolio)
 jordan.use('/software-engineering', sweng)
 jordan.use('/update-dns', async (req, res) => {
+	// return;
 	let ret = await updateDNS();
 	res.send(ret.replace(/\n/g, "<br>").replace(/ /g, "&nbsp;"));
 });
@@ -210,22 +212,50 @@ const proxy = HttpProxy.createProxyServer({
 
 vhost.proxyServer = proxy; // janky way of sending the proxy instance to www script
 vhost.proxyOnError = (err, req, res, target) => {
-	// server not responding to connection
-	if (err.code === 'ECONNREFUSED') {
-		res.set('Retry-After', '300'); // 5 minutes
-		return res.status(503).send('Nextcloud server is currently not running. A backup might be being performed.');
-	}
-	// other errors
-	else {
-		let str = `${new Date().toISOString()} - ${err}`;
-		console.error(str);
-		return res.status(500).send(str);
+	try {
+		if (res instanceof TLSSocket) {
+			console.error(`${new Date().toISOString()} - TLS Socket - ${err}`);
+			res.setNoDelay(true); // Ensure the response is sent immediately
+			res.write('HTTP/1.1 500 Internal Server Error\r\n');
+			res.write('Retry-After: 300\r\n');
+			res.write('Content-Type: text/plain\r\n');
+			res.write('\r\n');
+			if (err.code === 'ECONNREFUSED') 
+				res.write('Nextcloud server is currently not running. A backup might be being performed.');
+			else
+				res.write(err);
+			res.end();
+		}
+		else {
+			// server not responding to connection
+			if (err.code === 'ECONNREFUSED') {
+				res.set('Retry-After', '300'); // 5 minutes
+				return res.status(503).send('Nextcloud server is currently not running. A backup might be being performed.');
+			}
+			// other errors
+			else {
+				let str = `${new Date().toISOString()} - ${err}`;
+				console.error(str);
+				if (typeof res.status === 'function') return res.status(500).send(str);
+				else return res.send(str);
+			}
+		}
 	}	
+	catch (err) {
+		console.error('Caught in proxyOnError', err);
+	}
 }
+proxy.on('error', vhost.proxyOnError);
 
 // le proxy
 nextcloud.use((req, res) => {
-	proxy.web(req, res, {}, vhost.proxyOnError)
+	try {
+		proxy.web(req, res, {}, vhost.proxyOnError)
+	}
+	catch (err) {
+		console.error('Caught in nextcloud proxy', err);
+		res.status(500).send('An error occurred while trying to proxy the request.');
+	}
 })
 
 vhost.use(vhostFunc('jordanle.es', jordan)); //serves all subdomains via redirect drak
@@ -263,3 +293,14 @@ challenge.use('/', function(req, res){
 vhost.use(vhostFunc('_acme-challenge.drakinite.net', challenge));
 
 useFunctions.log("SERVER REBOOTED\r\nReady");
+
+
+
+if (!process.argv.includes('--no-dns')) {
+	try {
+		updateDNS();
+	}
+	catch (e) {
+		console.error('Caught on updateDNS in app.js', e);
+	}
+}

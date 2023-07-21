@@ -154,7 +154,8 @@ body
 		var audioundo = $('#audioundo')[0];
 		var animatedItems = $('[data-animate]');
 		var waitTimeout;
-		audio.volume = 0.2;
+		audio.volume = volume;
+		audioundo.volume = volume * 2;
 		connect();
 		
 		function animate(newText, doReverse){
@@ -190,7 +191,7 @@ body
 			console.log('Connecting...');
 			//connect
 			try {
-				socket80 = new ReconnectingWebSocket(`ws:/${websocketBase}:80`, null, options);
+				socket80 = new ReconnectingWebSocket(`ws:/${websocketBase}:80/LDC`, null, options);
 				socket80.onopen = () => {
 					socket80.send('Ping');
 					console.log('Successfully connected to :80');
@@ -203,7 +204,7 @@ body
 				console.log('Failed to start socket80');
 			}
 			try {
-				socket443 = new ReconnectingWebSocket(`wss:/${websocketBase}:443`, null, options);
+				socket443 = new ReconnectingWebSocket(`wss:/${websocketBase}:443/LDC`, null, options);
 				socket443.onopen = () => {
 					socket443.send('Ping');
 					console.log('Successfully connected to :443');
